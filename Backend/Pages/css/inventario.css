@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0px 250px;
+    padding: 80px 20px;
+    font-family: Arial, sans-serif;
+    background-color: #dddbdb;
+}
+
+h2 {
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.equipamento {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.equipamento span {
+    width: 30px;
+    font-weight: bold;
+}
+
+.equipamento input[type="number"] {
+    width: 60px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.equipamento input[type="text"] {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: #bfbfbf;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    border-top: 2px solid #888;
+}
+
+.navbar button {
+    flex: 1;
+    padding: 6px 0;
+    background: none;
+    border: none;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #000;
+}
+
+.navbar button i {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+}
+
+.navbar button.active {
+    background-color: #999;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-weight: bold;
+}
+@media (max-width: 425px) {
+    body {
+        padding: 12px;
+        margin: 0px;
+    }
+
+    .equipamento {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .equipamento span {
+        margin-bottom: 4px;
+    }
+
+    .equipamento input[type="number"],
+    .equipamento input[type="text"] {
+        width: 100%;
+    }
+}
+

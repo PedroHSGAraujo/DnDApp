@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Habilidades do Personagem</title>
+    <link rel="stylesheet" href="css/habilidades.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/auth.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Habilidades do Personagem</h1>
+
+    <h2>Ataques & Conjuração</h2>
+    <div id="lista-ataques">
+        <div class="linha-ataque">
+            <input type="text" placeholder="Nome" />
+            <input type="number" placeholder="Bônus de Ataque" />
+            <input type="text" placeholder="Dano/Tipo" />
+        </div>
+    </div>
+    <button class="btn-mais" onclick="adicionarLinhaAtaque()">+ Adicionar Ataque</button>
+
+    <h2>Características & Talentos</h2>
+    <textarea class="textarea-grande" placeholder="Ex: Sentidos aguçados, Visão no escuro, etc..."></textarea>
+
+    <h2>Outras Proficiências & Idiomas</h2>
+    <textarea class="textarea-grande" placeholder="Ex: Línguas, ferramentas, armaduras, etc..."></textarea>
+
+    <button class="salvar">Salvar Habilidades</button>
+
+    <div class="navbar">
+        <button data-aba="personagem" onclick="irPara('/personagens')">
+            <i data-lucide="user"></i>
+            <span>Personagem</span>
+        </button>
+        <button data-aba="atributos" onclick="irPara('/atributos')">
+            <i data-lucide="list"></i>
+            <span>Atributos</span>
+        </button>
+        <button class="active" data-aba="habilidades" onclick="irPara('/habilidades')">
+            <i data-lucide="star"></i>
+            <span>Habilidades</span>
+        </button>
+        <button data-aba="magias" onclick="irPara('/magias')">
+            <i data-lucide="zap"></i>
+            <span>Magias</span>
+        </button>
+        <button data-aba="inventario" onclick="irPara('/inventario')">
+            <i data-lucide="briefcase"></i>
+            <span>Inventário</span>
+        </button>
+        <button data-aba="jogador" onclick="irPara('/jogador')">
+            <i data-lucide="user-circle"></i>
+            <span>Jogador</span>
+        </button>
+    </div>
+    <script>
+        function irPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        function adicionarLinhaAtaque() {
+            const lista = document.getElementById('lista-ataques');
+            const novaLinha = document.createElement('div');
+            novaLinha.className = 'linha-ataque';
+            novaLinha.innerHTML = `
+        <input type="text" placeholder="Nome" />
+        <input type="number" placeholder="Bônus de Ataque" />
+        <input type="text" placeholder="Dano/Tipo" />
+      `;
+            lista.appendChild(novaLinha);
+        }
+
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>

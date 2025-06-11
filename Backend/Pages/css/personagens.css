@@ -1,0 +1,127 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #dddbdb;
+  color: #000;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+  padding: 20px;
+  padding-bottom: 100px; 
+}
+
+h1 {
+    margin: 12px;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+hr {
+  height: 2px;
+  background-color: #000;
+  border: none;
+  margin-bottom: 10px;
+}
+
+#lista-personagens {
+  list-style: none;
+  background-color: #999;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+#lista-personagens li {
+  background-color: #c4c4c4;
+  padding: 12px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+#novo-personagem {
+  display: block;
+  width: 70%;
+  padding: 14px;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 0 auto 10px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+#novo-personagem:hover {
+  background-color: #555;
+}
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background-color: #bfbfbf;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  border-top: 2px solid #888;
+}
+
+.navbar button {
+  flex: 1;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000;
+}
+
+.navbar button i {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 4px;
+}
+
+.navbar button.active {
+  background-color: #999;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 425px) {
+  .navbar button {
+    font-size: 10px;
+  }
+
+  .navbar button i {
+    width: 20px;
+    height: 20px;
+  }
+
+  .navbar {
+    height: auto;
+    flex-wrap: wrap;
+    padding-bottom: 6px;
+  }
+}

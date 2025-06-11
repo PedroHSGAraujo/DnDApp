@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personagens</title>
+  <link rel="stylesheet" href="css/personagens.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+  <div class="tela-personagens">
+    <h1>Personagens</h1>
+    <hr />
+    <div class="lista-personagens" id="lista-personagens">
+
+    </div>
+
+    <a href="/novo-personagem" id="novo-personagem" class="novo-personagem">Novo Personagem</a>
+
+  </div>
+
+  <div class="navbar">
+    <button class="active" data-aba="personagem" onclick="irPara('/personagens')">
+      <i data-lucide="user"></i>
+      <span>Personagem</span>
+    </button>
+    <button data-aba="atributos" onclick="irPara('/atributos')">
+      <i data-lucide="list"></i>
+      <span>Atributos</span>
+    </button>
+    <button data-aba="habilidades" onclick="irPara('/habilidades')">
+      <i data-lucide="star"></i>
+      <span>Habilidades</span>
+    </button>
+    <button data-aba="magias" onclick="irPara('/magias')">
+      <i data-lucide="zap"></i>
+      <span>Magias</span>
+    </button>
+    <button data-aba="inventario" onclick="irPara('/inventario')">
+      <i data-lucide="briefcase"></i>
+      <span>Inventário</span>
+    </button>
+    <button data-aba="jogador" onclick="irPara('/jogador')">
+      <i data-lucide="user-circle"></i>
+      <span>Jogador</span>
+    </button>
+  </div>
+
+
+  <script>
+    function irPara(pagina) {
+      window.location.href = pagina;
+    }
+    lucide.createIcons();
+
+    const token = localStorage.getItem("token");
+
+    // Verifica se o usuário está logado
+    if (!token) {
+      window.location.href = "index.html"; // Redireciona para login
+    } else {
+      fetch("http://localhost:3000/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.user) {
+            // Aqui você pode usar o username se quiser mostrar na interface
+            console.log("Usuário logado:", data.user.username);
+          } else {
+            window.location.href = "index.html";
+          }
+        })
+        .catch(() => {
+          window.location.href = "index.html";
+        });
+    }
+
+    // Função de navegação entre abas
+    function irPara(pagina) {
+      window.location.href = pagina;
+    }
+
+    // Ícones do Lucide
+    lucide.createIcons();
+
+    // Logout
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atributos do Personagem</title>
+    <link rel="stylesheet" href="css/atributos.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/auth.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Atributos do Personagem</h1>
+
+    <div class="linha">
+        <div class="campo">
+            <label for="forca">Força</label>
+            <input type="number" id="forca" />
+        </div>
+        <div class="campo">
+            <label for="destreza">Destreza</label>
+            <input type="number" id="destreza" />
+        </div>
+        <div class="campo">
+            <label for="constituicao">Constituição</label>
+            <input type="number" id="constituicao" />
+        </div>
+        <div class="campo">
+            <label for="inteligencia">Inteligência</label>
+            <input type="number" id="inteligencia" />
+        </div>
+        <div class="campo">
+            <label for="sabedoria">Sabedoria</label>
+            <input type="number" id="sabedoria" />
+        </div>
+        <div class="campo">
+            <label for="carisma">Carisma</label>
+            <input type="number" id="carisma" />
+        </div>
+    </div>
+    <hr />
+
+    <div class="linha">
+        <div class="campo">
+            <label for="inspiracao">Inspiração</label>
+            <input type="number" id="inspiracao" />
+        </div>
+        <div class="campo">
+            <label for="bonus-proficiencia">Bônus de Proficiência</label>
+            <input type="number" id="bonus-proficiencia" />
+        </div>
+    </div>
+    <hr />
+
+    <div class="linha">
+        <div class="coluna">
+            <div class="coluna-titulo">Salvaguardas</div>
+            <div class="campo">
+                <label for="salvaguarda-forca">Força</label>
+                <input type="number" id="salvaguarda-forca" />
+            </div>
+            <div class="campo">
+                <label for="salvaguarda-destreza">Destreza</label>
+                <input type="number" id="salvaguarda-destreza" />
+            </div>
+            <div class="campo">
+                <label for="salvaguarda-constituicao">Constituição</label>
+                <input type="number" id="salvaguarda-constituicao" />
+            </div>
+            <div class="campo">
+                <label for="salvaguarda-inteligencia">Inteligência</label>
+                <input type="number" id="salvaguarda-inteligencia" />
+            </div>
+            <div class="campo">
+                <label for="salvaguarda-sabedoria">Sabedoria</label>
+                <input type="number" id="salvaguarda-sabedoria" />
+            </div>
+            <div class="campo">
+                <label for="salvaguarda-carisma">Carisma</label>
+                <input type="number" id="salvaguarda-carisma" />
+            </div>
+        </div>
+    </div>
+    <hr />
+
+    <div class="linha">
+        <div class="coluna">
+            <div class="coluna-titulo">Perícias</div>
+
+            <div class="campo"><label>Acrobacia</label><input type="number" /></div>
+            <div class="campo"><label>Arcanismo</label><input type="number" /></div>
+            <div class="campo"><label>Atletismo</label><input type="number" /></div>
+            <div class="campo"><label>Atuação</label><input type="number" /></div>
+            <div class="campo"><label>Enganação</label><input type="number" /></div>
+            <div class="campo"><label>Furtividade</label><input type="number" /></div>
+            <div class="campo"><label>História</label><input type="number" /></div>
+            <div class="campo"><label>Intimidação</label><input type="number" /></div>
+            <div class="campo"><label>Intuição</label><input type="number" /></div>
+            <div class="campo"><label>Investigação</label><input type="number" /></div>
+            <div class="campo"><label>Lidar com Animais</label><input type="number" /></div>
+            <div class="campo"><label>Medicina</label><input type="number" /></div>
+            <div class="campo"><label>Natureza</label><input type="number" /></div>
+            <div class="campo"><label>Percepção</label><input type="number" /></div>
+            <div class="campo"><label>Persuasão</label><input type="number" /></div>
+            <div class="campo"><label>Prestidigitação</label><input type="number" /></div>
+            <div class="campo"><label>Religião</label><input type="number" /></div>
+            <div class="campo"><label>Sobrevivência</label><input type="number" /></div>
+        </div>
+    </div>
+    <hr />
+    <button id="btn-salvar-atributos">Salvar Atributos</button>
+
+    <div class="navbar">
+        <button data-aba="personagem" onclick="irPara('/personagens')">
+            <i data-lucide="user"></i>
+            <span>Personagem</span>
+        </button>
+        <button class="active" data-aba="atributos" onclick="irPara('/atributos')">
+            <i data-lucide="list"></i>
+            <span>Atributos</span>
+        </button>
+        <button data-aba="habilidades" onclick="irPara('/habilidades')">
+            <i data-lucide="star"></i>
+            <span>Habilidades</span>
+        </button>
+        <button data-aba="magias" onclick="irPara('/magias')">
+            <i data-lucide="zap"></i>
+            <span>Magias</span>
+        </button>
+        <button data-aba="inventario" onclick="irPara('/inventario')">
+            <i data-lucide="briefcase"></i>
+            <span>Inventário</span>
+        </button>
+        <button data-aba="jogador" onclick="irPara('/jogador')">
+            <i data-lucide="user-circle"></i>
+            <span>Jogador</span>
+        </button>
+    </div>
+
+    <script>
+        function irPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>

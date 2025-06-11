@@ -1,0 +1,114 @@
+body {
+    background-color: #dddbdb;
+    font-family: Arial, sans-serif;
+    padding: 80px 20px 40px;
+    max-width: 900px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.linha3campos {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.linha3campos input {
+    flex: 1;
+}
+
+.bloco-magia {
+    border-top: 2px solid #444;
+    padding-top: 20px;
+    margin-bottom: 30px;
+}
+
+.nivel-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.nivel-info span {
+    font-weight: bold;
+    font-size: 18px;
+    width: 40px;
+}
+
+.linha-magia {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.linha-magia input[type="text"] {
+    flex: 1;
+}
+
+.linha-magia input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    accent-color: #555;
+}
+
+.subtitulo {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: #bfbfbf;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    border-top: 2px solid #888;
+}
+
+.navbar button {
+    flex: 1;
+    padding: 6px 0;
+    background: none;
+    border: none;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #000;
+}
+
+.navbar button i {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+}
+
+.navbar button.active {
+    background-color: #999;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-weight: bold;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventário</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/inventario.css">
+    <script src="js/auth.js"></script>
+
+</head>
+
+<body>
+
+    <h2>Equipamento</h2>
+
+    <div class="equipamento">
+        <span>PC</span>
+        <input type="number" min="0">
+        <input type="text" placeholder="Nome do equipamento">
+    </div>
+
+    <div class="equipamento">
+        <span>PP</span>
+        <input type="number" min="0">
+        <input type="text" placeholder="Nome do equipamento">
+    </div>
+
+    <div class="equipamento">
+        <span>PE</span>
+        <input type="number" min="0">
+        <input type="text" placeholder="Nome do equipamento">
+    </div>
+
+    <div class="equipamento">
+        <span>PO</span>
+        <input type="number" min="0">
+        <input type="text" placeholder="Nome do equipamento">
+    </div>
+
+    <div class="equipamento">
+        <span>PL</span>
+        <input type="number" min="0">
+        <input type="text" placeholder="Nome do equipamento">
+    </div>
+
+    <div class="navbar">
+        <button data-aba="personagem" onclick="irPara('/personagens')">
+            <i data-lucide="user"></i>
+            <span>Personagem</span>
+        </button>
+        <button data-aba="atributos" onclick="irPara('/atributos')">
+            <i data-lucide="list"></i>
+            <span>Atributos</span>
+        </button>
+        <button data-aba="habilidades" onclick="irPara('/habilidades')">
+            <i data-lucide="star"></i>
+            <span>Habilidades</span>
+        </button>
+        <button data-aba="magias" onclick="irPara('/magias')">
+            <i data-lucide="zap"></i>
+            <span>Magias</span>
+        </button>
+        <button class="active" data-aba="inventario" onclick="irPara('/inventario')">
+            <i data-lucide="briefcase"></i>
+            <span>Inventário</span>
+        </button>
+        <button data-aba="jogador" onclick="irPara('/jogador')">
+            <i data-lucide="user-circle"></i>
+            <span>Jogador</span>
+        </button>
+    </div>
+
+    <script>
+        function irPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

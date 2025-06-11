@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="assets/logo.png" alt="Logo do APP" class="logo-img">
+        </div>
+
+        <form class="form" id="registerForm">
+            <input type="text" placeholder="Nome de Usuário" name="username" required />
+            <input type="email" placeholder="E-mail" name="email" required />
+            <input type="password" placeholder="Senha" name="senha" required />
+            <input type="password" placeholder="Confirmar Senha" name="confirmar_senha" required />
+
+            <div class="links">
+                <a href="index.html">Já tem uma conta? Fazer Login</a>
+            </div>
+
+            <button type="submit">Registrar</button>
+        </form>
+        <p id="message"></p>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const username = form.username.value;
+            const email = form.email.value;
+            const senha = form.senha.value;
+            const confirmarSenha = form.confirmar_senha.value;
+
+            const messageDiv = document.getElementById("message");
+
+            if (senha !== confirmarSenha) {
+                messageDiv.textContent = "As senhas não coincidem.";
+                messageDiv.style.color = "red";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ username, email, senha }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.style.color = "green";
+                    // Redirecionar após alguns segundos
+                    setTimeout(() => {
+                        window.location.href = "/personagens";
+                    }, 1000);
+                } else {
+                    messageDiv.textContent = data.error || "Erro ao registrar";
+                    messageDiv.style.color = "red";
+                }
+            } catch (err) {
+                console.error("Erro na requisição:", err);
+                messageDiv.textContent = "Erro na conexão com o servidor.";
+                messageDiv.style.color = "red";
+            }
+        });
+
+        // Verificação quando usuário sai do campo de username ou email
+        document.querySelectorAll("input[name='username'], input[name='email']").forEach(input => {
+            input.addEventListener("blur", async () => {
+                const username = document.querySelector("input[name='username']").value;
+                const email = document.querySelector("input[name='email']").value;
+
+                try {
+                    const response = await fetch(`http://localhost:3000/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
+                    const data = await response.json();
+
+                    if (data.exists) {
+                        document.getElementById("message").textContent = "Usuário ou e-mail já cadastrado";
+                        document.getElementById("message").style.color = "red";
+                    } else {
+                        document.getElementById("message").textContent = "";
+                    }
+                } catch (err) {
+                    console.error("Erro ao verificar usuário:", err);
+                }
+            });
+        });
+        const usernameInput = document.querySelector("input[name='username']");
+        const emailInput = document.querySelector("input[name='email']");
+        const messageBox = document.getElementById("message");
+
+        async function checkUserOrEmail() {
+            const username = usernameInput.value;
+            const email = emailInput.value;
+
+            if (!username && !email) return;
+
+            try {
+                const response = await fetch(`http://localhost:3000/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+
+                if (data.exists) {
+                    messageBox.textContent = "Usuário ou e-mail já cadastrado";
+                    messageBox.style.color = "red";
+                } else {
+                    messageBox.textContent = "";
+                }
+            } catch (err) {
+                console.error("Erro ao verificar usuário:", err);
+                messageBox.textContent = "Erro ao verificar disponibilidade.";
+                messageBox.style.color = "orange";
+            }
+        }
+
+        usernameInput.addEventListener("blur", checkUserOrEmail);
+        emailInput.addEventListener("blur", checkUserOrEmail);
+    </script>
+</body>
+</html>

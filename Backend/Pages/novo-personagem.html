@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Novo Personagem</title>
+  <link rel="stylesheet" href="css/novo-personagem.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <header>
+    <div class="linha">
+      <label for="nome-personagem">Nome do Personagem</label>
+      <input type="text" id="nome-personagem" />
+    </div>
+  </header>
+
+  <main>
+    <div class="linha">
+      <div class="campo">
+        <label for="classe-nivel">Classe e Nível</label>
+        <input type="text" id="classe-nivel" />
+      </div>
+      <div class="campo">
+        <label for="antecedente">Antecedente</label>
+        <input type="text" id="antecedente" />
+      </div>
+      <div class="campo">
+        <label for="nome-jogador">Nome do Jogador</label>
+        <input type="text" id="nome-jogador" />
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="raca">Raça</label>
+        <input type="text" id="raca" />
+      </div>
+      <div class="campo">
+        <label for="alinhamento">Alinhamento</label>
+        <input type="text" id="alinhamento" />
+      </div>
+      <div class="campo">
+        <label for="experiencia">Pontos de Experiência</label>
+        <input type="number" id="pontos_experiencia" />
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="classe-armadura">Classe de Armadura</label>
+        <input type="number" id="classe-armadura" />
+      </div>
+      <div class="campo">
+        <label for="iniciativa">Iniciativa</label>
+        <input type="number" id="iniciativa" />
+      </div>
+      <div class="campo">
+        <label for="deslocamento">Deslocamento</label>
+        <input type="number" id="deslocamento" />
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="vida-maxima">Pontos de Vida Máximos</label>
+        <input type="number" id="pontos_vida_max" />
+      </div>
+      <div class="campo">
+        <label for="vida-atual">Pontos de Vida Atuais</label>
+        <input type="number" id="pontos_vida_atual" />
+      </div>
+      <div class="campo">
+        <label for="vida-temporaria">Pontos de Vida Temporários</label>
+        <input type="number" id="pontos_vida_temp" />
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="dado-vida">Dado de Vida</label>
+        <input type="text" id="dado-vida" />
+      </div>
+      <div class="campo">
+        <label>Sucessos</label>
+        <div class="checkboxes" id="sucessos">
+          <input type="checkbox" id="sucesso1" />
+          <label for="sucesso1">1</label>
+          <input type="checkbox" id="sucesso2" />
+          <label for="sucesso2">2</label>
+          <input type="checkbox" id="sucesso3" />
+          <label for="sucesso3">3</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Falhas</label>
+        <div class="checkboxes" id="falhas">
+          <input type="checkbox" id="falha1" />
+          <label for="falha1">1</label>
+          <input type="checkbox" id="falha2" />
+          <label for="falha2">2</label>
+          <input type="checkbox" id="falha3" />
+          <label for="falha3">3</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="tracos-personalidade">Traços de Personalidade</label>
+        <input type="text" id="traços_personalidade" />
+      </div>
+      <div class="campo">
+        <label for="ideais">Ideais</label>
+        <input type="text" id="ideais" />
+      </div>
+      <div class="campo">
+        <label for="vinculos">Vínculos</label>
+        <input type="text" id="vínculos" />
+      </div>
+      <div class="campo">
+        <label for="fraquezas">Fraquezas</label>
+        <input type="text" id="fraquezas" />
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="idade">Idade</label>
+        <input type="number" id="idade" />
+      </div>
+      <div class="campo">
+        <label for="altura">Altura</label>
+        <input type="text" id="altura" />
+      </div>
+      <div class="campo">
+        <label for="peso">Peso</label>
+        <input type="text" id="peso" />
+      </div>
+    </div>
+
+    <div class="linha">
+      <div class="campo">
+        <label for="olhos">Cor dos Olhos</label>
+        <input type="text" id="cor_olhos" />
+      </div>
+      <div class="campo">
+        <label for="pele">Cor da Pele</label>
+        <input type="text" id="cor_pele" />
+      </div>
+      <div class="campo">
+        <label for="cabelo">Cor do Cabelo</label>
+        <input type="text" id="cor_cabelo" />
+      </div>
+    </div>
+
+    <div class="area-grande">
+      <label for="caracteristicas-adicionais">Características Adicionais</label>
+      <input type="text" id="caracteristicas-adicionais" />
+    </div>
+
+    <button id="btn-salvar">Salvar</button>
+  </main>
+
+  <div class="navbar">
+    <button class="active" data-aba="personagem" onclick="irPara('/personagens')">
+      <i data-lucide="user"></i>
+      <span>Personagem</span>
+    </button>
+    <button data-aba="atributos" onclick="irPara('/atributos')">
+      <i data-lucide="list"></i>
+      <span>Atributos</span>
+    </button>
+    <button data-aba="habilidades" onclick="irPara('/habilidades')">
+      <i data-lucide="star"></i>
+      <span>Habilidades</span>
+    </button>
+    <button data-aba="magias" onclick="irPara('/magias')">
+      <i data-lucide="zap"></i>
+      <span>Magias</span>
+    </button>
+    <button data-aba="inventario" onclick="irPara('/inventario')">
+      <i data-lucide="briefcase"></i>
+      <span>Inventário</span>
+    </button>
+    <button data-aba="jogador" onclick="irPara('/jogador')">
+      <i data-lucide="user-circle"></i>
+      <span>Jogador</span>
+    </button>
+  </div>
+
+  <script>
+    function irPara(pagina) {
+      window.location.href = pagina;
+    }
+
+    lucide.createIcons();
+
+    document.getElementById("btn-salvar").addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Você precisa estar logado.");
+        return;
+      }
+
+      // Função para converter valor de input numérico com fallback para null
+      function toInt(id) {
+        const val = document.getElementById(id).value;
+        return val === "" ? null : parseInt(val, 10);
+      }
+
+      // Função para converter checkbox para 1 ou 0
+      function toCheckboxInt(id) {
+        return document.getElementById(id).checked ? 1 : 0;
+      }
+
+      const personagem = {
+        nome: document.getElementById("nome-personagem").value,
+        classe_nivel: document.getElementById("classe-nivel").value,
+        antecedente: document.getElementById("antecedente").value,
+        nome_jogador: document.getElementById("nome-jogador").value,
+        raca: document.getElementById("raca").value,
+        alinhamento: document.getElementById("alinhamento").value,
+        pontos_experiencia: toInt("pontos_experiencia"),
+        classe_armadura: toInt("classe-armadura"),
+        iniciativa: toInt("iniciativa"),
+        deslocamento: toInt("deslocamento"),
+        pontos_vida_max: toInt("pontos_vida_max"),
+        pontos_vida_atual: toInt("pontos_vida_atual"),
+        pontos_vida_temp: toInt("pontos_vida_temp"),
+        dado_vida: document.getElementById("dado-vida").value,
+        sucesso1: toCheckboxInt("sucesso1"),
+        sucesso2: toCheckboxInt("sucesso2"),
+        sucesso3: toCheckboxInt("sucesso3"),
+        falha1: toCheckboxInt("falha1"),
+        falha2: toCheckboxInt("falha2"),
+        falha3: toCheckboxInt("falha3"),
+        traços_personalidade: document.getElementById("traços_personalidade").value,
+        ideais: document.getElementById("ideais").value,
+        vínculos: document.getElementById("vínculos").value,
+        fraquezas: document.getElementById("fraquezas").value,
+        idade: toInt("idade"),
+        altura: document.getElementById("altura").value,
+        peso: document.getElementById("peso").value,
+        cor_olhos: document.getElementById("cor_olhos").value,
+        cor_pele: document.getElementById("cor_pele").value,
+        cor_cabelo: document.getElementById("cor_cabelo").value,
+        caracteristicas_adicionais: document.getElementById("caracteristicas-adicionais").value,
+      };
+
+      try {
+        const res = await fetch("http://localhost:3000/characters", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(personagem),
+        });
+
+        if (res.ok) {
+          alert("Personagem criado!");
+          window.location.href = "/personagens";
+        } else {
+          const erro = await res.text();
+          alert("Erro ao criar personagem: " + erro);
+        }
+      } catch (err) {
+        alert("Erro de rede ou servidor: " + err.message);
+      }
+    });
+  </script>
+</body>
+
+</html>

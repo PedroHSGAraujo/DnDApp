@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jogador</title>
+    <link rel="stylesheet" href="css/jogador.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/auth.js"></script>
+
+</head>
+
+<body>
+
+    <div class="perfil">
+        <div class="foto-perfil"></div>
+        <input type="text" class="campo" id="username" readonly>
+        <input type="email" class="campo" id="email" readonly>
+        <div class="opcao" onclick="ativarEdicao()">Editar Perfil</div>
+        <div class="opcao" id="salvar-btn" onclick="salvarPerfil()" style="display: none;">Salvar Alterações</div>
+        <input type="password" class="campo" id="senha-atual" placeholder="Senha atual">
+        <input type="password" class="campo" id="nova-senha" placeholder="Nova senha">
+        <div class="opcao" onclick="atualizarSenha()">Atualizar Senha</button>
+    </div>
+
+    <div class="opcao sair" onclick="logout()">Sair da Conta</div>
+
+    <div class="navbar">
+        <button data-aba="personagem" onclick="irPara('/personagens')">
+            <i data-lucide="user"></i>
+            <span>Personagem</span>
+        </button>
+        <button data-aba="atributos" onclick="irPara('/atributos')">
+            <i data-lucide="list"></i>
+            <span>Atributos</span>
+        </button>
+        <button data-aba="habilidades" onclick="irPara('/habilidades')">
+            <i data-lucide="star"></i>
+            <span>Habilidades</span>
+        </button>
+        <button data-aba="magias" onclick="irPara('/magias')">
+            <i data-lucide="zap"></i>
+            <span>Magias</span>
+        </button>
+        <button data-aba="inventario" onclick="irPara('/inventario')">
+            <i data-lucide="briefcase"></i>
+            <span>Inventário</span>
+        </button>
+        <button class="active" data-aba="jogador" onclick="irPara('/jogador')">
+            <i data-lucide="user-circle"></i>
+            <span>Jogador</span>
+        </button>
+    </div>
+    <script>
+        let originalUsername = "";
+        let originalEmail = "";
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
+
+        async function atualizarSenha() {
+            const senhaAtual = document.getElementById("senha-atual").value;
+            const novaSenha = document.getElementById("nova-senha").value;
+            const token = localStorage.getItem("token");
+
+            const res = await fetch("http://localhost:3000/update-password", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ senhaAtual, novaSenha })
+            });
+
+            const data = await res.json();
+            alert(data.message || data.error);
+        }
+
+        async function carregarPerfil() {
+            const token = localStorage.getItem("token");
+            if (!token) return window.location.href = "/login";
+
+            try {
+                const response = await fetch("http://localhost:3000/profile", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error("Erro ao carregar perfil");
+
+                const data = await response.json();
+                const user = data.user;
+
+                document.getElementById("username").value = user.username;
+                document.getElementById("email").value = user.email;
+
+                originalUsername = user.username;
+                originalEmail = user.email;
+            } catch (err) {
+                console.error(err);
+                window.location.href = "/login";
+            }
+        }
+
+        function ativarEdicao() {
+            document.getElementById("username").readOnly = false;
+            document.getElementById("email").readOnly = false;
+            document.getElementById("salvar-btn").style.display = "block";
+        }
+
+        async function salvarPerfil() {
+            const token = localStorage.getItem("token");
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+
+            if (username === originalUsername && email === originalEmail) {
+                alert("Nenhuma alteração feita.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/profile", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ username, email }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Perfil atualizado com sucesso!");
+                    document.getElementById("username").readOnly = true;
+                    document.getElementById("email").readOnly = true;
+                    document.getElementById("salvar-btn").style.display = "none";
+                    originalUsername = username;
+                    originalEmail = email;
+                } else {
+                    alert(result.error || "Erro ao atualizar perfil.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao salvar alterações.");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
+
+        function irPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        lucide.createIcons();
+        carregarPerfil();
+    </script>
+
+</body>
+
+</html>

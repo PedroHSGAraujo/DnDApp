@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/auth.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="assets/logo.png" alt="Logo do APP" class="logo-img">
+        </div>
+
+        <form class="form">
+            <input type="text" placeholder="Username ou E-mail" name="username" required />
+            <input type="password" placeholder="Senha" name="senha" required />
+
+            <div class="links">
+                <a href="#">Esqueci minha senha</a>
+                <a href="/register">Não tem conta? Registrar</a>
+            </div>
+
+            <button type="button" onclick="loginUser()">Entrar</button>
+        </form>
+    </div>
+    <script>
+        async function loginUser() {
+            const username = document.querySelector("input[name='username']").value;
+            const senha = document.querySelector("input[name='senha']").value;
+
+            const response = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, senha }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem("token", data.token); // manter usuário logado
+                window.location.href = "/personagens";
+            } else {
+                alert(data.error);
+            }
+        }
+    </script>
+</body>
+
+</html>
