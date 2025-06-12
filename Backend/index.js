@@ -9,7 +9,14 @@ const jwt = require("jsonwebtoken");
 const characterRoutes = require('./characters')
 
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://dndapp-0f3t.onrender.com',
+    'http://localhost:3000',
+    'http://localhost:5000'
+  ],
+  credentials: true
+}));
 
 const PORT = process.env.PORT || 3000;
 
