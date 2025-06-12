@@ -109,8 +109,124 @@
     </div>
 
     <script>
-        // 🚀 URL DINÂMICA
         const API_URL = window.location.origin;
+
+        class AuthCache {
+            constructor() {
+                this.cacheKey = 'auth_verification_cache';
+                this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+            }
+
+            isValid() {
+                const cache = this.getCache();
+                if (!cache) return false;
+
+                const now = Date.now();
+                return (now - cache.timestamp) < this.cacheTimeout;
+            }
+
+            getCache() {
+                try {
+                    const cached = localStorage.getItem(this.cacheKey);
+                    return cached ? JSON.parse(cached) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            setCache(isValid) {
+                const cache = {
+                    isValid,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+            }
+
+            clearCache() {
+                localStorage.removeItem(this.cacheKey);
+            }
+        }
+
+        const authCache = new AuthCache();
+
+        // Função de verificação com cache
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+
+            // Verifica se temos um cache válido
+            if (authCache.isValid()) {
+                const cache = authCache.getCache();
+                if (cache && cache.isValid) {
+                    console.log('Usando cache de autenticação válido');
+                    return true;
+                }
+            }
+
+            try {
+                console.log('Verificando autenticação no servidor...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    console.log('Autenticação verificada com sucesso');
+                    authCache.setCache(true);
+                    return true;
+                } else if (res.status === 401 || res.status === 403) {
+                    console.log('Token inválido, removendo e redirecionando');
+                    localStorage.removeItem("token");
+                    authCache.clearCache();
+                    window.location.href = "/";
+                    return false;
+                } else {
+                    // Erro do servidor, mas mantém o cache anterior se existir
+                    console.log(`Erro do servidor: ${res.status}`);
+                    const cache = authCache.getCache();
+                    if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+                        console.log('Usando cache anterior devido a erro do servidor');
+                        return true;
+                    }
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
+
+                // Em caso de erro de rede, verifica se temos cache recente
+                const cache = authCache.getCache();
+                if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+                    console.log('Usando cache devido a erro de rede');
+                    return true;
+                }
+
+                // Se não há cache válido e é claramente um erro de rede, não desloga
+                if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+                    console.log('Erro de rede detectado, mantendo usuário logado');
+                    return true;
+                }
+
+                // Para outros erros, desloga
+                localStorage.removeItem("token");
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+        }
 
         async function verificarAutenticacao() {
             const token = localStorage.getItem("token");
@@ -139,7 +255,7 @@
 
         async function carregarPersonagens() {
             const token = localStorage.getItem("token");
-            
+
             try {
                 const response = await fetch(`${API_URL}/characters`, {
                     headers: { Authorization: `Bearer ${token}` }
@@ -148,9 +264,9 @@
                 if (response.ok) {
                     const data = await response.json();
                     const personagens = data.characters || [];
-                    
+
                     document.getElementById('loading').style.display = 'none';
-                    
+
                     if (personagens.length === 0) {
                         document.getElementById('empty-state').style.display = 'block';
                     } else {
@@ -182,11 +298,11 @@
         function criarCardPersonagem(personagem) {
             const card = document.createElement('div');
             card.className = 'character-card';
-            
+
             const vida = personagem.pontos_vida_atual || 0;
             const vidaMax = personagem.pontos_vida_max || 1;
             const porcentagemVida = Math.round((vida / vidaMax) * 100);
-            
+
             let corVida = '#4CAF50';
             if (porcentagemVida <= 25) corVida = '#f44336';
             else if (porcentagemVida <= 50) corVida = '#ff9800';
@@ -412,8 +528,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Empty State */
@@ -561,7 +682,7 @@
             color: #667eea;
         }
 
-        .stat > span {
+        .stat>span {
             font-size: 14px;
             font-weight: 600;
             color: #555;
@@ -860,6 +981,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -878,9 +1000,11 @@
             animation: fadeInUp 0.8s ease-out;
         }
 
-        .loading-state, .empty-state {
+        .loading-state,
+        .empty-state {
             animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </body>
+
 </html>

@@ -295,7 +295,8 @@
             <i data-lucide="pen-tool"></i>
             Descreva características especiais, marcas distintivas, etc.
           </label>
-          <textarea id="caracteristicas-adicionais" rows="3" placeholder="Ex: Cicatriz no rosto, tatuagem no braço, voz grave..."></textarea>
+          <textarea id="caracteristicas-adicionais" rows="3"
+            placeholder="Ex: Cicatriz no rosto, tatuagem no braço, voz grave..."></textarea>
         </div>
       </div>
 
@@ -339,8 +340,124 @@
   </div>
 
   <script>
-    // 🚀 URL DINÂMICA - Funciona automaticamente em qualquer ambiente
     const API_URL = window.location.origin;
+
+    class AuthCache {
+      constructor() {
+        this.cacheKey = 'auth_verification_cache';
+        this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+      }
+
+      isValid() {
+        const cache = this.getCache();
+        if (!cache) return false;
+
+        const now = Date.now();
+        return (now - cache.timestamp) < this.cacheTimeout;
+      }
+
+      getCache() {
+        try {
+          const cached = localStorage.getItem(this.cacheKey);
+          return cached ? JSON.parse(cached) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      setCache(isValid) {
+        const cache = {
+          isValid,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+      }
+
+      clearCache() {
+        localStorage.removeItem(this.cacheKey);
+      }
+    }
+
+    const authCache = new AuthCache();
+
+    // Função de verificação com cache
+    async function verificarAutenticacao() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log('Token não encontrado, redirecionando para login');
+        authCache.clearCache();
+        window.location.href = "/";
+        return false;
+      }
+
+      // Verifica se temos um cache válido
+      if (authCache.isValid()) {
+        const cache = authCache.getCache();
+        if (cache && cache.isValid) {
+          console.log('Usando cache de autenticação válido');
+          return true;
+        }
+      }
+
+      try {
+        console.log('Verificando autenticação no servidor...');
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const res = await fetch(`${API_URL}/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          console.log('Autenticação verificada com sucesso');
+          authCache.setCache(true);
+          return true;
+        } else if (res.status === 401 || res.status === 403) {
+          console.log('Token inválido, removendo e redirecionando');
+          localStorage.removeItem("token");
+          authCache.clearCache();
+          window.location.href = "/";
+          return false;
+        } else {
+          // Erro do servidor, mas mantém o cache anterior se existir
+          console.log(`Erro do servidor: ${res.status}`);
+          const cache = authCache.getCache();
+          if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+            console.log('Usando cache anterior devido a erro do servidor');
+            return true;
+          }
+          throw new Error(`Server error: ${res.status}`);
+        }
+      } catch (error) {
+        console.error('Erro na verificação de autenticação:', error);
+
+        // Em caso de erro de rede, verifica se temos cache recente
+        const cache = authCache.getCache();
+        if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+          console.log('Usando cache devido a erro de rede');
+          return true;
+        }
+
+        // Se não há cache válido e é claramente um erro de rede, não desloga
+        if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+          console.log('Erro de rede detectado, mantendo usuário logado');
+          return true;
+        }
+
+        // Para outros erros, desloga
+        localStorage.removeItem("token");
+        authCache.clearCache();
+        window.location.href = "/";
+        return false;
+      }
+    }
 
     function irPara(pagina) {
       window.location.href = pagina;
@@ -377,7 +494,7 @@
     }
 
     // Auto-sync vida atual com vida máxima
-    document.getElementById("pontos_vida_max").addEventListener("input", function() {
+    document.getElementById("pontos_vida_max").addEventListener("input", function () {
       const vidaMax = this.value;
       const vidaAtual = document.getElementById("pontos_vida_atual");
       if (!vidaAtual.value || vidaAtual.value === "0") {
@@ -392,7 +509,7 @@
 
       const token = localStorage.getItem("token");
       const btnSalvar = document.getElementById("btn-salvar");
-      
+
       // Desabilitar botão durante salvamento
       btnSalvar.disabled = true;
       btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Criando...';
@@ -732,17 +849,17 @@
       border-color: #f44336;
     }
 
-    .checkbox-label input:checked + .checkmark.success {
+    .checkbox-label input:checked+.checkmark.success {
       background: #4CAF50;
       border-color: #4CAF50;
     }
 
-    .checkbox-label input:checked + .checkmark.failure {
+    .checkbox-label input:checked+.checkmark.failure {
       background: #f44336;
       border-color: #f44336;
     }
 
-    .checkbox-label input:checked + .checkmark::after {
+    .checkbox-label input:checked+.checkmark::after {
       content: '✓';
       color: white;
       font-weight: bold;
@@ -803,8 +920,13 @@
     }
 
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* Navbar */
@@ -913,6 +1035,7 @@
         opacity: 0;
         transform: translateY(30px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -932,4 +1055,5 @@
     }
   </style>
 </body>
+
 </html>

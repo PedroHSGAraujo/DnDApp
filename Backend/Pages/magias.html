@@ -121,8 +121,124 @@
     </div>
 
     <script>
-        // 🚀 URL DINÂMICA - Detecta automaticamente o ambiente
         const API_URL = window.location.origin;
+
+        class AuthCache {
+            constructor() {
+                this.cacheKey = 'auth_verification_cache';
+                this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+            }
+
+            isValid() {
+                const cache = this.getCache();
+                if (!cache) return false;
+
+                const now = Date.now();
+                return (now - cache.timestamp) < this.cacheTimeout;
+            }
+
+            getCache() {
+                try {
+                    const cached = localStorage.getItem(this.cacheKey);
+                    return cached ? JSON.parse(cached) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            setCache(isValid) {
+                const cache = {
+                    isValid,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+            }
+
+            clearCache() {
+                localStorage.removeItem(this.cacheKey);
+            }
+        }
+
+        const authCache = new AuthCache();
+
+        // Função de verificação com cache
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+
+            // Verifica se temos um cache válido
+            if (authCache.isValid()) {
+                const cache = authCache.getCache();
+                if (cache && cache.isValid) {
+                    console.log('Usando cache de autenticação válido');
+                    return true;
+                }
+            }
+
+            try {
+                console.log('Verificando autenticação no servidor...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    console.log('Autenticação verificada com sucesso');
+                    authCache.setCache(true);
+                    return true;
+                } else if (res.status === 401 || res.status === 403) {
+                    console.log('Token inválido, removendo e redirecionando');
+                    localStorage.removeItem("token");
+                    authCache.clearCache();
+                    window.location.href = "/";
+                    return false;
+                } else {
+                    // Erro do servidor, mas mantém o cache anterior se existir
+                    console.log(`Erro do servidor: ${res.status}`);
+                    const cache = authCache.getCache();
+                    if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+                        console.log('Usando cache anterior devido a erro do servidor');
+                        return true;
+                    }
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
+
+                // Em caso de erro de rede, verifica se temos cache recente
+                const cache = authCache.getCache();
+                if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+                    console.log('Usando cache devido a erro de rede');
+                    return true;
+                }
+
+                // Se não há cache válido e é claramente um erro de rede, não desloga
+                if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+                    console.log('Erro de rede detectado, mantendo usuário logado');
+                    return true;
+                }
+
+                // Para outros erros, desloga
+                localStorage.removeItem("token");
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+        }
 
         // Verificação de autenticação
         async function verificarAutenticacao() {
@@ -146,7 +262,7 @@
                     window.location.href = "/";
                     return false;
                 }
-                
+
                 console.log('Autenticação verificada com sucesso');
                 return true;
             } catch (error) {
@@ -319,7 +435,7 @@
                     const characterData = await characterResponse.json();
                     console.log('Dados do personagem recebidos:', characterData);
                     const personagem = characterData.character;
-                    
+
                     if (personagem && personagem.nome) {
                         document.getElementById('titulo-personagem').textContent = `Magias - ${personagem.nome}`;
                         console.log('Título atualizado para:', personagem.nome);
@@ -367,17 +483,17 @@
             } catch (error) {
                 console.error('Erro detalhado ao carregar magias:', error);
                 console.error('Stack trace:', error.stack);
-                
+
                 // Mostrar conteúdo mesmo com erro
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-magias').style.display = 'block';
-                
+
                 // Gerar blocos e adicionar truques vazios em caso de erro
                 gerarBlocosMagia();
                 for (let i = 0; i < 3; i++) {
                     adicionarTruque();
                 }
-                
+
                 alert('Erro ao carregar magias: ' + error.message);
             }
         }
@@ -406,7 +522,7 @@
                 trequesContainer.innerHTML = '';
 
                 let truquesParsed = [];
-                
+
                 // Tentar fazer parse dos truques se for string JSON
                 if (typeof magias.truques === 'string') {
                     try {
@@ -458,7 +574,7 @@
 
                         let magiasNivel = [];
                         const magiasData = magias[`nivel_${nivel}_magias`];
-                        
+
                         // Tentar fazer parse das magias se for string JSON
                         if (typeof magiasData === 'string') {
                             try {
@@ -568,7 +684,7 @@
                 } else {
                     const errorData = await response.text();
                     console.error('Erro na resposta:', response.status, errorData);
-                    
+
                     let errorMessage = 'Erro desconhecido';
                     try {
                         const errorJson = JSON.parse(errorData);
@@ -576,7 +692,7 @@
                     } catch (e) {
                         errorMessage = `Erro HTTP ${response.status}: ${errorData}`;
                     }
-                    
+
                     alert('Erro ao salvar magias: ' + errorMessage);
                 }
             } catch (error) {
@@ -597,7 +713,7 @@
             console.log('=== INICIALIZANDO PÁGINA DE MAGIAS ===');
             console.log('URL atual:', window.location.href);
             console.log('API URL:', API_URL);
-            
+
             const autenticado = await verificarAutenticacao();
             if (autenticado) {
                 await carregarMagias();
@@ -703,8 +819,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Cards */
@@ -1127,6 +1248,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1146,4 +1268,5 @@
         }
     </style>
 </body>
+
 </html>

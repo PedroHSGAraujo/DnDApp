@@ -36,7 +36,8 @@
                         <i data-lucide="user"></i>
                         Nome de usuário
                     </label>
-                    <input type="text" id="username" name="username" required placeholder="Escolha um nome único" autocomplete="username">
+                    <input type="text" id="username" name="username" required placeholder="Escolha um nome único"
+                        autocomplete="username">
                     <span class="input-hint">Mínimo 3 caracteres, sem espaços</span>
                 </div>
 
@@ -45,7 +46,8 @@
                         <i data-lucide="mail"></i>
                         Email
                     </label>
-                    <input type="email" id="email" name="email" required placeholder="seu.email@exemplo.com" autocomplete="email">
+                    <input type="email" id="email" name="email" required placeholder="seu.email@exemplo.com"
+                        autocomplete="email">
                     <span class="input-hint">Use um email válido e ativo</span>
                 </div>
 
@@ -55,7 +57,8 @@
                         Senha
                     </label>
                     <div class="senha-field">
-                        <input type="password" id="senha" name="senha" required placeholder="Mínimo 6 caracteres" autocomplete="new-senha">
+                        <input type="password" id="senha" name="senha" required placeholder="Mínimo 6 caracteres"
+                            autocomplete="new-senha">
                         <button type="button" class="toggle-senha" onclick="togglesenha('senha', 'eye-icon')">
                             <i data-lucide="eye" id="eye-icon"></i>
                         </button>
@@ -69,7 +72,8 @@
                         Confirmar senha
                     </label>
                     <div class="senha-field">
-                        <input type="password" id="confirmsenha" name="confirmsenha" required placeholder="Digite a senha novamente" autocomplete="new-senha">
+                        <input type="password" id="confirmsenha" name="confirmsenha" required
+                            placeholder="Digite a senha novamente" autocomplete="new-senha">
                         <button type="button" class="toggle-senha" onclick="togglesenha('confirmsenha', 'eye-icon-2')">
                             <i data-lucide="eye" id="eye-icon-2"></i>
                         </button>
@@ -81,7 +85,8 @@
                     <label class="checkbox-label">
                         <input type="checkbox" id="terms" required>
                         <span class="checkmark"></span>
-                        Aceito os <a href="#" class="link" onclick="mostrarTermos()">termos de uso</a> e <a href="#" class="link" onclick="mostrarPrivacidade()">política de privacidade</a>
+                        Aceito os <a href="#" class="link" onclick="mostrarTermos()">termos de uso</a> e <a href="#"
+                            class="link" onclick="mostrarPrivacidade()">política de privacidade</a>
                     </label>
                 </div>
 
@@ -125,8 +130,124 @@
     </div>
 
     <script>
-        // 🚀 URL DINÂMICA
         const API_URL = window.location.origin;
+
+        class AuthCache {
+            constructor() {
+                this.cacheKey = 'auth_verification_cache';
+                this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+            }
+
+            isValid() {
+                const cache = this.getCache();
+                if (!cache) return false;
+
+                const now = Date.now();
+                return (now - cache.timestamp) < this.cacheTimeout;
+            }
+
+            getCache() {
+                try {
+                    const cached = localStorage.getItem(this.cacheKey);
+                    return cached ? JSON.parse(cached) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            setCache(isValid) {
+                const cache = {
+                    isValid,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+            }
+
+            clearCache() {
+                localStorage.removeItem(this.cacheKey);
+            }
+        }
+
+        const authCache = new AuthCache();
+
+        // Função de verificação com cache
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+
+            // Verifica se temos um cache válido
+            if (authCache.isValid()) {
+                const cache = authCache.getCache();
+                if (cache && cache.isValid) {
+                    console.log('Usando cache de autenticação válido');
+                    return true;
+                }
+            }
+
+            try {
+                console.log('Verificando autenticação no servidor...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    console.log('Autenticação verificada com sucesso');
+                    authCache.setCache(true);
+                    return true;
+                } else if (res.status === 401 || res.status === 403) {
+                    console.log('Token inválido, removendo e redirecionando');
+                    localStorage.removeItem("token");
+                    authCache.clearCache();
+                    window.location.href = "/";
+                    return false;
+                } else {
+                    // Erro do servidor, mas mantém o cache anterior se existir
+                    console.log(`Erro do servidor: ${res.status}`);
+                    const cache = authCache.getCache();
+                    if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+                        console.log('Usando cache anterior devido a erro do servidor');
+                        return true;
+                    }
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
+
+                // Em caso de erro de rede, verifica se temos cache recente
+                const cache = authCache.getCache();
+                if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+                    console.log('Usando cache devido a erro de rede');
+                    return true;
+                }
+
+                // Se não há cache válido e é claramente um erro de rede, não desloga
+                if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+                    console.log('Erro de rede detectado, mantendo usuário logado');
+                    return true;
+                }
+
+                // Para outros erros, desloga
+                localStorage.removeItem("token");
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+        }
 
         // Verificar se já está logado
         function verificarSeJaEstaLogado() {
@@ -149,7 +270,7 @@
         function togglesenha(inputId, iconId) {
             const senhaInput = document.getElementById(inputId);
             const eyeIcon = document.getElementById(iconId);
-            
+
             if (senhaInput.type === 'senha') {
                 senhaInput.type = 'text';
                 eyeIcon.setAttribute('data-lucide', 'eye-off');
@@ -281,15 +402,15 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ 
-                        username: username.trim(), 
-                        email: email.trim(), 
-                        senha: senha 
+                    body: JSON.stringify({
+                        username: username.trim(),
+                        email: email.trim(),
+                        senha: senha
                     }),
                 });
 
                 const data = await response.json();
-                
+
                 // Debug: Mostrar resposta do servidor
                 console.log('Resposta do servidor:', {
                     status: response.status,
@@ -299,11 +420,11 @@
 
                 if (response.ok) {
                     mostrarMensagem('🎉 Conta criada com sucesso! Redirecionando para o login...', 'success');
-                    
+
                     setTimeout(() => {
                         window.location.href = '/login';
                     }, 2000);
-                    
+
                     return true;
                 } else {
                     throw new Error(data.error || data.message || 'Erro ao criar conta');
@@ -333,7 +454,7 @@
         document.getElementById('username').addEventListener('input', (e) => {
             const username = e.target.value;
             const hint = e.target.nextElementSibling;
-            
+
             if (username.length > 0) {
                 const erro = validarUsername(username);
                 if (erro) {
@@ -351,14 +472,14 @@
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('senha').value; // NÃO fazer trim na senha
             const confirmsenha = document.getElementById('confirmsenha').value;
             const terms = document.getElementById('terms').checked;
             const registerBtn = document.getElementById('registerBtn');
-            
+
             // Debug: Verificar valores dos campos
             console.log('Valores do formulário:', {
                 username: username,
@@ -367,7 +488,7 @@
                 confirmsenha: confirmsenha ? `[${confirmsenha.length} caracteres]` : '[VAZIO]',
                 terms: terms
             });
-            
+
             // Validações mais rigorosas
             if (!username) {
                 mostrarMensagem('Nome de usuário é obrigatório.');
@@ -646,7 +767,8 @@
             height: 18px;
         }
 
-        .senha-strength, .match-indicator {
+        .senha-strength,
+        .match-indicator {
             font-size: 12px;
             font-weight: 600;
             margin-top: 4px;
@@ -683,12 +805,12 @@
             flex-shrink: 0;
         }
 
-        .checkbox-label input:checked + .checkmark {
+        .checkbox-label input:checked+.checkmark {
             background: #4CAF50;
             border-color: #4CAF50;
         }
 
-        .checkbox-label input:checked + .checkmark::after {
+        .checkbox-label input:checked+.checkmark::after {
             content: '✓';
             color: white;
             font-weight: bold;
@@ -834,8 +956,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive */
@@ -864,6 +991,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);

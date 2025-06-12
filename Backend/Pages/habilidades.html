@@ -107,8 +107,124 @@
     </div>
 
     <script>
-        // 🚀 URL DINÂMICA - Detecta automaticamente o ambiente
         const API_URL = window.location.origin;
+
+        class AuthCache {
+            constructor() {
+                this.cacheKey = 'auth_verification_cache';
+                this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+            }
+
+            isValid() {
+                const cache = this.getCache();
+                if (!cache) return false;
+
+                const now = Date.now();
+                return (now - cache.timestamp) < this.cacheTimeout;
+            }
+
+            getCache() {
+                try {
+                    const cached = localStorage.getItem(this.cacheKey);
+                    return cached ? JSON.parse(cached) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            setCache(isValid) {
+                const cache = {
+                    isValid,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+            }
+
+            clearCache() {
+                localStorage.removeItem(this.cacheKey);
+            }
+        }
+
+        const authCache = new AuthCache();
+
+        // Função de verificação com cache
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+
+            // Verifica se temos um cache válido
+            if (authCache.isValid()) {
+                const cache = authCache.getCache();
+                if (cache && cache.isValid) {
+                    console.log('Usando cache de autenticação válido');
+                    return true;
+                }
+            }
+
+            try {
+                console.log('Verificando autenticação no servidor...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    console.log('Autenticação verificada com sucesso');
+                    authCache.setCache(true);
+                    return true;
+                } else if (res.status === 401 || res.status === 403) {
+                    console.log('Token inválido, removendo e redirecionando');
+                    localStorage.removeItem("token");
+                    authCache.clearCache();
+                    window.location.href = "/";
+                    return false;
+                } else {
+                    // Erro do servidor, mas mantém o cache anterior se existir
+                    console.log(`Erro do servidor: ${res.status}`);
+                    const cache = authCache.getCache();
+                    if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+                        console.log('Usando cache anterior devido a erro do servidor');
+                        return true;
+                    }
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
+
+                // Em caso de erro de rede, verifica se temos cache recente
+                const cache = authCache.getCache();
+                if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+                    console.log('Usando cache devido a erro de rede');
+                    return true;
+                }
+
+                // Se não há cache válido e é claramente um erro de rede, não desloga
+                if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+                    console.log('Erro de rede detectado, mantendo usuário logado');
+                    return true;
+                }
+
+                // Para outros erros, desloga
+                localStorage.removeItem("token");
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+        }
 
         let ataques = []; // Array para armazenar os ataques
 
@@ -134,7 +250,7 @@
                     window.location.href = "/";
                     return false;
                 }
-                
+
                 console.log('Autenticação verificada com sucesso');
                 return true;
             } catch (error) {
@@ -221,7 +337,7 @@
                     const characterData = await characterResponse.json();
                     console.log('Dados do personagem recebidos:', characterData);
                     const personagem = characterData.character;
-                    
+
                     if (personagem && personagem.nome) {
                         document.getElementById('titulo-personagem').textContent = `Habilidades - ${personagem.nome}`;
                         console.log('Título atualizado para:', personagem.nome);
@@ -263,14 +379,14 @@
             } catch (error) {
                 console.error('Erro detalhado ao carregar habilidades:', error);
                 console.error('Stack trace:', error.stack);
-                
+
                 // Mostrar conteúdo mesmo com erro
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-habilidades').style.display = 'block';
-                
+
                 // Adicionar linha vazia em caso de erro
                 adicionarLinhaAtaque();
-                
+
                 alert('Erro ao carregar habilidades: ' + error.message);
             }
         }
@@ -295,7 +411,7 @@
                 listaAtaques.innerHTML = ''; // Limpar ataques existentes
 
                 let ataquesParsed = [];
-                
+
                 // Tentar fazer parse dos ataques se for string JSON
                 if (typeof habilidades.ataques_conjuracao === 'string') {
                     try {
@@ -419,7 +535,7 @@
                 } else {
                     const errorData = await response.text();
                     console.error('Erro na resposta:', response.status, errorData);
-                    
+
                     let errorMessage = 'Erro desconhecido';
                     try {
                         const errorJson = JSON.parse(errorData);
@@ -427,7 +543,7 @@
                     } catch (e) {
                         errorMessage = `Erro HTTP ${response.status}: ${errorData}`;
                     }
-                    
+
                     alert('Erro ao salvar habilidades: ' + errorMessage);
                 }
             } catch (error) {
@@ -448,7 +564,7 @@
             console.log('=== INICIALIZANDO PÁGINA DE HABILIDADES ===');
             console.log('URL atual:', window.location.href);
             console.log('API URL:', API_URL);
-            
+
             const autenticado = await verificarAutenticacao();
             if (autenticado) {
                 await carregarHabilidades();
@@ -554,8 +670,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Cards */
@@ -865,6 +986,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -884,4 +1006,5 @@
         }
     </style>
 </body>
+
 </html>

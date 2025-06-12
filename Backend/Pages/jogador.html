@@ -72,7 +72,8 @@
                             <i data-lucide="lock"></i>
                             Senha Atual
                         </label>
-                        <input type="password" class="input-field" id="senha-atual" placeholder="Digite sua senha atual">
+                        <input type="password" class="input-field" id="senha-atual"
+                            placeholder="Digite sua senha atual">
                     </div>
                     <div class="input-group">
                         <label for="nova-senha">
@@ -133,9 +134,125 @@
     </div>
 
     <script>
-        // 🚀 URL DINÂMICA - Funciona automaticamente em qualquer ambiente
         const API_URL = window.location.origin;
-        
+
+        class AuthCache {
+            constructor() {
+                this.cacheKey = 'auth_verification_cache';
+                this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+            }
+
+            isValid() {
+                const cache = this.getCache();
+                if (!cache) return false;
+
+                const now = Date.now();
+                return (now - cache.timestamp) < this.cacheTimeout;
+            }
+
+            getCache() {
+                try {
+                    const cached = localStorage.getItem(this.cacheKey);
+                    return cached ? JSON.parse(cached) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            setCache(isValid) {
+                const cache = {
+                    isValid,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+            }
+
+            clearCache() {
+                localStorage.removeItem(this.cacheKey);
+            }
+        }
+
+        const authCache = new AuthCache();
+
+        // Função de verificação com cache
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+
+            // Verifica se temos um cache válido
+            if (authCache.isValid()) {
+                const cache = authCache.getCache();
+                if (cache && cache.isValid) {
+                    console.log('Usando cache de autenticação válido');
+                    return true;
+                }
+            }
+
+            try {
+                console.log('Verificando autenticação no servidor...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    console.log('Autenticação verificada com sucesso');
+                    authCache.setCache(true);
+                    return true;
+                } else if (res.status === 401 || res.status === 403) {
+                    console.log('Token inválido, removendo e redirecionando');
+                    localStorage.removeItem("token");
+                    authCache.clearCache();
+                    window.location.href = "/";
+                    return false;
+                } else {
+                    // Erro do servidor, mas mantém o cache anterior se existir
+                    console.log(`Erro do servidor: ${res.status}`);
+                    const cache = authCache.getCache();
+                    if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+                        console.log('Usando cache anterior devido a erro do servidor');
+                        return true;
+                    }
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
+
+                // Em caso de erro de rede, verifica se temos cache recente
+                const cache = authCache.getCache();
+                if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+                    console.log('Usando cache devido a erro de rede');
+                    return true;
+                }
+
+                // Se não há cache válido e é claramente um erro de rede, não desloga
+                if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+                    console.log('Erro de rede detectado, mantendo usuário logado');
+                    return true;
+                }
+
+                // Para outros erros, desloga
+                localStorage.removeItem("token");
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+        }
+
         let originalUsername = "";
         let originalEmail = "";
 
@@ -155,7 +272,7 @@
             }
 
             try {
-                // 🎯 Usando URL dinâmica para atualizar senha
+                //Usando URL dinâmica para atualizar senha
                 const res = await fetch(`${API_URL}/update-password`, {
                     method: "PUT",
                     headers: {
@@ -166,7 +283,7 @@
                 });
 
                 const data = await res.json();
-                
+
                 if (res.ok) {
                     alert("Senha atualizada com sucesso!");
                     document.getElementById("senha-atual").value = "";
@@ -188,7 +305,7 @@
             }
 
             try {
-                // 🎯 Usando URL dinâmica para carregar perfil
+                //Usando URL dinâmica para carregar perfil
                 const response = await fetch(`${API_URL}/profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -217,7 +334,7 @@
             document.getElementById("email").readOnly = false;
             document.getElementById("edit-btn").style.display = "none";
             document.getElementById("save-btn").style.display = "inline-flex";
-            
+
             // Adicionar classe de edição para visual feedback
             document.getElementById("username").classList.add("editing");
             document.getElementById("email").classList.add("editing");
@@ -240,7 +357,7 @@
             }
 
             try {
-                // 🎯 Usando URL dinâmica para salvar perfil
+                // Usando URL dinâmica para salvar perfil
                 const response = await fetch(`${API_URL}/profile`, {
                     method: "PUT",
                     headers: {
@@ -271,7 +388,7 @@
             document.getElementById("email").readOnly = true;
             document.getElementById("edit-btn").style.display = "inline-flex";
             document.getElementById("save-btn").style.display = "none";
-            
+
             // Remover classe de edição
             document.getElementById("username").classList.remove("editing");
             document.getElementById("email").classList.remove("editing");
@@ -644,6 +761,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);

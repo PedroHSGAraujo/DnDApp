@@ -36,7 +36,8 @@
                         <i data-lucide="user"></i>
                         Nome de usuário
                     </label>
-                    <input type="text" id="username" name="username" required placeholder="Digite seu nome de usuário" autocomplete="username">
+                    <input type="text" id="username" name="username" required placeholder="Digite seu nome de usuário"
+                        autocomplete="username">
                 </div>
 
                 <div class="input-group">
@@ -45,7 +46,8 @@
                         Senha
                     </label>
                     <div class="senha-field">
-                        <input type="password" id="senha" name="senha" required placeholder="Digite sua senha" autocomplete="current-password">
+                        <input type="password" id="senha" name="senha" required placeholder="Digite sua senha"
+                            autocomplete="current-password">
                         <button type="button" class="toggle-senha" onclick="togglesenha()">
                             <i data-lucide="eye" id="eye-icon"></i>
                         </button>
@@ -92,9 +94,125 @@
     </div>
 
     <script>
-        // 🚀 URL DINÂMICA
         const API_URL = window.location.origin;
 
+        class AuthCache {
+            constructor() {
+                this.cacheKey = 'auth_verification_cache';
+                this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+            }
+
+            isValid() {
+                const cache = this.getCache();
+                if (!cache) return false;
+
+                const now = Date.now();
+                return (now - cache.timestamp) < this.cacheTimeout;
+            }
+
+            getCache() {
+                try {
+                    const cached = localStorage.getItem(this.cacheKey);
+                    return cached ? JSON.parse(cached) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            setCache(isValid) {
+                const cache = {
+                    isValid,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cache));
+            }
+
+            clearCache() {
+                localStorage.removeItem(this.cacheKey);
+            }
+        }
+
+        const authCache = new AuthCache();
+
+        // Função de verificação com cache
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+
+            // Verifica se temos um cache válido
+            if (authCache.isValid()) {
+                const cache = authCache.getCache();
+                if (cache && cache.isValid) {
+                    console.log('Usando cache de autenticação válido');
+                    return true;
+                }
+            }
+
+            try {
+                console.log('Verificando autenticação no servidor...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    console.log('Autenticação verificada com sucesso');
+                    authCache.setCache(true);
+                    return true;
+                } else if (res.status === 401 || res.status === 403) {
+                    console.log('Token inválido, removendo e redirecionando');
+                    localStorage.removeItem("token");
+                    authCache.clearCache();
+                    window.location.href = "/";
+                    return false;
+                } else {
+                    // Erro do servidor, mas mantém o cache anterior se existir
+                    console.log(`Erro do servidor: ${res.status}`);
+                    const cache = authCache.getCache();
+                    if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) { // 30 min
+                        console.log('Usando cache anterior devido a erro do servidor');
+                        return true;
+                    }
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
+
+                // Em caso de erro de rede, verifica se temos cache recente
+                const cache = authCache.getCache();
+                if (cache && cache.isValid && (Date.now() - cache.timestamp) < 30 * 60 * 1000) {
+                    console.log('Usando cache devido a erro de rede');
+                    return true;
+                }
+
+                // Se não há cache válido e é claramente um erro de rede, não desloga
+                if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+                    console.log('Erro de rede detectado, mantendo usuário logado');
+                    return true;
+                }
+
+                // Para outros erros, desloga
+                localStorage.removeItem("token");
+                authCache.clearCache();
+                window.location.href = "/";
+                return false;
+            }
+        }
+        
         // Verificar se já está logado
         function verificarSeJaEstaLogado() {
             const token = localStorage.getItem('token');
@@ -117,7 +235,7 @@
         function togglesenha() {
             const senhaInput = document.getElementById('senha');
             const eyeIcon = document.getElementById('eye-icon');
-            
+
             if (senhaInput.type === 'senha') {
                 senhaInput.type = 'text';
                 eyeIcon.setAttribute('data-lucide', 'eye-off');
@@ -136,9 +254,9 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ 
-                        username: username.trim(), 
-                        senha: senha 
+                    body: JSON.stringify({
+                        username: username.trim(),
+                        senha: senha
                     }),
                 });
 
@@ -147,15 +265,15 @@
                 if (response.ok) {
                     // Login bem-sucedido
                     localStorage.setItem('token', data.token);
-                    
+
                     // Mostrar sucesso
                     mostrarMensagem('🎉 Login realizado com sucesso!', 'success');
-                    
+
                     // Aguardar um pouco para mostrar a mensagem
                     setTimeout(() => {
                         window.location.href = '/personagens';
                     }, 1000);
-                    
+
                     return true;
                 } else {
                     // Erro no login
@@ -197,11 +315,11 @@
         // Event listener do formulário
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value;
             const senha = document.getElementById('senha').value;
             const loginBtn = document.getElementById('loginBtn');
-            
+
             // Validação básica
             if (!username || !senha) {
                 mostrarMensagem('Por favor, preencha todos os campos.');
@@ -562,8 +680,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive */
@@ -592,6 +715,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
