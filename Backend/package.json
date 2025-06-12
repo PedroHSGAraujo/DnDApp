@@ -1,4 +1,13 @@
 {
+  "name": "rpg-character-manager",
+  "version": "1.0.0",
+  "description": "Sistema de gerenciamento de personagens RPG",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "starter": "npx nodemon index.js",
+    "dev": "nodemon index.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -8,7 +17,7 @@
     "pg": "^8.16.0",
     "postgres": "^3.4.7"
   },
-  "scripts": {
-    "start": "npx nodemon index.js"
+  "engines": {
+    "node": "18.x"
   }
 }
