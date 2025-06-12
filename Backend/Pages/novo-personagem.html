@@ -211,7 +211,7 @@
         return val === "" ? null : parseInt(val, 10);
       }
 
-      // Função para converter checkbox para 1 ou 0
+      // Função CORRIGIDA para converter checkbox para 1 ou 0
       function toCheckboxInt(id) {
         return document.getElementById(id).checked ? 1 : 0;
       }
@@ -251,7 +251,7 @@
       };
 
       try {
-        const res = await fetch("http://localhost:3000/characters", {
+        const response = await fetch("http://localhost:3000/characters", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -260,11 +260,17 @@
           body: JSON.stringify(personagem),
         });
 
-        if (res.ok) {
-          alert("Personagem criado!");
-          window.location.href = "/personagens";
+        if (response.ok) {
+          const data = await response.json();
+          const characterId = data.character.id;
+          
+          // Definir este personagem como ativo
+          localStorage.setItem('selectedCharacterId', characterId);
+          
+          alert("Personagem criado! Configure os atributos.");
+          window.location.href = "/atributos";
         } else {
-          const erro = await res.text();
+          const erro = await response.text();
           alert("Erro ao criar personagem: " + erro);
         }
       } catch (err) {

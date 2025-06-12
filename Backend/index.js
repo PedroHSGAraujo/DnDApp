@@ -190,6 +190,56 @@ app.put("/update-password", authMiddleware, async (req, res) => {
     }
 });
 
+//Ver personagens
+
+app.get("/visualizar-personagem", (req, res) => {
+    res.sendFile(path.join(__dirname, "Pages", "visualizar-personagem.html"));
+});
+
+//Editar personagem
+
+app.get("/editar-personagem", (req, res) => {
+    res.sendFile(path.join(__dirname, "Pages", "editar-personagem.html"));
+});
+
+app.post("/verify-password", authMiddleware, async (req, res) => {
+    const { senha } = req.body;
+    const username = req.user.username;
+
+    console.log("=== VERIFICANDO SENHA ===");
+    console.log("Username:", username);
+    console.log("Senha recebida:", senha ? "***" : "vazia");
+
+    if (!senha) {
+        console.log("Erro: Senha não fornecida");
+        return res.status(400).json({ error: "Senha é obrigatória" });
+    }
+
+    try {
+        const users = await db.selectUser(username);
+        const user = users[0];
+
+        if (!user) {
+            console.log("Erro: Usuário não encontrado");
+            return res.status(400).json({ error: "Usuário não encontrado" });
+        }
+
+        console.log("Usuário encontrado, verificando senha...");
+        const senhaCorreta = await bcrypt.compare(senha, user.senha);
+
+        if (!senhaCorreta) {
+            console.log("Senha incorreta");
+            return res.status(401).json({ error: "Senha incorreta" });
+        }
+
+        console.log("Senha verificada com sucesso");
+        res.json({ message: "Senha verificada com sucesso" });
+    } catch (err) {
+        console.error("Erro na verificação de senha:", err);
+        res.status(500).json({ error: "Erro interno no servidor" });
+    }
+});
+
 //Rotas para o frontend
 
 const path = require("path");

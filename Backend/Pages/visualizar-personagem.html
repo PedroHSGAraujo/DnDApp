@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalhes do Personagem</title>
+    <link rel="stylesheet" href="css/visualizar-personagem.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <button onclick="voltarParaLista()" class="btn-voltar">
+                <i data-lucide="arrow-left"></i>
+                Voltar
+            </button>
+            <h1 id="nome-personagem">Carregando...</h1>
+            <button onclick="editarPersonagem()" class="btn-editar">
+                <i data-lucide="edit-2"></i>
+                Editar
+            </button>
+        </div>
+
+        <div id="loading" class="loading" style="display: block;">
+            <p>Carregando dados do personagem...</p>
+        </div>
+
+        <div id="conteudo-personagem" class="conteudo" style="display: none;">
+            <!-- Informações Básicas -->
+            <div class="secao">
+                <h2>Informações Básicas</h2>
+                <div class="grid-info">
+                    <div class="info-item">
+                        <label>Classe e Nível:</label>
+                        <span id="classe-nivel">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Raça:</label>
+                        <span id="raca">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Antecedente:</label>
+                        <span id="antecedente">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Alinhamento:</label>
+                        <span id="alinhamento">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Nome do Jogador:</label>
+                        <span id="nome-jogador">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Pontos de Experiência:</label>
+                        <span id="pontos-experiencia">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Combate -->
+            <div class="secao">
+                <h2>Atributos de Combate</h2>
+                <div class="grid-info">
+                    <div class="info-item">
+                        <label>Classe de Armadura:</label>
+                        <span id="classe-armadura">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Iniciativa:</label>
+                        <span id="iniciativa">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Deslocamento:</label>
+                        <span id="deslocamento">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pontos de Vida -->
+            <div class="secao">
+                <h2>Pontos de Vida</h2>
+                <div class="vida-detalhada">
+                    <div class="vida-principal">
+                        <div class="vida-numeros">
+                            <span class="vida-atual" id="vida-atual">0</span>
+                            <span class="vida-separador">/</span>
+                            <span class="vida-max" id="vida-max">0</span>
+                        </div>
+                        <div class="vida-barra-container">
+                            <div class="vida-barra">
+                                <div class="vida-fill" id="vida-fill"></div>
+                            </div>
+                            <span class="vida-porcentagem" id="vida-porcentagem">0%</span>
+                        </div>
+                    </div>
+                    <div class="vida-extra">
+                        <div class="info-item">
+                            <label>Pontos de Vida Temporários:</label>
+                            <span id="vida-temporaria">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Dado de Vida:</label>
+                            <span id="dado-vida">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testes de Morte -->
+            <div class="secao">
+                <h2>Testes Contra a Morte</h2>
+                <div class="testes-morte">
+                    <div class="teste-grupo">
+                        <h3>Sucessos</h3>
+                        <div class="checkboxes-display">
+                            <span class="checkbox-display" id="sucesso1">○</span>
+                            <span class="checkbox-display" id="sucesso2">○</span>
+                            <span class="checkbox-display" id="sucesso3">○</span>
+                        </div>
+                    </div>
+                    <div class="teste-grupo">
+                        <h3>Falhas</h3>
+                        <div class="checkboxes-display">
+                            <span class="checkbox-display" id="falha1">○</span>
+                            <span class="checkbox-display" id="falha2">○</span>
+                            <span class="checkbox-display" id="falha3">○</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personalidade -->
+            <div class="secao">
+                <h2>Personalidade</h2>
+                <div class="personalidade-grid">
+                    <div class="personalidade-item">
+                        <label>Traços de Personalidade:</label>
+                        <p id="tracos-personalidade">-</p>
+                    </div>
+                    <div class="personalidade-item">
+                        <label>Ideais:</label>
+                        <p id="ideais">-</p>
+                    </div>
+                    <div class="personalidade-item">
+                        <label>Vínculos:</label>
+                        <p id="vinculos">-</p>
+                    </div>
+                    <div class="personalidade-item">
+                        <label>Fraquezas:</label>
+                        <p id="fraquezas">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Características Físicas -->
+            <div class="secao">
+                <h2>Características Físicas</h2>
+                <div class="grid-info">
+                    <div class="info-item">
+                        <label>Idade:</label>
+                        <span id="idade">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Altura:</label>
+                        <span id="altura">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Peso:</label>
+                        <span id="peso">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Cor dos Olhos:</label>
+                        <span id="cor-olhos">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Cor da Pele:</label>
+                        <span id="cor-pele">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Cor do Cabelo:</label>
+                        <span id="cor-cabelo">-</span>
+                    </div>
+                </div>
+                <div class="caracteristicas-adicionais">
+                    <label>Características Adicionais:</label>
+                    <p id="caracteristicas-adicionais">-</p>
+                </div>
+            </div>
+
+            <!-- Zona de Perigo -->
+            <div class="secao zona-perigo">
+                <h2>⚠️ Zona de Perigo</h2>
+                <p>Esta ação não pode ser desfeita. O personagem será permanentemente excluído.</p>
+                <button onclick="abrirModalExcluir()" class="btn-excluir">
+                    <i data-lucide="trash-2"></i>
+                    Excluir Personagem
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div id="modal-excluir" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>⚠️ Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir permanentemente o personagem <strong id="nome-personagem-modal"></strong>?
+            </p>
+            <p><strong>Esta ação não pode ser desfeita!</strong></p>
+
+            <div class="campo-senha">
+                <label for="senha-confirmacao">Digite sua senha para confirmar:</label>
+                <input type="password" id="senha-confirmacao" placeholder="Sua senha" />
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="fecharModalExcluir()" class="btn-cancelar-modal">Cancelar</button>
+                <button onclick="confirmarExclusao()" class="btn-excluir-modal" id="btn-confirmar-exclusao">Excluir
+                    Permanentemente</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <button data-aba="personagem" onclick="irPara('/personagens')">
+            <i data-lucide="user"></i>
+            <span>Personagem</span>
+        </button>
+        <button data-aba="atributos" onclick="irPara('/atributos')">
+            <i data-lucide="list"></i>
+            <span>Atributos</span>
+        </button>
+        <button data-aba="habilidades" onclick="irPara('/habilidades')">
+            <i data-lucide="star"></i>
+            <span>Habilidades</span>
+        </button>
+        <button data-aba="magias" onclick="irPara('/magias')">
+            <i data-lucide="zap"></i>
+            <span>Magias</span>
+        </button>
+        <button data-aba="inventario" onclick="irPara('/inventario')">
+            <i data-lucide="briefcase"></i>
+            <span>Inventário</span>
+        </button>
+        <button data-aba="jogador" onclick="irPara('/jogador')">
+            <i data-lucide="user-circle"></i>
+            <span>Jogador</span>
+        </button>
+    </div>
+
+    <script>
+        // Função de verificação de autenticação
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                    return;
+                }
+            } catch (error) {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            }
+        }
+
+        function irPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        function voltarParaLista() {
+            window.location.href = '/personagens';
+        }
+
+        function editarPersonagem() {
+            window.location.href = '/editar-personagem';
+        }
+
+        async function carregarPersonagem() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                window.location.href = '/personagens';
+                return;
+            }
+
+            if (!token) {
+                alert('Token não encontrado');
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const personagem = data.character;
+                    preencherDados(personagem);
+                } else {
+                    const errorText = await response.text();
+                    console.error("Erro na resposta:", errorText);
+                    alert('Erro ao carregar personagem');
+                    window.location.href = '/personagens';
+                }
+            } catch (error) {
+                console.error('Erro de rede:', error);
+                alert('Erro de conexão ao carregar personagem');
+                window.location.href = '/personagens';
+            }
+        }
+
+        function preencherDados(personagem) {
+            // Helper para valor ou padrão
+            function valorOu(valor, padrao = '-') {
+                return valor || padrao;
+            }
+
+            // Informações básicas
+            document.getElementById('nome-personagem').textContent = valorOu(personagem.nome, 'Nome não encontrado');
+            document.getElementById('classe-nivel').textContent = valorOu(personagem.classe_nivel);
+            document.getElementById('raca').textContent = valorOu(personagem.raca);
+            document.getElementById('antecedente').textContent = valorOu(personagem.antecedente);
+            document.getElementById('alinhamento').textContent = valorOu(personagem.alinhamento);
+            document.getElementById('nome-jogador').textContent = valorOu(personagem.nome_jogador);
+            document.getElementById('pontos-experiencia').textContent = valorOu(personagem.pontos_experiencia);
+
+            // Combate
+            document.getElementById('classe-armadura').textContent = valorOu(personagem.classe_armadura);
+            document.getElementById('iniciativa').textContent = valorOu(personagem.iniciativa);
+            document.getElementById('deslocamento').textContent = valorOu(personagem.deslocamento);
+
+            // Pontos de vida
+            const vidaAtual = personagem.pontos_vida_atual || 0;
+            const vidaMax = personagem.pontos_vida_max || 0;
+            const vidaPercentual = vidaMax > 0 ? Math.round((vidaAtual / vidaMax) * 100) : 0;
+
+            document.getElementById('vida-atual').textContent = vidaAtual;
+            document.getElementById('vida-max').textContent = vidaMax;
+            document.getElementById('vida-temporaria').textContent = valorOu(personagem.pontos_vida_temp);
+            document.getElementById('dado-vida').textContent = valorOu(personagem.dado_vida);
+            document.getElementById('vida-porcentagem').textContent = vidaPercentual + '%';
+
+            // Barra de vida
+            const vidaFill = document.getElementById('vida-fill');
+            let corVida = '#4CAF50'; // Verde
+            if (vidaPercentual <= 25) corVida = '#f44336'; // Vermelho
+            else if (vidaPercentual <= 50) corVida = '#ff9800'; // Laranja
+            else if (vidaPercentual <= 75) corVida = '#ffeb3b'; // Amarelo
+
+            vidaFill.style.width = vidaPercentual + '%';
+            vidaFill.style.backgroundColor = corVida;
+
+            // Testes de morte
+            function mostrarCheckbox(id, valor) {
+                const elemento = document.getElementById(id);
+                elemento.textContent = valor == 1 ? '●' : '○';
+                elemento.className = valor == 1 ? 'checkbox-display ativo' : 'checkbox-display';
+            }
+
+            mostrarCheckbox('sucesso1', personagem.sucesso1);
+            mostrarCheckbox('sucesso2', personagem.sucesso2);
+            mostrarCheckbox('sucesso3', personagem.sucesso3);
+            mostrarCheckbox('falha1', personagem.falha1);
+            mostrarCheckbox('falha2', personagem.falha2);
+            mostrarCheckbox('falha3', personagem.falha3);
+
+            // Personalidade
+            document.getElementById('tracos-personalidade').textContent = valorOu(personagem.traços_personalidade);
+            document.getElementById('ideais').textContent = valorOu(personagem.ideais);
+            document.getElementById('vinculos').textContent = valorOu(personagem.vínculos);
+            document.getElementById('fraquezas').textContent = valorOu(personagem.fraquezas);
+
+            // Características físicas
+            document.getElementById('idade').textContent = valorOu(personagem.idade);
+            document.getElementById('altura').textContent = valorOu(personagem.altura);
+            document.getElementById('peso').textContent = valorOu(personagem.peso);
+            document.getElementById('cor-olhos').textContent = valorOu(personagem.cor_olhos);
+            document.getElementById('cor-pele').textContent = valorOu(personagem.cor_pele);
+            document.getElementById('cor-cabelo').textContent = valorOu(personagem.cor_cabelo);
+            document.getElementById('caracteristicas-adicionais').textContent = valorOu(personagem.caracteristicas_adicionais);
+
+            // Mostrar conteúdo e esconder loading
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('conteudo-personagem').style.display = 'block';
+        }
+
+        function abrirModalExcluir() {
+            const nomePersonagem = document.getElementById('nome-personagem').textContent;
+            document.getElementById('nome-personagem-modal').textContent = nomePersonagem;
+            document.getElementById('senha-confirmacao').value = '';
+            document.getElementById('modal-excluir').style.display = 'flex';
+        }
+
+        function fecharModalExcluir() {
+            document.getElementById('modal-excluir').style.display = 'none';
+            document.getElementById('senha-confirmacao').value = '';
+        }
+
+        async function confirmarExclusao() {
+            const senha = document.getElementById('senha-confirmacao').value;
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            console.log('=== INICIANDO EXCLUSÃO ===');
+            console.log('Senha fornecida:', senha ? 'Sim' : 'Não');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
+            if (!senha.trim()) {
+                alert('Por favor, digite sua senha para confirmar a exclusão.');
+                return;
+            }
+
+            if (!characterId) {
+                alert('Erro: Nenhum personagem selecionado.');
+                return;
+            }
+
+            // Desabilitar botão durante o processo
+            const btnConfirmar = document.getElementById('btn-confirmar-exclusao');
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = 'Verificando senha...';
+
+            try {
+                console.log('Verificando senha...');
+
+                // Primeiro, verificar a senha do usuário
+                const verificarSenhaResponse = await fetch('http://localhost:3000/verify-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ senha: senha })
+                });
+
+                console.log('Status verificação senha:', verificarSenhaResponse.status);
+                console.log('Content-Type da resposta:', verificarSenhaResponse.headers.get('content-type'));
+
+                const responseText = await verificarSenhaResponse.text();
+                console.log('Resposta completa da verificação:', responseText);
+
+                if (!verificarSenhaResponse.ok) {
+                    let errorMessage = 'Senha incorreta!';
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (e) {
+                        console.error('Resposta não é JSON:', responseText);
+                    }
+                    alert(errorMessage);
+                    return;
+                }
+
+                // Tentar parsear a resposta de sucesso
+                let verificacaoData;
+                try {
+                    verificacaoData = JSON.parse(responseText);
+                    console.log('Dados da verificação:', verificacaoData);
+                } catch (e) {
+                    console.error('Erro ao parsear resposta da verificação:', e);
+                    alert('Erro inesperado na verificação de senha');
+                    return;
+                }
+
+                console.log('Senha verificada com sucesso, excluindo personagem...');
+                btnConfirmar.textContent = 'Excluindo personagem...';
+
+                // Se a senha estiver correta, excluir o personagem
+                const excluirResponse = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Status exclusão:', excluirResponse.status);
+                console.log('Content-Type da exclusão:', excluirResponse.headers.get('content-type'));
+
+                const excluirResponseText = await excluirResponse.text();
+                console.log('Resposta completa da exclusão:', excluirResponseText);
+
+                if (excluirResponse.ok) {
+                    console.log('Personagem excluído com sucesso');
+                    alert('Personagem excluído com sucesso!');
+                    localStorage.removeItem('selectedCharacterId');
+                    window.location.href = '/personagens';
+                } else {
+                    let errorMessage = 'Erro ao excluir personagem';
+                    try {
+                        const errorData = JSON.parse(excluirResponseText);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (e) {
+                        console.error('Resposta de erro não é JSON:', excluirResponseText);
+                        errorMessage = `Erro HTTP ${excluirResponse.status}`;
+                    }
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Erro na função confirmarExclusao:', error);
+                console.error('Stack trace:', error.stack);
+                alert('Erro de conexão: ' + error.message);
+            } finally {
+                // Reabilitar botão
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = 'Excluir Permanentemente';
+                fecharModalExcluir();
+            }
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarAutenticacao();
+            await carregarPersonagem();
+            lucide.createIcons();
+        });
+    </script>
+
+    <style>
+        body {
+            background-color: #dddbdb;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-voltar,
+        .btn-editar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-voltar:hover,
+        .btn-editar:hover {
+            background-color: #1976D2;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .secao {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .secao h2 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 5px;
+        }
+
+        .grid-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-item label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .info-item span {
+            background-color: white;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+
+        .vida-detalhada {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .vida-principal {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .vida-numeros {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .vida-atual {
+            color: #4CAF50;
+        }
+
+        .vida-max {
+            color: #666;
+        }
+
+        .vida-barra-container {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vida-barra {
+            flex: 1;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .vida-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .vida-porcentagem {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .vida-extra {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .testes-morte {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .teste-grupo {
+            text-align: center;
+        }
+
+        .teste-grupo h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+        }
+
+        .checkboxes-display {
+            display: flex;
+            gap: 10px;
+        }
+
+        .checkbox-display {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            font-size: 16px;
+            background-color: white;
+            color: #ccc;
+        }
+
+        .checkbox-display.ativo {
+            border-color: #4CAF50;
+            color: #4CAF50;
+            background-color: #f0f8f0;
+        }
+
+        .personalidade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .personalidade-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .personalidade-item label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .personalidade-item p {
+            background-color: white;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            color: #333;
+            margin: 0;
+            min-height: 40px;
+            line-height: 1.4;
+        }
+
+        .caracteristicas-adicionais {
+            margin-top: 20px;
+        }
+
+        .caracteristicas-adicionais label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .caracteristicas-adicionais p {
+            background-color: white;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            color: #333;
+            margin: 0;
+            min-height: 40px;
+            line-height: 1.4;
+        }
+
+        /* Zona de Perigo */
+        .zona-perigo {
+            border: 2px solid #f44336 !important;
+            background-color: #ffebee !important;
+        }
+
+        .zona-perigo h2 {
+            color: #f44336 !important;
+            border-bottom-color: #f44336 !important;
+        }
+
+        .zona-perigo p {
+            color: #d32f2f;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .btn-excluir {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn-excluir:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Modal de Exclusão */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #f44336;
+            font-size: 20px;
+        }
+
+        .modal-content p {
+            margin: 15px 0;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .campo-senha {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .campo-senha label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .campo-senha input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .campo-senha input:focus {
+            outline: none;
+            border-color: #f44336;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn-cancelar-modal,
+        .btn-excluir-modal {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .btn-cancelar-modal {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .btn-cancelar-modal:hover {
+            background-color: #bbb;
+        }
+
+        .btn-excluir-modal {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-excluir-modal:hover {
+            background-color: #d32f2f;
+        }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #bfbfbf;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            border-top: 2px solid #888;
+        }
+
+        .navbar button {
+            flex: 1;
+            padding: 6px 0;
+            background: none;
+            border: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .navbar button i {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+        }
+
+        .navbar button.active {
+            background-color: #999;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-weight: bold;
+        }

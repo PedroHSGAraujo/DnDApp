@@ -7,111 +7,128 @@
     <title>Atributos do Personagem</title>
     <link rel="stylesheet" href="css/atributos.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="js/auth.js"></script>
-
 </head>
 
 <body>
+    <!-- Header com nome do personagem -->
+    <div class="header">
+        <button onclick="voltarParaPersonagens()" class="btn-voltar">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+        </button>
+        <h1 id="titulo-personagem">Atributos do Personagem</h1>
+        <div class="spacer"></div>
+    </div>
 
-    <h1>Atributos do Personagem</h1>
+    <!-- Loading -->
+    <div id="loading" class="loading" style="display: block;">
+        <p>Carregando atributos do personagem...</p>
+    </div>
 
-    <div class="linha">
-        <div class="campo">
-            <label for="forca">Força</label>
-            <input type="number" id="forca" />
+    <!-- Conteúdo principal -->
+    <div id="conteudo-atributos" style="display: none;">
+        <div class="linha">
+            <div class="campo">
+                <label for="forca">Força</label>
+                <input type="number" id="forca" min="1" max="30" value="10" />
+            </div>
+            <div class="campo">
+                <label for="destreza">Destreza</label>
+                <input type="number" id="destreza" min="1" max="30" value="10" />
+            </div>
+            <div class="campo">
+                <label for="constituicao">Constituição</label>
+                <input type="number" id="constituicao" min="1" max="30" value="10" />
+            </div>
+            <div class="campo">
+                <label for="inteligencia">Inteligência</label>
+                <input type="number" id="inteligencia" min="1" max="30" value="10" />
+            </div>
+            <div class="campo">
+                <label for="sabedoria">Sabedoria</label>
+                <input type="number" id="sabedoria" min="1" max="30" value="10" />
+            </div>
+            <div class="campo">
+                <label for="carisma">Carisma</label>
+                <input type="number" id="carisma" min="1" max="30" value="10" />
+            </div>
         </div>
-        <div class="campo">
-            <label for="destreza">Destreza</label>
-            <input type="number" id="destreza" />
+        <hr />
+
+        <div class="linha">
+            <div class="campo">
+                <label for="inspiracao">Inspiração</label>
+                <input type="number" id="inspiracao" min="0" value="0" />
+            </div>
+            <div class="campo">
+                <label for="bonus-proficiencia">Bônus de Proficiência</label>
+                <input type="number" id="bonus-proficiencia" min="2" value="2" />
+            </div>
         </div>
-        <div class="campo">
-            <label for="constituicao">Constituição</label>
-            <input type="number" id="constituicao" />
+        <hr />
+
+        <div class="linha">
+            <div class="coluna">
+                <div class="coluna-titulo">Salvaguardas</div>
+                <div class="campo">
+                    <label for="salvaguarda-forca">Força</label>
+                    <input type="number" id="salvaguarda-forca" value="0" />
+                </div>
+                <div class="campo">
+                    <label for="salvaguarda-destreza">Destreza</label>
+                    <input type="number" id="salvaguarda-destreza" value="0" />
+                </div>
+                <div class="campo">
+                    <label for="salvaguarda-constituicao">Constituição</label>
+                    <input type="number" id="salvaguarda-constituicao" value="0" />
+                </div>
+                <div class="campo">
+                    <label for="salvaguarda-inteligencia">Inteligência</label>
+                    <input type="number" id="salvaguarda-inteligencia" value="0" />
+                </div>
+                <div class="campo">
+                    <label for="salvaguarda-sabedoria">Sabedoria</label>
+                    <input type="number" id="salvaguarda-sabedoria" value="0" />
+                </div>
+                <div class="campo">
+                    <label for="salvaguarda-carisma">Carisma</label>
+                    <input type="number" id="salvaguarda-carisma" value="0" />
+                </div>
+            </div>
         </div>
-        <div class="campo">
-            <label for="inteligencia">Inteligência</label>
-            <input type="number" id="inteligencia" />
+        <hr />
+
+        <div class="linha">
+            <div class="coluna">
+                <div class="coluna-titulo">Perícias</div>
+
+                <div class="campo"><label>Acrobacia</label><input type="number" id="acrobacia" value="0" /></div>
+                <div class="campo"><label>Arcanismo</label><input type="number" id="arcanismo" value="0" /></div>
+                <div class="campo"><label>Atletismo</label><input type="number" id="atletismo" value="0" /></div>
+                <div class="campo"><label>Atuação</label><input type="number" id="atuacao" value="0" /></div>
+                <div class="campo"><label>Enganação</label><input type="number" id="enganacao" value="0" /></div>
+                <div class="campo"><label>Furtividade</label><input type="number" id="furtividade" value="0" /></div>
+                <div class="campo"><label>História</label><input type="number" id="historia" value="0" /></div>
+                <div class="campo"><label>Intimidação</label><input type="number" id="intimidacao" value="0" /></div>
+                <div class="campo"><label>Intuição</label><input type="number" id="intuicao" value="0" /></div>
+                <div class="campo"><label>Investigação</label><input type="number" id="investigacao" value="0" /></div>
+                <div class="campo"><label>Lidar com Animais</label><input type="number" id="lidar-com-animais" value="0" /></div>
+                <div class="campo"><label>Medicina</label><input type="number" id="medicina" value="0" /></div>
+                <div class="campo"><label>Natureza</label><input type="number" id="natureza" value="0" /></div>
+                <div class="campo"><label>Percepção</label><input type="number" id="percepcao" value="0" /></div>
+                <div class="campo"><label>Persuasão</label><input type="number" id="persuasao" value="0" /></div>
+                <div class="campo"><label>Prestidigitação</label><input type="number" id="prestidigitacao" value="0" /></div>
+                <div class="campo"><label>Religião</label><input type="number" id="religiao" value="0" /></div>
+                <div class="campo"><label>Sobrevivência</label><input type="number" id="sobrevivencia" value="0" /></div>
+            </div>
         </div>
-        <div class="campo">
-            <label for="sabedoria">Sabedoria</label>
-            <input type="number" id="sabedoria" />
-        </div>
-        <div class="campo">
-            <label for="carisma">Carisma</label>
-            <input type="number" id="carisma" />
+        <hr />
+        
+        <div class="botoes-acao">
+            <button id="btn-salvar-atributos" class="btn-salvar">Salvar Atributos</button>
+            <button onclick="continuarParaHabilidades()" class="btn-continuar" style="display: none;">Continuar para Habilidades</button>
         </div>
     </div>
-    <hr />
-
-    <div class="linha">
-        <div class="campo">
-            <label for="inspiracao">Inspiração</label>
-            <input type="number" id="inspiracao" />
-        </div>
-        <div class="campo">
-            <label for="bonus-proficiencia">Bônus de Proficiência</label>
-            <input type="number" id="bonus-proficiencia" />
-        </div>
-    </div>
-    <hr />
-
-    <div class="linha">
-        <div class="coluna">
-            <div class="coluna-titulo">Salvaguardas</div>
-            <div class="campo">
-                <label for="salvaguarda-forca">Força</label>
-                <input type="number" id="salvaguarda-forca" />
-            </div>
-            <div class="campo">
-                <label for="salvaguarda-destreza">Destreza</label>
-                <input type="number" id="salvaguarda-destreza" />
-            </div>
-            <div class="campo">
-                <label for="salvaguarda-constituicao">Constituição</label>
-                <input type="number" id="salvaguarda-constituicao" />
-            </div>
-            <div class="campo">
-                <label for="salvaguarda-inteligencia">Inteligência</label>
-                <input type="number" id="salvaguarda-inteligencia" />
-            </div>
-            <div class="campo">
-                <label for="salvaguarda-sabedoria">Sabedoria</label>
-                <input type="number" id="salvaguarda-sabedoria" />
-            </div>
-            <div class="campo">
-                <label for="salvaguarda-carisma">Carisma</label>
-                <input type="number" id="salvaguarda-carisma" />
-            </div>
-        </div>
-    </div>
-    <hr />
-
-    <div class="linha">
-        <div class="coluna">
-            <div class="coluna-titulo">Perícias</div>
-
-            <div class="campo"><label>Acrobacia</label><input type="number" /></div>
-            <div class="campo"><label>Arcanismo</label><input type="number" /></div>
-            <div class="campo"><label>Atletismo</label><input type="number" /></div>
-            <div class="campo"><label>Atuação</label><input type="number" /></div>
-            <div class="campo"><label>Enganação</label><input type="number" /></div>
-            <div class="campo"><label>Furtividade</label><input type="number" /></div>
-            <div class="campo"><label>História</label><input type="number" /></div>
-            <div class="campo"><label>Intimidação</label><input type="number" /></div>
-            <div class="campo"><label>Intuição</label><input type="number" /></div>
-            <div class="campo"><label>Investigação</label><input type="number" /></div>
-            <div class="campo"><label>Lidar com Animais</label><input type="number" /></div>
-            <div class="campo"><label>Medicina</label><input type="number" /></div>
-            <div class="campo"><label>Natureza</label><input type="number" /></div>
-            <div class="campo"><label>Percepção</label><input type="number" /></div>
-            <div class="campo"><label>Persuasão</label><input type="number" /></div>
-            <div class="campo"><label>Prestidigitação</label><input type="number" /></div>
-            <div class="campo"><label>Religião</label><input type="number" /></div>
-            <div class="campo"><label>Sobrevivência</label><input type="number" /></div>
-        </div>
-    </div>
-    <hr />
-    <button id="btn-salvar-atributos">Salvar Atributos</button>
 
     <div class="navbar">
         <button data-aba="personagem" onclick="irPara('/personagens')">
@@ -141,13 +158,337 @@
     </div>
 
     <script>
+        // Verificação de autenticação
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                    return;
+                }
+            } catch (error) {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            }
+        }
+
         function irPara(pagina) {
             window.location.href = pagina;
         }
 
-        lucide.createIcons();
+        function voltarParaPersonagens() {
+            window.location.href = '/visualizar-personagem';
+        }
+
+        function continuarParaHabilidades() {
+            window.location.href = '/habilidades';
+        }
+
+        // Função para pegar valor numérico
+        function getNumericValue(id) {
+            const value = document.getElementById(id).value;
+            return value === "" ? 0 : parseInt(value, 10);
+        }
+
+        // Carregar atributos existentes (se houver)
+        async function carregarAtributos() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                window.location.href = '/personagens';
+                return;
+            }
+
+            try {
+                // Primeiro, carregar dados básicos do personagem
+                const characterResponse = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (characterResponse.ok) {
+                    const characterData = await characterResponse.json();
+                    const personagem = characterData.character;
+                    document.getElementById('titulo-personagem').textContent = `Atributos - ${personagem.nome}`;
+                }
+
+                // Tentar carregar atributos existentes
+                const attributesResponse = await fetch(`http://localhost:3000/characters/${characterId}/attributes`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (attributesResponse.ok) {
+                    const attributesData = await attributesResponse.json();
+                    const atributos = attributesData.attributes;
+                    preencherAtributos(atributos);
+                } else {
+                    console.log('Nenhum atributo encontrado, usando valores padrão');
+                }
+
+                // Mostrar conteúdo e esconder loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-atributos').style.display = 'block';
+
+            } catch (error) {
+                console.error('Erro ao carregar atributos:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-atributos').style.display = 'block';
+            }
+        }
+
+        // Preencher formulário com atributos existentes
+        function preencherAtributos(atributos) {
+            // Atributos principais
+            document.getElementById('forca').value = atributos.forca || 10;
+            document.getElementById('destreza').value = atributos.destreza || 10;
+            document.getElementById('constituicao').value = atributos.constituicao || 10;
+            document.getElementById('inteligencia').value = atributos.inteligencia || 10;
+            document.getElementById('sabedoria').value = atributos.sabedoria || 10;
+            document.getElementById('carisma').value = atributos.carisma || 10;
+
+            // Outros
+            document.getElementById('inspiracao').value = atributos.inspiracao || 0;
+            document.getElementById('bonus-proficiencia').value = atributos.bonus_proficiencia || 2;
+
+            // Salvaguardas
+            document.getElementById('salvaguarda-forca').value = atributos.salvaguarda_forca || 0;
+            document.getElementById('salvaguarda-destreza').value = atributos.salvaguarda_destreza || 0;
+            document.getElementById('salvaguarda-constituicao').value = atributos.salvaguarda_constituicao || 0;
+            document.getElementById('salvaguarda-inteligencia').value = atributos.salvaguarda_inteligencia || 0;
+            document.getElementById('salvaguarda-sabedoria').value = atributos.salvaguarda_sabedoria || 0;
+            document.getElementById('salvaguarda-carisma').value = atributos.salvaguarda_carisma || 0;
+
+            // Perícias
+            document.getElementById('acrobacia').value = atributos.acrobacia || 0;
+            document.getElementById('arcanismo').value = atributos.arcanismo || 0;
+            document.getElementById('atletismo').value = atributos.atletismo || 0;
+            document.getElementById('atuacao').value = atributos.atuacao || 0;
+            document.getElementById('enganacao').value = atributos.enganacao || 0;
+            document.getElementById('furtividade').value = atributos.furtividade || 0;
+            document.getElementById('historia').value = atributos.historia || 0;
+            document.getElementById('intimidacao').value = atributos.intimidacao || 0;
+            document.getElementById('intuicao').value = atributos.intuicao || 0;
+            document.getElementById('investigacao').value = atributos.investigacao || 0;
+            document.getElementById('lidar-com-animais').value = atributos.lidar_com_animais || 0;
+            document.getElementById('medicina').value = atributos.medicina || 0;
+            document.getElementById('natureza').value = atributos.natureza || 0;
+            document.getElementById('percepcao').value = atributos.percepcao || 0;
+            document.getElementById('persuasao').value = atributos.persuasao || 0;
+            document.getElementById('prestidigitacao').value = atributos.prestidigitacao || 0;
+            document.getElementById('religiao').value = atributos.religiao || 0;
+            document.getElementById('sobrevivencia').value = atributos.sobrevivencia || 0;
+        }
+
+        // Salvar atributos
+        async function salvarAtributos() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            const atributos = {
+                // Atributos principais
+                forca: getNumericValue('forca'),
+                destreza: getNumericValue('destreza'),
+                constituicao: getNumericValue('constituicao'),
+                inteligencia: getNumericValue('inteligencia'),
+                sabedoria: getNumericValue('sabedoria'),
+                carisma: getNumericValue('carisma'),
+
+                // Outros
+                inspiracao: getNumericValue('inspiracao'),
+                bonus_proficiencia: getNumericValue('bonus-proficiencia'),
+
+                // Salvaguardas
+                salvaguarda_forca: getNumericValue('salvaguarda-forca'),
+                salvaguarda_destreza: getNumericValue('salvaguarda-destreza'),
+                salvaguarda_constituicao: getNumericValue('salvaguarda-constituicao'),
+                salvaguarda_inteligencia: getNumericValue('salvaguarda-inteligencia'),
+                salvaguarda_sabedoria: getNumericValue('salvaguarda-sabedoria'),
+                salvaguarda_carisma: getNumericValue('salvaguarda-carisma'),
+
+                // Perícias
+                acrobacia: getNumericValue('acrobacia'),
+                arcanismo: getNumericValue('arcanismo'),
+                atletismo: getNumericValue('atletismo'),
+                atuacao: getNumericValue('atuacao'),
+                enganacao: getNumericValue('enganacao'),
+                furtividade: getNumericValue('furtividade'),
+                historia: getNumericValue('historia'),
+                intimidacao: getNumericValue('intimidacao'),
+                intuicao: getNumericValue('intuicao'),
+                investigacao: getNumericValue('investigacao'),
+                lidar_com_animais: getNumericValue('lidar-com-animais'),
+                medicina: getNumericValue('medicina'),
+                natureza: getNumericValue('natureza'),
+                percepcao: getNumericValue('percepcao'),
+                persuasao: getNumericValue('persuasao'),
+                prestidigitacao: getNumericValue('prestidigitacao'),
+                religiao: getNumericValue('religiao'),
+                sobrevivencia: getNumericValue('sobrevivencia')
+            };
+
+            const btnSalvar = document.getElementById('btn-salvar-atributos');
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+
+            try {
+                const response = await fetch(`http://localhost:3000/characters/${characterId}/attributes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(atributos)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Atributos salvos com sucesso!');
+                    
+                    // Sempre mostrar botão continuar após salvar
+                    document.querySelector('.btn-continuar').style.display = 'inline-block';
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao salvar atributos: ' + (errorData.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão ao salvar atributos');
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = 'Salvar Atributos';
+            }
+        }
+
+        // Event listener do botão salvar
+        document.getElementById('btn-salvar-atributos').addEventListener('click', salvarAtributos);
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarAutenticacao();
+            await carregarAtributos();
+            lucide.createIcons();
+        });
     </script>
 
+    <style>
+        /* Estilos adicionais */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-voltar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #555;
+        }
+
+        .spacer {
+            width: 80px; /* Mesma largura do botão voltar para centralizar o título */
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .botoes-acao {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .btn-salvar, .btn-continuar {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-salvar {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-salvar:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-salvar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-continuar {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-continuar:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .spacer {
+                display: none;
+            }
+
+            .botoes-acao {
+                flex-direction: column;
+            }
+        }
+    </style>
 </body>
 
 </html>

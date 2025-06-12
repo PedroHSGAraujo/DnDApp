@@ -15,7 +15,7 @@
     <h1>Personagens</h1>
     <hr />
     <div class="lista-personagens" id="lista-personagens">
-
+      <!-- Lista será preenchida pelo JavaScript -->
     </div>
 
     <a href="/novo-personagem" id="novo-personagem" class="novo-personagem">Novo Personagem</a>
@@ -49,7 +49,6 @@
     </button>
   </div>
 
-
   <script>
     function irPara(pagina) {
       window.location.href = pagina;
@@ -70,8 +69,9 @@
         .then(res => res.json())
         .then(data => {
           if (data.user) {
-            // Aqui você pode usar o username se quiser mostrar na interface
             console.log("Usuário logado:", data.user.username);
+            // CARREGAR PERSONAGENS AQUI
+            carregarPersonagens();
           } else {
             window.location.href = "index.html";
           }
@@ -79,6 +79,53 @@
         .catch(() => {
           window.location.href = "index.html";
         });
+    }
+
+    // Função para carregar e mostrar personagens
+    async function carregarPersonagens() {
+      try {
+        const response = await fetch("http://localhost:3000/characters", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const personagens = data.characters;
+          
+          const lista = document.getElementById("lista-personagens");
+          
+          if (personagens.length === 0) {
+            lista.innerHTML = "<p>Você ainda não criou nenhum personagem.</p>";
+          } else {
+            lista.innerHTML = "";
+            personagens.forEach(personagem => {
+              const item = document.createElement("li");
+              item.innerHTML = `
+                <strong>${personagem.nome}</strong><br>
+                ${personagem.classe_nivel || 'Classe não definida'} - ${personagem.raca || 'Raça não definida'}<br>
+                <small>Vida: ${personagem.pontos_vida_atual || 0}/${personagem.pontos_vida_max || 0}</small>
+              `;
+              item.style.cursor = "pointer";
+              item.addEventListener("click", () => selecionarPersonagem(personagem.id));
+              lista.appendChild(item);
+            });
+          }
+        } else {
+          console.error("Erro ao carregar personagens");
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+      }
+    }
+
+    function selecionarPersonagem(characterId) {
+      // Definir este personagem como ativo
+      localStorage.setItem('selectedCharacterId', characterId);
+      
+      // Ir para a página de visualização do personagem
+      irPara('/visualizar-personagem');
     }
 
     // Função de navegação entre abas

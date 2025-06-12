@@ -7,64 +7,59 @@
     <title>Magias</title>
     <link rel="stylesheet" href="css/magias.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="js/auth.js"></script>
-    <script>verificarAutenticacao();</script>
-
 </head>
 
 <body>
-
-    <h1>Magias</h1>
-
-    <label for="classe">Classe Conjuradora:</label>
-    <input type="text" id="classe" placeholder="Ex: Mago, Clérigo, Druida..." />
-
-    <div class="linha3campos">
-        <input type="text" placeholder="CD para testes de resistência" />
-        <input type="text" placeholder="Bônus de ataque com magia" />
-        <input type="text" placeholder="Habilidade chave" />
+    <!-- Header com nome do personagem -->
+    <div class="header">
+        <button onclick="voltarParaVisualizacao()" class="btn-voltar">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+        </button>
+        <h1 id="titulo-personagem">Magias do Personagem</h1>
+        <div class="spacer"></div>
     </div>
 
-    <div class="bloco-magia">
-        <div class="nivel-info">
-            <span>0</span>
-            <strong>Truques</strong>
-        </div>
-        <div class="truques">
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
-            </div>
-            <div class="linha-magia">
-                <input type="checkbox" />
-                <input type="text" placeholder="Nome do truque" />
+    <!-- Loading -->
+    <div id="loading" class="loading" style="display: block;">
+        <p>Carregando magias do personagem...</p>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div id="conteudo-magias" style="display: none;">
+        <!-- Informações básicas de conjuração -->
+        <div class="secao-conjuracao">
+            <label for="classe-conjuradora">Classe Conjuradora:</label>
+            <input type="text" id="classe-conjuradora" placeholder="Ex: Mago, Clérigo, Druida..." />
+
+            <div class="linha3campos">
+                <input type="text" id="cd-resistencia" placeholder="CD para testes de resistência" />
+                <input type="text" id="bonus-ataque-magia" placeholder="Bônus de ataque com magia" />
+                <input type="text" id="habilidade-chave" placeholder="Habilidade chave" />
             </div>
         </div>
 
+        <!-- Truques (Nível 0) -->
+        <div class="bloco-magia">
+            <div class="nivel-info">
+                <span class="nivel-numero">0</span>
+                <strong>Truques</strong>
+            </div>
+            <div id="truques-container" class="truques">
+                <!-- Truques serão inseridos aqui -->
+            </div>
+            <button type="button" onclick="adicionarTruque()" class="btn-adicionar-magia">+ Adicionar Truque</button>
+        </div>
+
+        <!-- Magias por Nível (1-9) -->
+        <div id="niveis-magias">
+            <!-- Níveis de magia serão gerados dinamicamente -->
+        </div>
+
+        <div class="botoes-acao">
+            <button class="btn-salvar" id="btn-salvar-magias">Salvar Magias</button>
+            <button onclick="continuarParaInventario()" class="btn-continuar" style="display: none;">Continuar para Inventário</button>
+        </div>
     </div>
 
     <div class="navbar">
@@ -95,44 +90,566 @@
     </div>
 
     <script>
-        function gerarBlocoMagia(nivel) {
-            const bloco = document.createElement('div');
-            bloco.className = 'bloco-magia';
-
-            const cabecalho = `
-        <div class="nivel-info">
-          <span>${nivel}</span>
-          <input type="number" placeholder="Total de Espaços"/>
-          <input type="number" placeholder="Espaços Utilizados"/>
-        </div>
-      `;
-
-            let linhas = '';
-            for (let i = 0; i < 13; i++) {
-                linhas += `
-          <div class="linha-magia">
-            <input type="checkbox" />
-            <input type="text" placeholder="Nome da magia" />
-          </div>
-        `;
+        // Verificação de autenticação
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/";
+                return;
             }
 
-            bloco.innerHTML = cabecalho + linhas;
-            document.body.appendChild(bloco);
-        }
+            try {
+                const res = await fetch("http://localhost:3000/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-        for (let i = 1; i <= 9; i++) {
-            gerarBlocoMagia(i);
+                if (!res.ok) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                    return;
+                }
+            } catch (error) {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            }
         }
 
         function irPara(pagina) {
             window.location.href = pagina;
         }
 
-        lucide.createIcons();
+        function voltarParaVisualizacao() {
+            window.location.href = '/visualizar-personagem';
+        }
 
+        function continuarParaInventario() {
+            window.location.href = '/inventario';
+        }
+
+        // Gerar blocos de magia para os níveis 1-9
+        function gerarBlocosMagia() {
+            const container = document.getElementById('niveis-magias');
+            
+            for (let nivel = 1; nivel <= 9; nivel++) {
+                const bloco = document.createElement('div');
+                bloco.className = 'bloco-magia';
+                bloco.innerHTML = `
+                    <div class="nivel-info">
+                        <span class="nivel-numero">${nivel}</span>
+                        <input type="number" id="nivel-${nivel}-total" placeholder="Total de Espaços" min="0" />
+                        <input type="number" id="nivel-${nivel}-usados" placeholder="Espaços Utilizados" min="0" />
+                    </div>
+                    <div id="nivel-${nivel}-magias" class="magias-nivel">
+                        <!-- Magias do nível serão inseridas aqui -->
+                    </div>
+                    <button type="button" onclick="adicionarMagia(${nivel})" class="btn-adicionar-magia">+ Adicionar Magia Nível ${nivel}</button>
+                `;
+                container.appendChild(bloco);
+            }
+        }
+
+        // Adicionar truque
+        function adicionarTruque() {
+            const container = document.getElementById('truques-container');
+            const linha = document.createElement('div');
+            linha.className = 'linha-magia';
+            linha.innerHTML = `
+                <input type="checkbox" class="checkbox-preparada" />
+                <input type="text" class="input-nome-magia" placeholder="Nome do truque" />
+                <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
+                    <i data-lucide="x"></i>
+                </button>
+            `;
+            container.appendChild(linha);
+            lucide.createIcons();
+        }
+
+        // Adicionar magia de nível específico
+        function adicionarMagia(nivel) {
+            const container = document.getElementById(`nivel-${nivel}-magias`);
+            const linha = document.createElement('div');
+            linha.className = 'linha-magia';
+            linha.innerHTML = `
+                <input type="checkbox" class="checkbox-preparada" />
+                <input type="text" class="input-nome-magia" placeholder="Nome da magia" />
+                <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
+                    <i data-lucide="x"></i>
+                </button>
+            `;
+            container.appendChild(linha);
+            lucide.createIcons();
+        }
+
+        // Remover magia/truque
+        function removerMagia(botao) {
+            const linha = botao.closest('.linha-magia');
+            linha.remove();
+        }
+
+        // Coletar dados dos truques
+        function coletarTruques() {
+            const linhas = document.querySelectorAll('#truques-container .linha-magia');
+            const truques = [];
+
+            linhas.forEach(linha => {
+                const nome = linha.querySelector('.input-nome-magia').value.trim();
+                const preparada = linha.querySelector('.checkbox-preparada').checked;
+
+                if (nome) {
+                    truques.push({
+                        nome: nome,
+                        preparada: preparada
+                    });
+                }
+            });
+
+            return truques;
+        }
+
+        // Coletar dados das magias de um nível específico
+        function coletarMagiasNivel(nivel) {
+            const linhas = document.querySelectorAll(`#nivel-${nivel}-magias .linha-magia`);
+            const magias = [];
+
+            linhas.forEach(linha => {
+                const nome = linha.querySelector('.input-nome-magia').value.trim();
+                const preparada = linha.querySelector('.checkbox-preparada').checked;
+
+                if (nome) {
+                    magias.push({
+                        nome: nome,
+                        preparada: preparada
+                    });
+                }
+            });
+
+            return magias;
+        }
+
+        // Carregar magias existentes
+        async function carregarMagias() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                window.location.href = '/personagens';
+                return;
+            }
+
+            try {
+                // Primeiro, carregar dados básicos do personagem
+                const characterResponse = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (characterResponse.ok) {
+                    const characterData = await characterResponse.json();
+                    const personagem = characterData.character;
+                    document.getElementById('titulo-personagem').textContent = `Magias - ${personagem.nome}`;
+                }
+
+                // Gerar blocos de magia
+                gerarBlocosMagia();
+
+                // Tentar carregar magias existentes
+                const spellsResponse = await fetch(`http://localhost:3000/characters/${characterId}/spells`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (spellsResponse.ok) {
+                    const spellsData = await spellsResponse.json();
+                    const magias = spellsData.spells;
+                    preencherMagias(magias);
+                } else {
+                    console.log('Nenhuma magia encontrada, usando valores padrão');
+                    // Adicionar alguns truques vazios
+                    for (let i = 0; i < 3; i++) {
+                        adicionarTruque();
+                    }
+                }
+
+                // Mostrar conteúdo e esconder loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-magias').style.display = 'block';
+
+            } catch (error) {
+                console.error('Erro ao carregar magias:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-magias').style.display = 'block';
+                gerarBlocosMagia();
+                // Adicionar alguns truques vazios em caso de erro
+                for (let i = 0; i < 3; i++) {
+                    adicionarTruque();
+                }
+            }
+        }
+
+        // Preencher formulário com magias existentes
+        function preencherMagias(magias) {
+            // Informações básicas
+            document.getElementById('classe-conjuradora').value = magias.classe_conjuradora || '';
+            document.getElementById('cd-resistencia').value = magias.cd_resistencia || '';
+            document.getElementById('bonus-ataque-magia').value = magias.bonus_ataque_magia || '';
+            document.getElementById('habilidade-chave').value = magias.habilidade_chave || '';
+
+            // Preencher truques
+            const trequesContainer = document.getElementById('truques-container');
+            trequesContainer.innerHTML = '';
+            
+            if (magias.truques && magias.truques.length > 0) {
+                magias.truques.forEach(truque => {
+                    const linha = document.createElement('div');
+                    linha.className = 'linha-magia';
+                    linha.innerHTML = `
+                        <input type="checkbox" class="checkbox-preparada" ${truque.preparada ? 'checked' : ''} />
+                        <input type="text" class="input-nome-magia" placeholder="Nome do truque" value="${truque.nome || ''}" />
+                        <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
+                            <i data-lucide="x"></i>
+                        </button>
+                    `;
+                    trequesContainer.appendChild(linha);
+                });
+            } else {
+                // Adicionar truques vazios se não houver
+                for (let i = 0; i < 3; i++) {
+                    adicionarTruque();
+                }
+            }
+
+            // Preencher magias por nível
+            for (let nivel = 1; nivel <= 9; nivel++) {
+                // Espaços de magia
+                const totalInput = document.getElementById(`nivel-${nivel}-total`);
+                const usadosInput = document.getElementById(`nivel-${nivel}-usados`);
+                
+                if (totalInput) totalInput.value = magias[`nivel_${nivel}_espacos_total`] || '';
+                if (usadosInput) usadosInput.value = magias[`nivel_${nivel}_espacos_usados`] || '';
+
+                // Magias do nível
+                const container = document.getElementById(`nivel-${nivel}-magias`);
+                container.innerHTML = '';
+                
+                const magiasNivel = magias[`nivel_${nivel}_magias`];
+                if (magiasNivel && magiasNivel.length > 0) {
+                    magiasNivel.forEach(magia => {
+                        const linha = document.createElement('div');
+                        linha.className = 'linha-magia';
+                        linha.innerHTML = `
+                            <input type="checkbox" class="checkbox-preparada" ${magia.preparada ? 'checked' : ''} />
+                            <input type="text" class="input-nome-magia" placeholder="Nome da magia" value="${magia.nome || ''}" />
+                            <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
+                                <i data-lucide="x"></i>
+                            </button>
+                        `;
+                        container.appendChild(linha);
+                    });
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // Salvar magias
+        async function salvarMagias() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            const magias = {
+                classe_conjuradora: document.getElementById('classe-conjuradora').value.trim(),
+                cd_resistencia: document.getElementById('cd-resistencia').value.trim(),
+                bonus_ataque_magia: document.getElementById('bonus-ataque-magia').value.trim(),
+                habilidade_chave: document.getElementById('habilidade-chave').value.trim(),
+                truques: coletarTruques()
+            };
+
+            // Coletar magias por nível
+            for (let nivel = 1; nivel <= 9; nivel++) {
+                const totalElement = document.getElementById(`nivel-${nivel}-total`);
+                const usadosElement = document.getElementById(`nivel-${nivel}-usados`);
+                
+                magias[`nivel_${nivel}_espacos_total`] = totalElement ? parseInt(totalElement.value) || 0 : 0;
+                magias[`nivel_${nivel}_espacos_usados`] = usadosElement ? parseInt(usadosElement.value) || 0 : 0;
+                magias[`nivel_${nivel}_magias`] = coletarMagiasNivel(nivel);
+            }
+
+            const btnSalvar = document.getElementById('btn-salvar-magias');
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+
+            try {
+                const response = await fetch(`http://localhost:3000/characters/${characterId}/spells`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(magias)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Magias salvas com sucesso!');
+                    
+                    // Sempre mostrar botão continuar após salvar
+                    document.querySelector('.btn-continuar').style.display = 'inline-block';
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao salvar magias: ' + (errorData.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão ao salvar magias');
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = 'Salvar Magias';
+            }
+        }
+
+        // Event listener do botão salvar
+        document.getElementById('btn-salvar-magias').addEventListener('click', salvarMagias);
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarAutenticacao();
+            await carregarMagias();
+            lucide.createIcons();
+        });
     </script>
 
+    <style>
+        /* Estilos adicionais */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-voltar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #555;
+        }
+
+        .spacer {
+            width: 80px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .secao-conjuracao {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .secao-conjuracao label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .secao-conjuracao input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .bloco-magia {
+            border-top: 2px solid #444;
+            padding-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .nivel-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nivel-numero {
+            font-weight: bold;
+            font-size: 18px;
+            width: 40px;
+            text-align: center;
+            background-color: #333;
+            color: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .nivel-info input {
+            flex: 1;
+            min-width: 150px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .linha-magia {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .linha-magia input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .linha-magia input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            accent-color: #555;
+        }
+
+        .btn-remover-magia {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-remover-magia:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-remover-magia i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-adicionar-magia {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .btn-adicionar-magia:hover {
+            background-color: #45a049;
+        }
+
+        .botoes-acao {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .btn-salvar, .btn-continuar {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-salvar {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-salvar:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-salvar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-continuar {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-continuar:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .spacer {
+                display: none;
+            }
+
+            .nivel-info {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nivel-info input {
+                min-width: unset;
+            }
+
+            .linha-magia {
+                flex-wrap: wrap;
+            }
+
+            .botoes-acao {
+                flex-direction: column;
+            }
+        }
+    </style>
 </body>
 
 </html>

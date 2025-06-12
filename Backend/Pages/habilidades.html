@@ -7,31 +7,43 @@
     <title>Habilidades do Personagem</title>
     <link rel="stylesheet" href="css/habilidades.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="js/auth.js"></script>
-
 </head>
 
 <body>
+    <!-- Header com nome do personagem -->
+    <div class="header">
+        <button onclick="voltarParaVisualizacao()" class="btn-voltar">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+        </button>
+        <h1 id="titulo-personagem">Habilidades do Personagem</h1>
+        <div class="spacer"></div>
+    </div>
 
-    <h1>Habilidades do Personagem</h1>
+    <!-- Loading -->
+    <div id="loading" class="loading" style="display: block;">
+        <p>Carregando habilidades do personagem...</p>
+    </div>
 
-    <h2>Ataques & Conjuração</h2>
-    <div id="lista-ataques">
-        <div class="linha-ataque">
-            <input type="text" placeholder="Nome" />
-            <input type="number" placeholder="Bônus de Ataque" />
-            <input type="text" placeholder="Dano/Tipo" />
+    <!-- Conteúdo principal -->
+    <div id="conteudo-habilidades" style="display: none;">
+        <h2>Ataques & Conjuração</h2>
+        <div id="lista-ataques">
+            <!-- Ataques serão inseridos aqui dinamicamente -->
+        </div>
+        <button class="btn-mais" onclick="adicionarLinhaAtaque()">+ Adicionar Ataque</button>
+
+        <h2>Características & Talentos</h2>
+        <textarea class="textarea-grande" id="caracteristicas-talentos" placeholder="Ex: Sentidos aguçados, Visão no escuro, Fúria, Ação Extra, etc..."></textarea>
+
+        <h2>Outras Proficiências & Idiomas</h2>
+        <textarea class="textarea-grande" id="outras-proficiencias" placeholder="Ex: Idiomas (Élfico, Anão), Ferramentas (Kit de Ladrão), Armaduras (Leve, Média), etc..."></textarea>
+
+        <div class="botoes-acao">
+            <button class="btn-salvar" id="btn-salvar-habilidades">Salvar Habilidades</button>
+            <button onclick="continuarParaMagias()" class="btn-continuar" style="display: none;">Continuar para Magias</button>
         </div>
     </div>
-    <button class="btn-mais" onclick="adicionarLinhaAtaque()">+ Adicionar Ataque</button>
-
-    <h2>Características & Talentos</h2>
-    <textarea class="textarea-grande" placeholder="Ex: Sentidos aguçados, Visão no escuro, etc..."></textarea>
-
-    <h2>Outras Proficiências & Idiomas</h2>
-    <textarea class="textarea-grande" placeholder="Ex: Línguas, ferramentas, armaduras, etc..."></textarea>
-
-    <button class="salvar">Salvar Habilidades</button>
 
     <div class="navbar">
         <button data-aba="personagem" onclick="irPara('/personagens')">
@@ -59,26 +71,390 @@
             <span>Jogador</span>
         </button>
     </div>
+
     <script>
+        let ataques = []; // Array para armazenar os ataques
+
+        // Verificação de autenticação
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                    return;
+                }
+            } catch (error) {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            }
+        }
+
         function irPara(pagina) {
             window.location.href = pagina;
         }
 
+        function voltarParaVisualizacao() {
+            window.location.href = '/visualizar-personagem';
+        }
+
+        function continuarParaMagias() {
+            window.location.href = '/magias';
+        }
+
+        // Adicionar nova linha de ataque
         function adicionarLinhaAtaque() {
             const lista = document.getElementById('lista-ataques');
             const novaLinha = document.createElement('div');
             novaLinha.className = 'linha-ataque';
             novaLinha.innerHTML = `
-        <input type="text" placeholder="Nome" />
-        <input type="number" placeholder="Bônus de Ataque" />
-        <input type="text" placeholder="Dano/Tipo" />
-      `;
+                <input type="text" placeholder="Nome do Ataque/Magia" class="input-nome" />
+                <input type="text" placeholder="Bônus de Ataque (ex: +5)" class="input-bonus" />
+                <input type="text" placeholder="Dano/Tipo (ex: 1d8+3 cortante)" class="input-dano" />
+                <button type="button" onclick="removerLinhaAtaque(this)" class="btn-remover" title="Remover">
+                    <i data-lucide="x"></i>
+                </button>
+            `;
             lista.appendChild(novaLinha);
+            
+            // Re-inicializar ícones do Lucide
+            lucide.createIcons();
         }
 
-        lucide.createIcons();
+        // Remover linha de ataque
+        function removerLinhaAtaque(botao) {
+            const linha = botao.closest('.linha-ataque');
+            linha.remove();
+        }
+
+        // Carregar habilidades existentes (se houver)
+        async function carregarHabilidades() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                window.location.href = '/personagens';
+                return;
+            }
+
+            try {
+                // Primeiro, carregar dados básicos do personagem
+                const characterResponse = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (characterResponse.ok) {
+                    const characterData = await characterResponse.json();
+                    const personagem = characterData.character;
+                    document.getElementById('titulo-personagem').textContent = `Habilidades - ${personagem.nome}`;
+                }
+
+                // Tentar carregar habilidades existentes
+                const abilitiesResponse = await fetch(`http://localhost:3000/characters/${characterId}/abilities`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (abilitiesResponse.ok) {
+                    const abilitiesData = await abilitiesResponse.json();
+                    const habilidades = abilitiesData.abilities;
+                    preencherHabilidades(habilidades);
+                } else {
+                    console.log('Nenhuma habilidade encontrada, usando valores padrão');
+                    // Adicionar pelo menos uma linha de ataque vazia
+                    adicionarLinhaAtaque();
+                }
+
+                // Mostrar conteúdo e esconder loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-habilidades').style.display = 'block';
+
+            } catch (error) {
+                console.error('Erro ao carregar habilidades:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-habilidades').style.display = 'block';
+                // Adicionar linha vazia em caso de erro
+                adicionarLinhaAtaque();
+            }
+        }
+
+        // Preencher formulário com habilidades existentes
+        function preencherHabilidades(habilidades) {
+            // Preencher textareas
+            document.getElementById('caracteristicas-talentos').value = habilidades.caracteristicas_talentos || '';
+            document.getElementById('outras-proficiencias').value = habilidades.outras_proficiencias_idiomas || '';
+
+            // Preencher ataques
+            const listaAtaques = document.getElementById('lista-ataques');
+            listaAtaques.innerHTML = ''; // Limpar ataques existentes
+
+            if (habilidades.ataques_conjuracao && habilidades.ataques_conjuracao.length > 0) {
+                habilidades.ataques_conjuracao.forEach(ataque => {
+                    const novaLinha = document.createElement('div');
+                    novaLinha.className = 'linha-ataque';
+                    novaLinha.innerHTML = `
+                        <input type="text" placeholder="Nome do Ataque/Magia" class="input-nome" value="${ataque.nome || ''}" />
+                        <input type="text" placeholder="Bônus de Ataque (ex: +5)" class="input-bonus" value="${ataque.bonus_ataque || ''}" />
+                        <input type="text" placeholder="Dano/Tipo (ex: 1d8+3 cortante)" class="input-dano" value="${ataque.dano_tipo || ''}" />
+                        <button type="button" onclick="removerLinhaAtaque(this)" class="btn-remover" title="Remover">
+                            <i data-lucide="x"></i>
+                        </button>
+                    `;
+                    listaAtaques.appendChild(novaLinha);
+                });
+            } else {
+                // Se não há ataques, adicionar uma linha vazia
+                adicionarLinhaAtaque();
+            }
+
+            // Re-inicializar ícones do Lucide
+            lucide.createIcons();
+        }
+
+        // Coletar dados dos ataques
+        function coletarAtaques() {
+            const linhasAtaque = document.querySelectorAll('.linha-ataque');
+            const ataques = [];
+
+            linhasAtaque.forEach(linha => {
+                const nome = linha.querySelector('.input-nome').value.trim();
+                const bonusAtaque = linha.querySelector('.input-bonus').value.trim();
+                const danoTipo = linha.querySelector('.input-dano').value.trim();
+
+                // Só adiciona se pelo menos o nome foi preenchido
+                if (nome) {
+                    ataques.push({
+                        nome: nome,
+                        bonus_ataque: bonusAtaque,
+                        dano_tipo: danoTipo
+                    });
+                }
+            });
+
+            return ataques;
+        }
+
+        // Salvar habilidades
+        async function salvarHabilidades() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            const habilidades = {
+                ataques_conjuracao: coletarAtaques(),
+                caracteristicas_talentos: document.getElementById('caracteristicas-talentos').value.trim(),
+                outras_proficiencias_idiomas: document.getElementById('outras-proficiencias').value.trim()
+            };
+
+            const btnSalvar = document.getElementById('btn-salvar-habilidades');
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+
+            try {
+                const response = await fetch(`http://localhost:3000/characters/${characterId}/abilities`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(habilidades)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Habilidades salvas com sucesso!');
+                    
+                    // Sempre mostrar botão continuar após salvar
+                    document.querySelector('.btn-continuar').style.display = 'inline-block';
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao salvar habilidades: ' + (errorData.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão ao salvar habilidades');
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = 'Salvar Habilidades';
+            }
+        }
+
+        // Event listener do botão salvar
+        document.getElementById('btn-salvar-habilidades').addEventListener('click', salvarHabilidades);
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarAutenticacao();
+            await carregarHabilidades();
+            lucide.createIcons();
+        });
     </script>
 
+    <style>
+        /* Estilos adicionais */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-voltar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #555;
+        }
+
+        .spacer {
+            width: 80px; /* Mesma largura do botão voltar */
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .linha-ataque {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .linha-ataque input {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-remover {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-remover:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-remover i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .botoes-acao {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .btn-salvar, .btn-continuar {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-salvar {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-salvar:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-salvar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-continuar {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-continuar:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .spacer {
+                display: none;
+            }
+
+            .linha-ataque {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .linha-ataque input {
+                min-width: unset;
+            }
+
+            .botoes-acao {
+                flex-direction: column;
+            }
+        }
+    </style>
 </body>
 
 </html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar Personagem</title>
+  <link rel="stylesheet" href="css/novo-personagem.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <header>
+    <div class="linha">
+      <button onclick="voltarParaVisualizacao()" class="btn-voltar" style="margin-right: 15px;">
+        <i data-lucide="arrow-left"></i>
+        Voltar
+      </button>
+      <label for="nome-personagem">Nome do Personagem</label>
+      <input type="text" id="nome-personagem" />
+    </div>
+  </header>
+
+  <main>
+    <div id="loading" class="loading" style="display: block; text-align: center; padding: 40px;">
+      <p>Carregando dados do personagem...</p>
+    </div>
+
+    <div id="formulario-edicao" style="display: none;">
+      <div class="linha">
+        <div class="campo">
+          <label for="classe-nivel">Classe e Nível</label>
+          <input type="text" id="classe-nivel" />
+        </div>
+        <div class="campo">
+          <label for="antecedente">Antecedente</label>
+          <input type="text" id="antecedente" />
+        </div>
+        <div class="campo">
+          <label for="nome-jogador">Nome do Jogador</label>
+          <input type="text" id="nome-jogador" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="raca">Raça</label>
+          <input type="text" id="raca" />
+        </div>
+        <div class="campo">
+          <label for="alinhamento">Alinhamento</label>
+          <input type="text" id="alinhamento" />
+        </div>
+        <div class="campo">
+          <label for="experiencia">Pontos de Experiência</label>
+          <input type="number" id="pontos_experiencia" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="classe-armadura">Classe de Armadura</label>
+          <input type="number" id="classe-armadura" />
+        </div>
+        <div class="campo">
+          <label for="iniciativa">Iniciativa</label>
+          <input type="number" id="iniciativa" />
+        </div>
+        <div class="campo">
+          <label for="deslocamento">Deslocamento</label>
+          <input type="number" id="deslocamento" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="vida-maxima">Pontos de Vida Máximos</label>
+          <input type="number" id="pontos_vida_max" />
+        </div>
+        <div class="campo">
+          <label for="vida-atual">Pontos de Vida Atuais</label>
+          <input type="number" id="pontos_vida_atual" />
+        </div>
+        <div class="campo">
+          <label for="vida-temporaria">Pontos de Vida Temporários</label>
+          <input type="number" id="pontos_vida_temp" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="dado-vida">Dado de Vida</label>
+          <input type="text" id="dado-vida" />
+        </div>
+        <div class="campo">
+          <label>Sucessos nos Testes de Morte</label>
+          <div class="checkboxes" id="sucessos">
+            <div class="checkbox-item">
+              <input type="checkbox" id="sucesso1" />
+              <label for="sucesso1">1º Sucesso</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="sucesso2" />
+              <label for="sucesso2">2º Sucesso</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="sucesso3" />
+              <label for="sucesso3">3º Sucesso</label>
+            </div>
+          </div>
+        </div>
+        <div class="campo">
+          <label>Falhas nos Testes de Morte</label>
+          <div class="checkboxes" id="falhas">
+            <div class="checkbox-item">
+              <input type="checkbox" id="falha1" />
+              <label for="falha1">1ª Falha</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="falha2" />
+              <label for="falha2">2ª Falha</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="falha3" />
+              <label for="falha3">3ª Falha</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="tracos-personalidade">Traços de Personalidade</label>
+          <input type="text" id="traços_personalidade" />
+        </div>
+        <div class="campo">
+          <label for="ideais">Ideais</label>
+          <input type="text" id="ideais" />
+        </div>
+        <div class="campo">
+          <label for="vinculos">Vínculos</label>
+          <input type="text" id="vínculos" />
+        </div>
+        <div class="campo">
+          <label for="fraquezas">Fraquezas</label>
+          <input type="text" id="fraquezas" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="idade">Idade</label>
+          <input type="number" id="idade" />
+        </div>
+        <div class="campo">
+          <label for="altura">Altura</label>
+          <input type="text" id="altura" />
+        </div>
+        <div class="campo">
+          <label for="peso">Peso</label>
+          <input type="text" id="peso" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="olhos">Cor dos Olhos</label>
+          <input type="text" id="cor_olhos" />
+        </div>
+        <div class="campo">
+          <label for="pele">Cor da Pele</label>
+          <input type="text" id="cor_pele" />
+        </div>
+        <div class="campo">
+          <label for="cabelo">Cor do Cabelo</label>
+          <input type="text" id="cor_cabelo" />
+        </div>
+      </div>
+
+      <div class="area-grande">
+        <label for="caracteristicas-adicionais">Características Adicionais</label>
+        <input type="text" id="caracteristicas-adicionais" />
+      </div>
+
+      <div class="botoes-acao" style="display: flex; gap: 15px; margin-top: 20px;">
+        <button id="btn-salvar" type="button" class="btn-salvar">Salvar Alterações</button>
+        <button onclick="voltarParaVisualizacao()" type="button" class="btn-cancelar">Cancelar</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="navbar">
+    <button data-aba="personagem" onclick="irPara('/personagens')">
+      <i data-lucide="user"></i>
+      <span>Personagem</span>
+    </button>
+    <button data-aba="atributos" onclick="irPara('/atributos')">
+      <i data-lucide="list"></i>
+      <span>Atributos</span>
+    </button>
+    <button data-aba="habilidades" onclick="irPara('/habilidades')">
+      <i data-lucide="star"></i>
+      <span>Habilidades</span>
+    </button>
+    <button data-aba="magias" onclick="irPara('/magias')">
+      <i data-lucide="zap"></i>
+      <span>Magias</span>
+    </button>
+    <button data-aba="inventario" onclick="irPara('/inventario')">
+      <i data-lucide="briefcase"></i>
+      <span>Inventário</span>
+    </button>
+    <button data-aba="jogador" onclick="irPara('/jogador')">
+      <i data-lucide="user-circle"></i>
+      <span>Jogador</span>
+    </button>
+  </div>
+
+  <script>
+    // Função de verificação de autenticação inline
+    async function verificarAutenticacao() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          localStorage.removeItem("token");
+          window.location.href = "/";
+          return;
+        }
+      } catch (error) {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      }
+    }
+
+    function irPara(pagina) {
+      window.location.href = pagina;
+    }
+
+    function voltarParaVisualizacao() {
+      window.location.href = '/visualizar-personagem';
+    }
+
+    // Função para converter checkbox
+    function getCheckboxValue(id) {
+      return document.getElementById(id).checked ? 1 : 0;
+    }
+
+    // Função para converter número ou retornar null
+    function getNumberValue(id) {
+      const value = document.getElementById(id).value;
+      return value === "" ? null : parseInt(value, 10);
+    }
+
+    // Função para pegar valor de texto
+    function getTextValue(id) {
+      return document.getElementById(id).value || "";
+    }
+
+    // Função para definir valor nos campos
+    function setFieldValue(id, value) {
+      const element = document.getElementById(id);
+      if (element) {
+        if (element.type === 'checkbox') {
+          element.checked = value == 1;
+        } else {
+          element.value = value || '';
+        }
+      }
+    }
+
+    // Carregar dados do personagem para edição
+    async function carregarDadosParaEdicao() {
+      const characterId = localStorage.getItem('selectedCharacterId');
+      const token = localStorage.getItem('token');
+
+      if (!characterId) {
+        alert('Nenhum personagem selecionado');
+        window.location.href = '/personagens';
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/characters/${characterId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const personagem = data.character;
+          preencherFormulario(personagem);
+        } else {
+          alert('Erro ao carregar dados do personagem');
+          window.location.href = '/personagens';
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao carregar dados do personagem');
+        window.location.href = '/personagens';
+      }
+    }
+
+    // Preencher formulário com os dados existentes
+    function preencherFormulario(personagem) {
+      // Informações básicas
+      setFieldValue('nome-personagem', personagem.nome);
+      setFieldValue('classe-nivel', personagem.classe_nivel);
+      setFieldValue('antecedente', personagem.antecedente);
+      setFieldValue('nome-jogador', personagem.nome_jogador);
+      setFieldValue('raca', personagem.raca);
+      setFieldValue('alinhamento', personagem.alinhamento);
+      setFieldValue('pontos_experiencia', personagem.pontos_experiencia);
+
+      // Combate
+      setFieldValue('classe-armadura', personagem.classe_armadura);
+      setFieldValue('iniciativa', personagem.iniciativa);
+      setFieldValue('deslocamento', personagem.deslocamento);
+
+      // Vida
+      setFieldValue('pontos_vida_max', personagem.pontos_vida_max);
+      setFieldValue('pontos_vida_atual', personagem.pontos_vida_atual);
+      setFieldValue('pontos_vida_temp', personagem.pontos_vida_temp);
+      setFieldValue('dado-vida', personagem.dado_vida);
+
+      // Checkboxes de testes de morte
+      setFieldValue('sucesso1', personagem.sucesso1);
+      setFieldValue('sucesso2', personagem.sucesso2);
+      setFieldValue('sucesso3', personagem.sucesso3);
+      setFieldValue('falha1', personagem.falha1);
+      setFieldValue('falha2', personagem.falha2);
+      setFieldValue('falha3', personagem.falha3);
+
+      // Personalidade
+      setFieldValue('traços_personalidade', personagem.traços_personalidade);
+      setFieldValue('ideais', personagem.ideais);
+      setFieldValue('vínculos', personagem.vínculos);
+      setFieldValue('fraquezas', personagem.fraquezas);
+
+      // Físico
+      setFieldValue('idade', personagem.idade);
+      setFieldValue('altura', personagem.altura);
+      setFieldValue('peso', personagem.peso);
+      setFieldValue('cor_olhos', personagem.cor_olhos);
+      setFieldValue('cor_pele', personagem.cor_pele);
+      setFieldValue('cor_cabelo', personagem.cor_cabelo);
+      setFieldValue('caracteristicas-adicionais', personagem.caracteristicas_adicionais);
+
+      // Mostrar formulário e esconder loading
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('formulario-edicao').style.display = 'block';
+    }
+
+    // Event listener do botão salvar
+    document.getElementById("btn-salvar").addEventListener("click", async function(event) {
+      event.preventDefault();
+      
+      const token = localStorage.getItem("token");
+      const characterId = localStorage.getItem('selectedCharacterId');
+      
+      if (!token) {
+        alert("Você precisa estar logado para editar um personagem.");
+        window.location.href = "/login";
+        return;
+      }
+
+      if (!characterId) {
+        alert("Nenhum personagem selecionado para editar.");
+        return;
+      }
+
+      // Validação básica
+      const nome = getTextValue("nome-personagem");
+      if (!nome.trim()) {
+        alert("Por favor, digite o nome do personagem.");
+        return;
+      }
+
+      // Montar objeto do personagem
+      const personagem = {
+        nome: nome,
+        classe_nivel: getTextValue("classe-nivel"),
+        antecedente: getTextValue("antecedente"),
+        nome_jogador: getTextValue("nome-jogador"),
+        raca: getTextValue("raca"),
+        alinhamento: getTextValue("alinhamento"),
+        pontos_experiencia: getNumberValue("pontos_experiencia"),
+        classe_armadura: getNumberValue("classe-armadura"),
+        iniciativa: getNumberValue("iniciativa"),
+        deslocamento: getNumberValue("deslocamento"),
+        pontos_vida_max: getNumberValue("pontos_vida_max"),
+        pontos_vida_atual: getNumberValue("pontos_vida_atual"),
+        pontos_vida_temp: getNumberValue("pontos_vida_temp"),
+        dado_vida: getTextValue("dado-vida"),
+        
+        // Checkboxes
+        sucesso1: getCheckboxValue("sucesso1"),
+        sucesso2: getCheckboxValue("sucesso2"),
+        sucesso3: getCheckboxValue("sucesso3"),
+        falha1: getCheckboxValue("falha1"),
+        falha2: getCheckboxValue("falha2"),
+        falha3: getCheckboxValue("falha3"),
+        
+        // Personalidade
+        traços_personalidade: getTextValue("traços_personalidade"),
+        ideais: getTextValue("ideais"),
+        vínculos: getTextValue("vínculos"),
+        fraquezas: getTextValue("fraquezas"),
+        
+        // Físico
+        idade: getNumberValue("idade"),
+        altura: getTextValue("altura"),
+        peso: getTextValue("peso"),
+        cor_olhos: getTextValue("cor_olhos"),
+        cor_pele: getTextValue("cor_pele"),
+        cor_cabelo: getTextValue("cor_cabelo"),
+        caracteristicas_adicionais: getTextValue("caracteristicas-adicionais"),
+      };
+
+      // Desabilitar botão durante o envio
+      const btnSalvar = document.getElementById("btn-salvar");
+      btnSalvar.disabled = true;
+      btnSalvar.textContent = "Salvando...";
+
+      try {
+        const response = await fetch(`http://localhost:3000/characters/${characterId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(personagem),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert("Personagem atualizado com sucesso!");
+          window.location.href = "/visualizar-personagem";
+        } else {
+          const errorData = await response.json();
+          alert("Erro ao atualizar personagem: " + (errorData.error || "Erro desconhecido"));
+        }
+      } catch (error) {
+        console.error("Erro de rede:", error);
+        alert("Erro de conexão. Verifique se o servidor está funcionando.");
+      } finally {
+        // Reabilitar botão
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = "Salvar Alterações";
+      }
+    });
+
+    // Inicializar página
+    document.addEventListener('DOMContentLoaded', async () => {
+      await verificarAutenticacao();
+      await carregarDadosParaEdicao();
+      lucide.createIcons();
+    });
+  </script>
+
+  <style>
+    /* Estilos para os checkboxes */
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+      font-weight: normal;
+      cursor: pointer;
+    }
+
+    .btn-voltar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background-color: #666;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-voltar:hover {
+      background-color: #555;
+    }
+
+    .btn-salvar {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 12px 24px;
+      flex: 1;
+    }
+
+    .btn-salvar:hover {
+      background-color: #45a049;
+    }
+
+    .btn-salvar:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-cancelar {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 12px 24px;
+      flex: 1;
+    }
+
+    .btn-cancelar:hover {
+      background-color: #da190b;
+    }
+
+    .loading {
+      color: #666;
+    }
+  </style>
+</body>
+
+</html>
