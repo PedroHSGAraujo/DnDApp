@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Habilidades do Personagem</title>
-    <link rel="stylesheet" href="css/habilidades.css">
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
@@ -25,29 +24,58 @@
 
     <!-- Loading -->
     <div id="loading" class="loading" style="display: block;">
-        <p>Carregando habilidades do personagem...</p>
+        <div class="loading-content">
+            <i data-lucide="loader-2" class="loading-spinner"></i>
+            <p>Carregando habilidades do personagem...</p>
+        </div>
     </div>
 
     <!-- Conteúdo principal -->
-    <div id="conteudo-habilidades" style="display: none;">
-        <h2>Ataques & Conjuração</h2>
-        <div id="lista-ataques">
-            <!-- Ataques serão inseridos aqui dinamicamente -->
+    <div id="conteudo-habilidades" class="container" style="display: none;">
+        <!-- Ataques & Conjuração -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="sword"></i>
+                Ataques & Conjuração
+            </h2>
+            <div id="lista-ataques">
+                <!-- Ataques serão inseridos aqui dinamicamente -->
+            </div>
+            <button class="btn-adicionar" onclick="adicionarLinhaAtaque()">
+                <i data-lucide="plus"></i>
+                Adicionar Ataque
+            </button>
         </div>
-        <button class="btn-mais" onclick="adicionarLinhaAtaque()">+ Adicionar Ataque</button>
 
-        <h2>Características & Talentos</h2>
-        <textarea class="textarea-grande" id="caracteristicas-talentos"
-            placeholder="Ex: Sentidos aguçados, Visão no escuro, Fúria, Ação Extra, etc..."></textarea>
+        <!-- Características & Talentos -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="star"></i>
+                Características & Talentos
+            </h2>
+            <textarea class="textarea-grande" id="caracteristicas-talentos"
+                placeholder="Ex: Sentidos aguçados, Visão no escuro, Fúria, Ação Extra, etc..."></textarea>
+        </div>
 
-        <h2>Outras Proficiências & Idiomas</h2>
-        <textarea class="textarea-grande" id="outras-proficiencias"
-            placeholder="Ex: Idiomas (Élfico, Anão), Ferramentas (Kit de Ladrão), Armaduras (Leve, Média), etc..."></textarea>
+        <!-- Outras Proficiências & Idiomas -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="book-open"></i>
+                Outras Proficiências & Idiomas
+            </h2>
+            <textarea class="textarea-grande" id="outras-proficiencias"
+                placeholder="Ex: Idiomas (Élfico, Anão), Ferramentas (Kit de Ladrão), Armaduras (Leve, Média), etc..."></textarea>
+        </div>
 
         <div class="botoes-acao">
-            <button class="btn-salvar" id="btn-salvar-habilidades">Salvar Habilidades</button>
-            <button onclick="continuarParaMagias()" class="btn-continuar" style="display: none;">Continuar para
-                Magias</button>
+            <button class="btn-salvar" id="btn-salvar-habilidades">
+                <i data-lucide="save"></i>
+                Salvar Habilidades
+            </button>
+            <button onclick="continuarParaMagias()" class="btn-continuar" style="display: none;">
+                <i data-lucide="arrow-right"></i>
+                Continuar para Magias
+            </button>
         </div>
     </div>
 
@@ -273,7 +301,7 @@
 
             const btnSalvar = document.getElementById('btn-salvar-habilidades');
             btnSalvar.disabled = true;
-            btnSalvar.textContent = 'Salvando...';
+            btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
                 const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/abilities`, {
@@ -290,7 +318,7 @@
                     alert('Habilidades salvas com sucesso!');
 
                     // Sempre mostrar botão continuar após salvar
-                    document.querySelector('.btn-continuar').style.display = 'inline-block';
+                    document.querySelector('.btn-continuar').style.display = 'inline-flex';
                 } else {
                     const errorData = await response.json();
                     alert('Erro ao salvar habilidades: ' + (errorData.error || 'Erro desconhecido'));
@@ -300,7 +328,8 @@
                 alert('Erro de conexão ao salvar habilidades');
             } finally {
                 btnSalvar.disabled = false;
-                btnSalvar.textContent = 'Salvar Habilidades';
+                btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Habilidades';
+                lucide.createIcons();
             }
         }
 
@@ -316,142 +345,380 @@
     </script>
 
     <style>
-        /* Estilos adicionais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
             margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
             margin: 0;
             flex: 1;
             text-align: center;
+            color: #333;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .btn-voltar {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 15px;
-            background-color: #666;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .btn-voltar:hover {
-            background-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .spacer {
             width: 80px;
-            /* Mesma largura do botão voltar */
         }
 
+        /* Loading */
         .loading {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
             text-align: center;
-            padding: 50px;
-            color: #666;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
 
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-content p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .card-title i {
+            width: 24px;
+            height: 24px;
+            color: #667eea;
+        }
+
+        /* Linha de Ataque */
         .linha-ataque {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
             align-items: center;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .linha-ataque:hover {
+            background: rgba(102, 126, 234, 0.08);
+            border-color: rgba(102, 126, 234, 0.2);
         }
 
         .linha-ataque input {
-            padding: 8px;
+            padding: 12px 16px;
             font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
             flex: 1;
-            min-width: 150px;
+            background: white;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .linha-ataque input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .btn-remover {
-            background-color: #f44336;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .btn-remover:hover {
-            background-color: #d32f2f;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
         }
 
         .btn-remover i {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
         }
 
+        .btn-adicionar {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn-adicionar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Textarea */
+        .textarea-grande {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            font-size: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            resize: vertical;
+            background: white;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .textarea-grande:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea-grande::placeholder {
+            color: #999;
+        }
+
+        /* Buttons */
         .botoes-acao {
             display: flex;
             gap: 15px;
             margin: 30px 0;
+            flex-wrap: wrap;
         }
 
         .btn-salvar,
         .btn-continuar {
-            padding: 12px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
             flex: 1;
+            justify-content: center;
+            min-width: 200px;
         }
 
         .btn-salvar {
-            background-color: #2196F3;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
         }
 
         .btn-salvar:hover {
-            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
         }
 
         .btn-salvar:disabled {
-            background-color: #ccc;
+            background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-continuar {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-continuar:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            border-top: 1px solid #e1e5e9;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar button {
+            flex: 1;
+            padding: 8px 0;
+            background: none;
+            border: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .navbar button i {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+        }
+
+        .navbar button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .navbar button:hover:not(.active) {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 10px;
+                padding: 20px;
             }
 
             .spacer {
                 display: none;
             }
 
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
             .linha-ataque {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 10px;
             }
 
             .linha-ataque input {
@@ -461,6 +728,46 @@
             .botoes-acao {
                 flex-direction: column;
             }
+
+            .btn-salvar,
+            .btn-continuar {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-title {
+                font-size: 18px;
+            }
+
+            .btn-remover {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .linha-ataque {
+            animation: fadeInUp 0.5s ease-out;
         }
     </style>
 </body>

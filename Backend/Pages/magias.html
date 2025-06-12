@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Magias</title>
-    <link rel="stylesheet" href="css/magias.css">
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
@@ -25,33 +24,56 @@
 
     <!-- Loading -->
     <div id="loading" class="loading" style="display: block;">
-        <p>Carregando magias do personagem...</p>
+        <div class="loading-content">
+            <i data-lucide="loader-2" class="loading-spinner"></i>
+            <p>Carregando magias do personagem...</p>
+        </div>
     </div>
 
     <!-- Conteúdo principal -->
-    <div id="conteudo-magias" style="display: none;">
+    <div id="conteudo-magias" class="container" style="display: none;">
         <!-- Informações básicas de conjuração -->
-        <div class="secao-conjuracao">
-            <label for="classe-conjuradora">Classe Conjuradora:</label>
-            <input type="text" id="classe-conjuradora" placeholder="Ex: Mago, Clérigo, Druida..." />
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="wand-2"></i>
+                Informações de Conjuração
+            </h2>
+            <div class="campo-full">
+                <label for="classe-conjuradora">Classe Conjuradora:</label>
+                <input type="text" id="classe-conjuradora" placeholder="Ex: Mago, Clérigo, Druida..." />
+            </div>
 
             <div class="linha3campos">
-                <input type="text" id="cd-resistencia" placeholder="CD para testes de resistência" />
-                <input type="text" id="bonus-ataque-magia" placeholder="Bônus de ataque com magia" />
-                <input type="text" id="habilidade-chave" placeholder="Habilidade chave" />
+                <div class="campo">
+                    <label for="cd-resistencia">CD para Resistência</label>
+                    <input type="text" id="cd-resistencia" placeholder="Ex: 15" />
+                </div>
+                <div class="campo">
+                    <label for="bonus-ataque-magia">Bônus de Ataque</label>
+                    <input type="text" id="bonus-ataque-magia" placeholder="Ex: +7" />
+                </div>
+                <div class="campo">
+                    <label for="habilidade-chave">Habilidade Chave</label>
+                    <input type="text" id="habilidade-chave" placeholder="Ex: Inteligência" />
+                </div>
             </div>
         </div>
 
         <!-- Truques (Nível 0) -->
-        <div class="bloco-magia">
-            <div class="nivel-info">
-                <span class="nivel-numero">0</span>
-                <strong>Truques</strong>
+        <div class="card">
+            <div class="bloco-magia">
+                <div class="nivel-header">
+                    <span class="nivel-numero">0</span>
+                    <strong class="nivel-titulo">Truques</strong>
+                </div>
+                <div id="truques-container" class="truques">
+                    <!-- Truques serão inseridos aqui -->
+                </div>
+                <button type="button" onclick="adicionarTruque()" class="btn-adicionar-magia">
+                    <i data-lucide="plus"></i>
+                    Adicionar Truque
+                </button>
             </div>
-            <div id="truques-container" class="truques">
-                <!-- Truques serão inseridos aqui -->
-            </div>
-            <button type="button" onclick="adicionarTruque()" class="btn-adicionar-magia">+ Adicionar Truque</button>
         </div>
 
         <!-- Magias por Nível (1-9) -->
@@ -60,9 +82,14 @@
         </div>
 
         <div class="botoes-acao">
-            <button class="btn-salvar" id="btn-salvar-magias">Salvar Magias</button>
-            <button onclick="continuarParaInventario()" class="btn-continuar" style="display: none;">Continuar para
-                Inventário</button>
+            <button class="btn-salvar" id="btn-salvar-magias">
+                <i data-lucide="save"></i>
+                Salvar Magias
+            </button>
+            <button onclick="continuarParaInventario()" class="btn-continuar" style="display: none;">
+                <i data-lucide="arrow-right"></i>
+                Continuar para Inventário
+            </button>
         </div>
     </div>
 
@@ -137,20 +164,29 @@
             const container = document.getElementById('niveis-magias');
 
             for (let nivel = 1; nivel <= 9; nivel++) {
-                const bloco = document.createElement('div');
-                bloco.className = 'bloco-magia';
-                bloco.innerHTML = `
-                    <div class="nivel-info">
-                        <span class="nivel-numero">${nivel}</span>
-                        <input type="number" id="nivel-${nivel}-total" placeholder="Total de Espaços" min="0" />
-                        <input type="number" id="nivel-${nivel}-usados" placeholder="Espaços Utilizados" min="0" />
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="bloco-magia">
+                        <div class="nivel-header">
+                            <span class="nivel-numero">${nivel}</span>
+                            <strong class="nivel-titulo">Nível ${nivel}</strong>
+                            <div class="espacos-magia">
+                                <input type="number" id="nivel-${nivel}-total" placeholder="Total" min="0" />
+                                <span class="separador">/</span>
+                                <input type="number" id="nivel-${nivel}-usados" placeholder="Usados" min="0" />
+                            </div>
+                        </div>
+                        <div id="nivel-${nivel}-magias" class="magias-nivel">
+                            <!-- Magias do nível serão inseridas aqui -->
+                        </div>
+                        <button type="button" onclick="adicionarMagia(${nivel})" class="btn-adicionar-magia">
+                            <i data-lucide="plus"></i>
+                            Adicionar Magia Nível ${nivel}
+                        </button>
                     </div>
-                    <div id="nivel-${nivel}-magias" class="magias-nivel">
-                        <!-- Magias do nível serão inseridas aqui -->
-                    </div>
-                    <button type="button" onclick="adicionarMagia(${nivel})" class="btn-adicionar-magia">+ Adicionar Magia Nível ${nivel}</button>
                 `;
-                container.appendChild(bloco);
+                container.appendChild(card);
             }
         }
 
@@ -390,7 +426,7 @@
 
             const btnSalvar = document.getElementById('btn-salvar-magias');
             btnSalvar.disabled = true;
-            btnSalvar.textContent = 'Salvando...';
+            btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
                 const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/spells`, {
@@ -407,7 +443,7 @@
                     alert('Magias salvas com sucesso!');
 
                     // Sempre mostrar botão continuar após salvar
-                    document.querySelector('.btn-continuar').style.display = 'inline-block';
+                    document.querySelector('.btn-continuar').style.display = 'inline-flex';
                 } else {
                     const errorData = await response.json();
                     alert('Erro ao salvar magias: ' + (errorData.error || 'Erro desconhecido'));
@@ -417,7 +453,8 @@
                 alert('Erro de conexão ao salvar magias');
             } finally {
                 btnSalvar.disabled = false;
-                btnSalvar.textContent = 'Salvar Magias';
+                btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Magias';
+                lucide.createIcons();
             }
         }
 
@@ -433,125 +470,295 @@
     </script>
 
     <style>
-        /* Estilos adicionais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
             margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
             margin: 0;
             flex: 1;
             text-align: center;
+            color: #333;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .btn-voltar {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 15px;
-            background-color: #666;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .btn-voltar:hover {
-            background-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .spacer {
             width: 80px;
         }
 
+        /* Loading */
         .loading {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
             text-align: center;
-            padding: 50px;
-            color: #666;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
 
-        .secao-conjuracao {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-content p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .card-title i {
+            width: 24px;
+            height: 24px;
+            color: #667eea;
+        }
+
+        /* Form Elements */
+        .campo-full {
             margin-bottom: 20px;
         }
 
-        .secao-conjuracao label {
+        .campo-full label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
         }
 
-        .secao-conjuracao input {
+        .campo-full input {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
         }
 
+        .linha3campos {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .campo {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Blocos de Magia */
         .bloco-magia {
-            border-top: 2px solid #444;
+            border-top: 3px solid #667eea;
             padding-top: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
-        .nivel-info {
+        .nivel-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .nivel-numero {
-            font-weight: bold;
-            font-size: 18px;
-            width: 40px;
-            text-align: center;
-            background-color: #333;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: 50%;
-            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
         }
 
-        .nivel-info input {
+        .nivel-titulo {
+            color: #333;
+            font-size: 18px;
             flex: 1;
-            min-width: 150px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
         }
 
-        .linha-magia {
+        .espacos-magia {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
+            background: rgba(102, 126, 234, 0.05);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .espacos-magia input {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .separador {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        /* Linha de Magia */
+        .linha-magia {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .linha-magia:hover {
+            background: rgba(102, 126, 234, 0.06);
+            border-color: rgba(102, 126, 234, 0.15);
         }
 
         .linha-magia input[type="text"] {
             flex: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
         }
 
         .linha-magia input[type="checkbox"] {
             width: 20px;
             height: 20px;
-            border-radius: 50%;
-            accent-color: #555;
+            border-radius: 4px;
+            accent-color: #667eea;
+            flex-shrink: 0;
         }
 
         .btn-remover-magia {
-            background-color: #f44336;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
             color: white;
             border: none;
             border-radius: 50%;
@@ -561,10 +768,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .btn-remover-magia:hover {
-            background-color: #d32f2f;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
         }
 
         .btn-remover-magia i {
@@ -573,88 +783,230 @@
         }
 
         .btn-adicionar-magia {
-            background-color: #4CAF50;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 8px 15px;
+            border-radius: 10px;
             cursor: pointer;
-            margin-top: 10px;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
         .btn-adicionar-magia:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
 
+        /* Buttons */
         .botoes-acao {
             display: flex;
             gap: 15px;
             margin: 30px 0;
+            flex-wrap: wrap;
         }
 
         .btn-salvar,
         .btn-continuar {
-            padding: 12px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
             flex: 1;
+            justify-content: center;
+            min-width: 200px;
         }
 
         .btn-salvar {
-            background-color: #2196F3;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
         }
 
         .btn-salvar:hover {
-            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
         }
 
         .btn-salvar:disabled {
-            background-color: #ccc;
+            background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-continuar {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-continuar:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            border-top: 1px solid #e1e5e9;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar button {
+            flex: 1;
+            padding: 8px 0;
+            background: none;
+            border: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .navbar button i {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+        }
+
+        .navbar button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .navbar button:hover:not(.active) {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 10px;
+                padding: 20px;
             }
 
             .spacer {
                 display: none;
             }
 
-            .nivel-info {
-                flex-direction: column;
-                align-items: stretch;
+            .header h1 {
+                font-size: 20px;
             }
 
-            .nivel-info input {
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .linha3campos {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .campo {
                 min-width: unset;
+            }
+
+            .nivel-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .espacos-magia {
+                justify-content: center;
             }
 
             .linha-magia {
                 flex-wrap: wrap;
+                gap: 8px;
             }
 
             .botoes-acao {
                 flex-direction: column;
             }
+
+            .btn-salvar,
+            .btn-continuar {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-title {
+                font-size: 18px;
+            }
+
+            .nivel-numero {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .btn-remover-magia {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .linha-magia {
+            animation: fadeInUp 0.5s ease-out;
         }
     </style>
 </body>
-
 </html>

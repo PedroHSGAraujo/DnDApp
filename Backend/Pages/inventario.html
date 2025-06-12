@@ -9,7 +9,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="css/inventario.css">
 </head>
 
 <body>
@@ -25,51 +24,73 @@
 
     <!-- Loading -->
     <div id="loading" class="loading" style="display: block;">
-        <p>Carregando inventário do personagem...</p>
+        <div class="loading-content">
+            <i data-lucide="loader-2" class="loading-spinner"></i>
+            <p>Carregando inventário do personagem...</p>
+        </div>
     </div>
 
     <!-- Conteúdo principal -->
-    <div id="conteudo-inventario" style="display: none;">
+    <div id="conteudo-inventario" class="container" style="display: none;">
         <!-- Moedas -->
-        <div class="secao-moedas">
-            <h2>💰 Moedas</h2>
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="coins"></i>
+                Moedas
+            </h2>
             <div class="moedas-grid">
-                <div class="moeda">
-                    <label for="pc">PC (Cobre)</label>
+                <div class="moeda copper">
+                    <label for="pc">PC</label>
+                    <span class="moeda-nome">Cobre</span>
                     <input type="number" id="pc" min="0" value="0" />
                 </div>
-                <div class="moeda">
-                    <label for="pp">PP (Prata)</label>
+                <div class="moeda silver">
+                    <label for="pp">PP</label>
+                    <span class="moeda-nome">Prata</span>
                     <input type="number" id="pp" min="0" value="0" />
                 </div>
-                <div class="moeda">
-                    <label for="pe">PE (Electro)</label>
+                <div class="moeda electrum">
+                    <label for="pe">PE</label>
+                    <span class="moeda-nome">Electro</span>
                     <input type="number" id="pe" min="0" value="0" />
                 </div>
-                <div class="moeda">
-                    <label for="po">PO (Ouro)</label>
+                <div class="moeda gold">
+                    <label for="po">PO</label>
+                    <span class="moeda-nome">Ouro</span>
                     <input type="number" id="po" min="0" value="0" />
                 </div>
-                <div class="moeda">
-                    <label for="pl">PL (Platina)</label>
+                <div class="moeda platinum">
+                    <label for="pl">PL</label>
+                    <span class="moeda-nome">Platina</span>
                     <input type="number" id="pl" min="0" value="0" />
                 </div>
             </div>
         </div>
 
         <!-- Equipamentos -->
-        <div class="secao-equipamentos">
-            <h2>🎒 Equipamentos</h2>
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="briefcase"></i>
+                Equipamentos
+            </h2>
             <div id="lista-equipamentos">
                 <!-- Equipamentos serão inseridos aqui dinamicamente -->
             </div>
-            <button class="btn-adicionar" onclick="adicionarEquipamento()">+ Adicionar Equipamento</button>
+            <button class="btn-adicionar" onclick="adicionarEquipamento()">
+                <i data-lucide="plus"></i>
+                Adicionar Equipamento
+            </button>
         </div>
 
         <div class="botoes-acao">
-            <button class="btn-salvar" id="btn-salvar-inventario">Salvar Inventário</button>
-            <button onclick="finalizarPersonagem()" class="btn-finalizar" style="display: none;">✅ Personagem
-                Completo!</button>
+            <button class="btn-salvar" id="btn-salvar-inventario">
+                <i data-lucide="save"></i>
+                Salvar Inventário
+            </button>
+            <button onclick="finalizarPersonagem()" class="btn-finalizar" style="display: none;">
+                <i data-lucide="check-circle"></i>
+                Personagem Completo!
+            </button>
         </div>
     </div>
 
@@ -147,20 +168,26 @@
             novoEquipamento.className = 'equipamento';
             novoEquipamento.innerHTML = `
                 <div class="equipamento-campos">
-                    <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="1" />
-                    <input type="text" class="input-nome" placeholder="Nome do equipamento" />
-                    <select class="select-categoria">
-                        <option value="">Categoria</option>
-                        <option value="Arma">Arma</option>
-                        <option value="Armadura">Armadura</option>
-                        <option value="Escudo">Escudo</option>
-                        <option value="Ferramenta">Ferramenta</option>
-                        <option value="Consumível">Consumível</option>
-                        <option value="Gema">Gema</option>
-                        <option value="Arte">Objeto de Arte</option>
-                        <option value="Mágico">Item Mágico</option>
-                        <option value="Diversos">Diversos</option>
-                    </select>
+                    <div class="campo-quantidade">
+                        <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="1" />
+                    </div>
+                    <div class="campo-nome">
+                        <input type="text" class="input-nome" placeholder="Nome do equipamento" />
+                    </div>
+                    <div class="campo-categoria">
+                        <select class="select-categoria">
+                            <option value="">Categoria</option>
+                            <option value="Arma">Arma</option>
+                            <option value="Armadura">Armadura</option>
+                            <option value="Escudo">Escudo</option>
+                            <option value="Ferramenta">Ferramenta</option>
+                            <option value="Consumível">Consumível</option>
+                            <option value="Gema">Gema</option>
+                            <option value="Arte">Objeto de Arte</option>
+                            <option value="Mágico">Item Mágico</option>
+                            <option value="Diversos">Diversos</option>
+                        </select>
+                    </div>
                     <button type="button" onclick="removerEquipamento(this)" class="btn-remover" title="Remover">
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -256,20 +283,26 @@
                     novoEquipamento.className = 'equipamento';
                     novoEquipamento.innerHTML = `
                         <div class="equipamento-campos">
-                            <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="${equipamento.quantidade || 1}" />
-                            <input type="text" class="input-nome" placeholder="Nome do equipamento" value="${equipamento.nome || ''}" />
-                            <select class="select-categoria">
-                                <option value="">Categoria</option>
-                                <option value="Arma" ${equipamento.categoria === 'Arma' ? 'selected' : ''}>Arma</option>
-                                <option value="Armadura" ${equipamento.categoria === 'Armadura' ? 'selected' : ''}>Armadura</option>
-                                <option value="Escudo" ${equipamento.categoria === 'Escudo' ? 'selected' : ''}>Escudo</option>
-                                <option value="Ferramenta" ${equipamento.categoria === 'Ferramenta' ? 'selected' : ''}>Ferramenta</option>
-                                <option value="Consumível" ${equipamento.categoria === 'Consumível' ? 'selected' : ''}>Consumível</option>
-                                <option value="Gema" ${equipamento.categoria === 'Gema' ? 'selected' : ''}>Gema</option>
-                                <option value="Arte" ${equipamento.categoria === 'Arte' ? 'selected' : ''}>Objeto de Arte</option>
-                                <option value="Mágico" ${equipamento.categoria === 'Mágico' ? 'selected' : ''}>Item Mágico</option>
-                                <option value="Diversos" ${equipamento.categoria === 'Diversos' ? 'selected' : ''}>Diversos</option>
-                            </select>
+                            <div class="campo-quantidade">
+                                <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="${equipamento.quantidade || 1}" />
+                            </div>
+                            <div class="campo-nome">
+                                <input type="text" class="input-nome" placeholder="Nome do equipamento" value="${equipamento.nome || ''}" />
+                            </div>
+                            <div class="campo-categoria">
+                                <select class="select-categoria">
+                                    <option value="">Categoria</option>
+                                    <option value="Arma" ${equipamento.categoria === 'Arma' ? 'selected' : ''}>Arma</option>
+                                    <option value="Armadura" ${equipamento.categoria === 'Armadura' ? 'selected' : ''}>Armadura</option>
+                                    <option value="Escudo" ${equipamento.categoria === 'Escudo' ? 'selected' : ''}>Escudo</option>
+                                    <option value="Ferramenta" ${equipamento.categoria === 'Ferramenta' ? 'selected' : ''}>Ferramenta</option>
+                                    <option value="Consumível" ${equipamento.categoria === 'Consumível' ? 'selected' : ''}>Consumível</option>
+                                    <option value="Gema" ${equipamento.categoria === 'Gema' ? 'selected' : ''}>Gema</option>
+                                    <option value="Arte" ${equipamento.categoria === 'Arte' ? 'selected' : ''}>Objeto de Arte</option>
+                                    <option value="Mágico" ${equipamento.categoria === 'Mágico' ? 'selected' : ''}>Item Mágico</option>
+                                    <option value="Diversos" ${equipamento.categoria === 'Diversos' ? 'selected' : ''}>Diversos</option>
+                                </select>
+                            </div>
                             <button type="button" onclick="removerEquipamento(this)" class="btn-remover" title="Remover">
                                 <i data-lucide="trash-2"></i>
                             </button>
@@ -332,7 +365,7 @@
 
             const btnSalvar = document.getElementById('btn-salvar-inventario');
             btnSalvar.disabled = true;
-            btnSalvar.textContent = 'Salvando...';
+            btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
                 const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
@@ -349,7 +382,7 @@
                     alert('Inventário salvo com sucesso!');
 
                     // Mostrar botão de finalização
-                    document.querySelector('.btn-finalizar').style.display = 'inline-block';
+                    document.querySelector('.btn-finalizar').style.display = 'inline-flex';
                 } else {
                     const errorData = await response.json();
                     alert('Erro ao salvar inventário: ' + (errorData.error || 'Erro desconhecido'));
@@ -359,7 +392,8 @@
                 alert('Erro de conexão ao salvar inventário');
             } finally {
                 btnSalvar.disabled = false;
-                btnSalvar.textContent = 'Salvar Inventário';
+                btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Inventário';
+                lucide.createIcons();
             }
         }
 
@@ -375,254 +409,423 @@
     </script>
 
     <style>
-        /* Estilos adicionais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
             margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
             margin: 0;
             flex: 1;
             text-align: center;
+            color: #333;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .btn-voltar {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 15px;
-            background-color: #666;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .btn-voltar:hover {
-            background-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .spacer {
             width: 80px;
         }
 
+        /* Loading */
         .loading {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
             text-align: center;
-            padding: 50px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-content p {
             color: #666;
+            font-size: 16px;
         }
 
-        .secao-moedas {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .secao-moedas h2 {
-            margin: 0 0 15px 0;
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
             color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
         }
 
+        .card-title i {
+            width: 24px;
+            height: 24px;
+            color: #667eea;
+        }
+
+        /* Moedas */
         .moedas-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
         }
 
         .moeda {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .moeda::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .moeda.copper {
+            border-color: #b87333;
+        }
+        .moeda.copper::before {
+            background: linear-gradient(90deg, #b87333, #d2871e);
+        }
+
+        .moeda.silver {
+            border-color: #c0c0c0;
+        }
+        .moeda.silver::before {
+            background: linear-gradient(90deg, #c0c0c0, #e5e5e5);
+        }
+
+        .moeda.electrum {
+            border-color: #8e7cc3;
+        }
+        .moeda.electrum::before {
+            background: linear-gradient(90deg, #8e7cc3, #a855f7);
+        }
+
+        .moeda.gold {
+            border-color: #ffd700;
+        }
+        .moeda.gold::before {
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+        }
+
+        .moeda.platinum {
+            border-color: #e5e7eb;
+        }
+        .moeda.platinum::before {
+            background: linear-gradient(90deg, #e5e7eb, #f3f4f6);
+        }
+
+        .moeda:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .moeda label {
             font-weight: bold;
-            color: #555;
-            font-size: 14px;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .moeda-nome {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .moeda input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
             font-size: 16px;
+            font-weight: 600;
+            background: white;
+            transition: all 0.3s ease;
         }
 
-        .secao-equipamentos {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
+        .moeda input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .secao-equipamentos h2 {
-            margin: 0 0 15px 0;
-            color: #333;
-        }
-
+        /* Equipamentos */
         .equipamento {
             margin-bottom: 15px;
         }
 
         .equipamento-campos {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 80px 1fr 150px 50px;
+            gap: 12px;
             align-items: center;
-            flex-wrap: wrap;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .equipamento-campos:hover {
+            background: rgba(102, 126, 234, 0.08);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .campo-quantidade,
+        .campo-nome,
+        .campo-categoria {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-quantidade,
+        .input-nome,
+        .select-categoria {
+            padding: 10px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+            font-size: 14px;
         }
 
         .input-quantidade {
-            width: 60px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
         }
 
         .input-nome {
-            flex: 1;
-            min-width: 200px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            font-weight: 500;
         }
 
         .select-categoria {
-            min-width: 120px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .input-quantidade:focus,
+        .input-nome:focus,
+        .select-categoria:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .btn-remover {
-            background-color: #f44336;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
         }
 
         .btn-remover:hover {
-            background-color: #d32f2f;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
         }
 
         .btn-remover i {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
         }
 
         .btn-adicionar {
-            background-color: #4CAF50;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 10px 15px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
-            margin-top: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
         }
 
         .btn-adicionar:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
         }
 
+        /* Buttons */
         .botoes-acao {
             display: flex;
             gap: 15px;
             margin: 30px 0;
+            flex-wrap: wrap;
         }
 
         .btn-salvar,
         .btn-finalizar {
-            padding: 12px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
             flex: 1;
+            justify-content: center;
+            min-width: 200px;
         }
 
         .btn-salvar {
-            background-color: #2196F3;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
         }
 
         .btn-salvar:hover {
-            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
         }
 
         .btn-salvar:disabled {
-            background-color: #ccc;
+            background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-finalizar {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-finalizar:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .spacer {
-                display: none;
-            }
-
-            .moedas-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .equipamento-campos {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .input-nome {
-                min-width: unset;
-            }
-
-            .botoes-acao {
-                flex-direction: column;
-            }
+        .spin {
+            animation: spin 1s linear infinite;
         }
 
-        /* Navbar já está no CSS original */
+        /* Navbar */
         .navbar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             height: 70px;
-            background-color: #bfbfbf;
+            background: white;
             display: flex;
             justify-content: space-around;
             align-items: flex-end;
-            border-top: 2px solid #888;
+            border-top: 1px solid #e1e5e9;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .navbar button {
             flex: 1;
-            padding: 6px 0;
+            padding: 8px 0;
             background: none;
             border: none;
             font-size: 11px;
@@ -631,7 +834,8 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #000;
+            color: #666;
+            transition: all 0.3s ease;
         }
 
         .navbar button i {
@@ -641,10 +845,108 @@
         }
 
         .navbar button.active {
-            background-color: #999;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding-top: 15px;
             padding-bottom: 15px;
             font-weight: bold;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .navbar button:hover:not(.active) {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 20px;
+            }
+
+            .spacer {
+                display: none;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .moedas-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .equipamento-campos {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .botoes-acao {
+                flex-direction: column;
+            }
+
+            .btn-salvar,
+            .btn-finalizar {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-title {
+                font-size: 18px;
+            }
+
+            .moedas-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .moeda {
+                padding: 15px;
+            }
+
+            .btn-remover {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .equipamento {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .moeda {
+            animation: fadeInUp 0.7s ease-out;
         }
     </style>
 </body>

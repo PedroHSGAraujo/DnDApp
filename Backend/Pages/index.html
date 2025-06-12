@@ -2,56 +2,624 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - D&D Character Manager</title>
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
-    <script src="js/auth.js"></script>
-
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
     <div class="container">
-        <div class="logo">
-            <img src="assets/logo.png" alt="Logo do APP" class="logo-img">
+        <!-- Header com Logo -->
+        <div class="header">
+            <div class="logo">
+                <i data-lucide="shield" class="logo-icon"></i>
+                <h1>D&D Manager</h1>
+            </div>
+            <p class="subtitle">Gerencie seus personagens de D&D 5e</p>
         </div>
 
-        <form class="form">
-            <input type="text" placeholder="Username ou E-mail" name="username" required />
-            <input type="password" placeholder="Senha" name="senha" required />
-
-            <div class="links">
-                <a href="#">Esqueci minha senha</a>
-                <a href="/register">Não tem conta? Registrar</a>
+        <!-- Card de Login -->
+        <div class="login-card">
+            <div class="card-header">
+                <i data-lucide="log-in" class="card-icon"></i>
+                <h2>Entrar na sua conta</h2>
+                <p>Acesse seus personagens e aventuras</p>
             </div>
 
-            <button type="button" onclick="loginUser()">Entrar</button>
-        </form>
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <label for="username">
+                        <i data-lucide="user"></i>
+                        Nome de usuário
+                    </label>
+                    <input type="text" id="username" name="username" required placeholder="Digite seu nome de usuário" autocomplete="username">
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">
+                        <i data-lucide="lock"></i>
+                        Senha
+                    </label>
+                    <div class="senha-field">
+                        <input type="password" id="senha" name="senha" required placeholder="Digite sua senha" autocomplete="current-senha">
+                        <button type="button" class="toggle-senha" onclick="togglesenha()">
+                            <i data-lucide="eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <i data-lucide="log-in"></i>
+                    Entrar
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>ou</span>
+            </div>
+
+            <div class="register-section">
+                <p>Ainda não tem uma conta?</p>
+                <a href="/register" class="btn-register">
+                    <i data-lucide="user-plus"></i>
+                    Criar conta gratuita
+                </a>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <i data-lucide="users"></i>
+                <h3>Múltiplos Personagens</h3>
+                <p>Crie e gerencie vários personagens</p>
+            </div>
+            <div class="feature">
+                <i data-lucide="shield-check"></i>
+                <h3>Seguro e Confiável</h3>
+                <p>Seus dados protegidos na nuvem</p>
+            </div>
+            <div class="feature">
+                <i data-lucide="smartphone"></i>
+                <h3>Acesso Mobile</h3>
+                <p>Use em qualquer dispositivo</p>
+            </div>
+        </div>
     </div>
+
     <script>
-        async function loginUser() {
-            const username = document.querySelector("input[name='username']").value;
-            const senha = document.querySelector("input[name='senha']").value;
+        // 🚀 URL DINÂMICA
+        const API_URL = window.location.origin;
 
-            const response = await fetch("https://dndapp-0f3t.onrender.com/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, senha }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem("token", data.token); // manter usuário logado
-                window.location.href = "/personagens";
-            } else {
-                alert(data.error);
+        // Verificar se já está logado
+        function verificarSeJaEstaLogado() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Verificar se o token ainda é válido
+                fetch(`${API_URL}/profile`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '/personagens';
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                }).catch(() => {
+                    localStorage.removeItem('token');
+                });
             }
         }
+
+        function togglesenha() {
+            const senhaInput = document.getElementById('senha');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (senhaInput.type === 'senha') {
+                senhaInput.type = 'text';
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                senhaInput.type = 'senha';
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // Função de login
+        async function realizarLogin(username, senha) {
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username: username.trim(), 
+                        senha: senha 
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Login bem-sucedido
+                    localStorage.setItem('token', data.token);
+                    
+                    // Mostrar sucesso
+                    mostrarMensagem('🎉 Login realizado com sucesso!', 'success');
+                    
+                    // Aguardar um pouco para mostrar a mensagem
+                    setTimeout(() => {
+                        window.location.href = '/personagens';
+                    }, 1000);
+                    
+                    return true;
+                } else {
+                    // Erro no login
+                    throw new Error(data.error || data.message || 'Credenciais inválidas');
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
+                throw error;
+            }
+        }
+
+        // Mostrar mensagens de feedback
+        function mostrarMensagem(texto, tipo = 'error') {
+            // Remover mensagem anterior se existir
+            const mensagemAnterior = document.querySelector('.message');
+            if (mensagemAnterior) {
+                mensagemAnterior.remove();
+            }
+
+            const mensagem = document.createElement('div');
+            mensagem.className = `message ${tipo}`;
+            mensagem.innerHTML = `
+                <i data-lucide="${tipo === 'success' ? 'check-circle' : 'alert-circle'}"></i>
+                <span>${texto}</span>
+            `;
+
+            const card = document.querySelector('.login-card');
+            card.insertBefore(mensagem, card.firstChild);
+            lucide.createIcons();
+
+            // Remover após 5 segundos
+            setTimeout(() => {
+                if (mensagem.parentNode) {
+                    mensagem.remove();
+                }
+            }, 5000);
+        }
+
+        // Event listener do formulário
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const senha = document.getElementById('senha').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Validação básica
+            if (!username || !senha) {
+                mostrarMensagem('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            if (username.trim().length < 3) {
+                mostrarMensagem('Nome de usuário deve ter pelo menos 3 caracteres.');
+                return;
+            }
+
+            // Estado de carregamento
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Entrando...';
+            lucide.createIcons();
+
+            try {
+                await realizarLogin(username, senha);
+            } catch (error) {
+                mostrarMensagem(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+            } finally {
+                // Reabilitar botão
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i data-lucide="log-in"></i> Entrar';
+                lucide.createIcons();
+            }
+        });
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarSeJaEstaLogado();
+            lucide.createIcons();
+
+            // Focar no campo de username
+            document.getElementById('username').focus();
+        });
+
+        // Permitir login com Enter
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const form = document.getElementById('loginForm');
+                if (form.checkValidity()) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
     </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .card-header h2 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message i {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .message.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* Form */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .input-group label i {
+            width: 16px;
+            height: 16px;
+            color: #667eea;
+        }
+
+        .input-group input {
+            padding: 14px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group input:invalid {
+            border-color: #f44336;
+        }
+
+        .senha-field {
+            position: relative;
+        }
+
+        .toggle-senha {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-senha:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .toggle-senha i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login i {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Register Section */
+        .register-section {
+            text-align: center;
+        }
+
+        .register-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .btn-register {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-register i {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .feature {
+            text-align: center;
+            color: white;
+            padding: 15px;
+        }
+
+        .feature i {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .feature h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .feature p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Spinner */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .login-card {
+                padding: 30px 25px;
+            }
+
+            .logo h1 {
+                font-size: 28px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .features {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
 </body>
 
 </html>

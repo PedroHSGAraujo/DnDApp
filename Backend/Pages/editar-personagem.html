@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Personagem</title>
-  <link rel="stylesheet" href="css/novo-personagem.css" />
   <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
@@ -13,185 +12,322 @@
 </head>
 
 <body>
-  <header>
-    <div class="linha">
-      <button onclick="voltarParaVisualizacao()" class="btn-voltar" style="margin-right: 15px;">
-        <i data-lucide="arrow-left"></i>
-        Voltar
-      </button>
-      <label for="nome-personagem">Nome do Personagem</label>
-      <input type="text" id="nome-personagem" />
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-nav">
+        <button onclick="voltarParaVisualizacao()" class="btn-back">
+          <i data-lucide="arrow-left"></i>
+          Voltar
+        </button>
+        <div class="header-content">
+          <i data-lucide="edit" class="header-icon"></i>
+          <h1>Editar Personagem</h1>
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading-state">
+      <div class="loading-content">
+        <i data-lucide="loader-2" class="loading-spinner"></i>
+        <p>Carregando dados do personagem...</p>
+      </div>
     </div>
-  </header>
 
-  <main>
-    <div id="loading" class="loading" style="display: block; text-align: center; padding: 40px;">
-      <p>Carregando dados do personagem...</p>
-    </div>
-
-    <div id="formulario-edicao" style="display: none;">
-      <div class="linha">
-        <div class="campo">
-          <label for="classe-nivel">Classe e Nível</label>
-          <input type="text" id="classe-nivel" />
-        </div>
-        <div class="campo">
-          <label for="antecedente">Antecedente</label>
-          <input type="text" id="antecedente" />
-        </div>
-        <div class="campo">
-          <label for="nome-jogador">Nome do Jogador</label>
-          <input type="text" id="nome-jogador" />
+    <!-- Main Form -->
+    <main id="formulario-edicao" class="main-content" style="display: none;">
+      <!-- Nome do Personagem - Destaque -->
+      <div class="character-name-section">
+        <div class="input-group featured">
+          <label for="nome-personagem">
+            <i data-lucide="user"></i>
+            Nome do Personagem
+          </label>
+          <input type="text" id="nome-personagem" placeholder="Nome do seu personagem..." />
         </div>
       </div>
 
-      <div class="linha">
-        <div class="campo">
-          <label for="raca">Raça</label>
-          <input type="text" id="raca" />
-        </div>
-        <div class="campo">
-          <label for="alinhamento">Alinhamento</label>
-          <input type="text" id="alinhamento" />
-        </div>
-        <div class="campo">
-          <label for="experiencia">Pontos de Experiência</label>
-          <input type="number" id="pontos_experiencia" />
-        </div>
-      </div>
-
-      <div class="linha">
-        <div class="campo">
-          <label for="classe-armadura">Classe de Armadura</label>
-          <input type="number" id="classe-armadura" />
-        </div>
-        <div class="campo">
-          <label for="iniciativa">Iniciativa</label>
-          <input type="number" id="iniciativa" />
-        </div>
-        <div class="campo">
-          <label for="deslocamento">Deslocamento</label>
-          <input type="number" id="deslocamento" />
-        </div>
-      </div>
-
-      <div class="linha">
-        <div class="campo">
-          <label for="vida-maxima">Pontos de Vida Máximos</label>
-          <input type="number" id="pontos_vida_max" />
-        </div>
-        <div class="campo">
-          <label for="vida-atual">Pontos de Vida Atuais</label>
-          <input type="number" id="pontos_vida_atual" />
-        </div>
-        <div class="campo">
-          <label for="vida-temporaria">Pontos de Vida Temporários</label>
-          <input type="number" id="pontos_vida_temp" />
-        </div>
-      </div>
-
-      <div class="linha">
-        <div class="campo">
-          <label for="dado-vida">Dado de Vida</label>
-          <input type="text" id="dado-vida" />
-        </div>
-        <div class="campo">
-          <label>Sucessos nos Testes de Morte</label>
-          <div class="checkboxes" id="sucessos">
-            <div class="checkbox-item">
-              <input type="checkbox" id="sucesso1" />
-              <label for="sucesso1">1º Sucesso</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="sucesso2" />
-              <label for="sucesso2">2º Sucesso</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="sucesso3" />
-              <label for="sucesso3">3º Sucesso</label>
-            </div>
+      <!-- Informações Básicas -->
+      <div class="form-section">
+        <h2><i data-lucide="info"></i> Informações Básicas</h2>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="classe-nivel">
+              <i data-lucide="sword"></i>
+              Classe e Nível
+            </label>
+            <input type="text" id="classe-nivel" placeholder="Ex: Guerreiro Nível 5" />
           </div>
-        </div>
-        <div class="campo">
-          <label>Falhas nos Testes de Morte</label>
-          <div class="checkboxes" id="falhas">
-            <div class="checkbox-item">
-              <input type="checkbox" id="falha1" />
-              <label for="falha1">1ª Falha</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="falha2" />
-              <label for="falha2">2ª Falha</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="falha3" />
-              <label for="falha3">3ª Falha</label>
-            </div>
+          <div class="input-group">
+            <label for="antecedente">
+              <i data-lucide="scroll-text"></i>
+              Antecedente
+            </label>
+            <input type="text" id="antecedente" placeholder="Ex: Soldado, Artesão" />
+          </div>
+          <div class="input-group">
+            <label for="nome-jogador">
+              <i data-lucide="user-circle"></i>
+              Nome do Jogador
+            </label>
+            <input type="text" id="nome-jogador" placeholder="Seu nome" />
           </div>
         </div>
       </div>
 
-      <div class="linha">
-        <div class="campo">
-          <label for="tracos-personalidade">Traços de Personalidade</label>
-          <input type="text" id="traços_personalidade" />
-        </div>
-        <div class="campo">
-          <label for="ideais">Ideais</label>
-          <input type="text" id="ideais" />
-        </div>
-        <div class="campo">
-          <label for="vinculos">Vínculos</label>
-          <input type="text" id="vínculos" />
-        </div>
-        <div class="campo">
-          <label for="fraquezas">Fraquezas</label>
-          <input type="text" id="fraquezas" />
-        </div>
-      </div>
-
-      <div class="linha">
-        <div class="campo">
-          <label for="idade">Idade</label>
-          <input type="number" id="idade" />
-        </div>
-        <div class="campo">
-          <label for="altura">Altura</label>
-          <input type="text" id="altura" />
-        </div>
-        <div class="campo">
-          <label for="peso">Peso</label>
-          <input type="text" id="peso" />
+      <!-- Características -->
+      <div class="form-section">
+        <h2><i data-lucide="users"></i> Características</h2>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="raca">
+              <i data-lucide="crown"></i>
+              Raça
+            </label>
+            <input type="text" id="raca" placeholder="Ex: Humano, Elfo" />
+          </div>
+          <div class="input-group">
+            <label for="alinhamento">
+              <i data-lucide="compass"></i>
+              Alinhamento
+            </label>
+            <input type="text" id="alinhamento" placeholder="Ex: Leal e Bom" />
+          </div>
+          <div class="input-group">
+            <label for="pontos_experiencia">
+              <i data-lucide="star"></i>
+              Pontos de Experiência
+            </label>
+            <input type="number" id="pontos_experiencia" placeholder="0" min="0" />
+          </div>
         </div>
       </div>
 
-      <div class="linha">
-        <div class="campo">
-          <label for="olhos">Cor dos Olhos</label>
-          <input type="text" id="cor_olhos" />
-        </div>
-        <div class="campo">
-          <label for="pele">Cor da Pele</label>
-          <input type="text" id="cor_pele" />
-        </div>
-        <div class="campo">
-          <label for="cabelo">Cor do Cabelo</label>
-          <input type="text" id="cor_cabelo" />
+      <!-- Atributos de Combate -->
+      <div class="form-section">
+        <h2><i data-lucide="shield"></i> Atributos de Combate</h2>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="classe-armadura">
+              <i data-lucide="shield-check"></i>
+              Classe de Armadura
+            </label>
+            <input type="number" id="classe-armadura" placeholder="10" min="1" />
+          </div>
+          <div class="input-group">
+            <label for="iniciativa">
+              <i data-lucide="zap"></i>
+              Iniciativa
+            </label>
+            <input type="number" id="iniciativa" placeholder="0" />
+          </div>
+          <div class="input-group">
+            <label for="deslocamento">
+              <i data-lucide="move"></i>
+              Deslocamento
+            </label>
+            <input type="number" id="deslocamento" placeholder="30" min="0" />
+          </div>
         </div>
       </div>
 
-      <div class="area-grande">
-        <label for="caracteristicas-adicionais">Características Adicionais</label>
-        <input type="text" id="caracteristicas-adicionais" />
+      <!-- Pontos de Vida -->
+      <div class="form-section">
+        <h2><i data-lucide="heart"></i> Pontos de Vida</h2>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="pontos_vida_max">
+              <i data-lucide="heart-pulse"></i>
+              Pontos de Vida Máximos
+            </label>
+            <input type="number" id="pontos_vida_max" placeholder="8" min="1" />
+          </div>
+          <div class="input-group">
+            <label for="pontos_vida_atual">
+              <i data-lucide="activity"></i>
+              Pontos de Vida Atuais
+            </label>
+            <input type="number" id="pontos_vida_atual" placeholder="8" min="0" />
+          </div>
+          <div class="input-group">
+            <label for="pontos_vida_temp">
+              <i data-lucide="plus-circle"></i>
+              Pontos de Vida Temporários
+            </label>
+            <input type="number" id="pontos_vida_temp" placeholder="0" min="0" />
+          </div>
+        </div>
       </div>
 
-      <div class="botoes-acao" style="display: flex; gap: 15px; margin-top: 20px;">
-        <button id="btn-salvar" type="button" class="btn-salvar">Salvar Alterações</button>
-        <button onclick="voltarParaVisualizacao()" type="button" class="btn-cancelar">Cancelar</button>
+      <!-- Testes de Morte -->
+      <div class="form-section">
+        <h2><i data-lucide="skull"></i> Testes Contra a Morte</h2>
+        <div class="death-saves">
+          <div class="save-group">
+            <label for="dado-vida">
+              <i data-lucide="dice-6"></i>
+              Dado de Vida
+            </label>
+            <input type="text" id="dado-vida" placeholder="1d8" />
+          </div>
+          <div class="saves-checkboxes">
+            <div class="save-type">
+              <h3><i data-lucide="check-circle"></i> Sucessos</h3>
+              <div class="checkboxes">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="sucesso1" />
+                  <span class="checkmark success"></span>
+                  1º Sucesso
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="sucesso2" />
+                  <span class="checkmark success"></span>
+                  2º Sucesso
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="sucesso3" />
+                  <span class="checkmark success"></span>
+                  3º Sucesso
+                </label>
+              </div>
+            </div>
+            <div class="save-type">
+              <h3><i data-lucide="x-circle"></i> Falhas</h3>
+              <div class="checkboxes">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="falha1" />
+                  <span class="checkmark failure"></span>
+                  1ª Falha
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="falha2" />
+                  <span class="checkmark failure"></span>
+                  2ª Falha
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="falha3" />
+                  <span class="checkmark failure"></span>
+                  3ª Falha
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </main>
 
+      <!-- Personalidade -->
+      <div class="form-section">
+        <h2><i data-lucide="brain"></i> Personalidade</h2>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="traços_personalidade">
+              <i data-lucide="smile"></i>
+              Traços de Personalidade
+            </label>
+            <input type="text" id="traços_personalidade" placeholder="Ex: Corajoso, Leal" />
+          </div>
+          <div class="input-group">
+            <label for="ideais">
+              <i data-lucide="target"></i>
+              Ideais
+            </label>
+            <input type="text" id="ideais" placeholder="Ex: Justiça, Liberdade" />
+          </div>
+          <div class="input-group">
+            <label for="vínculos">
+              <i data-lucide="link"></i>
+              Vínculos
+            </label>
+            <input type="text" id="vínculos" placeholder="Ex: Família, Honra" />
+          </div>
+          <div class="input-group">
+            <label for="fraquezas">
+              <i data-lucide="alert-triangle"></i>
+              Fraquezas
+            </label>
+            <input type="text" id="fraquezas" placeholder="Ex: Teimoso, Impulsivo" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Características Físicas -->
+      <div class="form-section">
+        <h2><i data-lucide="eye"></i> Características Físicas</h2>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="idade">
+              <i data-lucide="calendar"></i>
+              Idade
+            </label>
+            <input type="number" id="idade" placeholder="25" min="1" />
+          </div>
+          <div class="input-group">
+            <label for="altura">
+              <i data-lucide="ruler"></i>
+              Altura
+            </label>
+            <input type="text" id="altura" placeholder="1,75m" />
+          </div>
+          <div class="input-group">
+            <label for="peso">
+              <i data-lucide="weight"></i>
+              Peso
+            </label>
+            <input type="text" id="peso" placeholder="70kg" />
+          </div>
+          <div class="input-group">
+            <label for="cor_olhos">
+              <i data-lucide="eye"></i>
+              Cor dos Olhos
+            </label>
+            <input type="text" id="cor_olhos" placeholder="Castanhos" />
+          </div>
+          <div class="input-group">
+            <label for="cor_pele">
+              <i data-lucide="palette"></i>
+              Cor da Pele
+            </label>
+            <input type="text" id="cor_pele" placeholder="Morena" />
+          </div>
+          <div class="input-group">
+            <label for="cor_cabelo">
+              <i data-lucide="scissors"></i>
+              Cor do Cabelo
+            </label>
+            <input type="text" id="cor_cabelo" placeholder="Preto" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Características Adicionais -->
+      <div class="form-section">
+        <h2><i data-lucide="file-text"></i> Características Adicionais</h2>
+        <div class="input-group full-width">
+          <label for="caracteristicas-adicionais">
+            <i data-lucide="pen-tool"></i>
+            Descreva características especiais, marcas distintivas, etc.
+          </label>
+          <textarea id="caracteristicas-adicionais" rows="3" placeholder="Ex: Cicatriz no rosto, tatuagem no braço..."></textarea>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="action-section">
+        <button id="btn-salvar" type="button" class="btn btn-success">
+          <i data-lucide="save"></i>
+          Salvar Alterações
+        </button>
+        <button onclick="voltarParaVisualizacao()" type="button" class="btn btn-danger">
+          <i data-lucide="x"></i>
+          Cancelar
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Navbar -->
   <div class="navbar">
     <button data-aba="personagem" onclick="irPara('/personagens')">
       <i data-lucide="user"></i>
@@ -220,16 +356,20 @@
   </div>
 
   <script>
-    // Função de verificação de autenticação inline
+    // 🚀 URL DINÂMICA - Funciona automaticamente em qualquer ambiente
+    const API_URL = window.location.origin;
+
+    // Função de verificação de autenticação
     async function verificarAutenticacao() {
       const token = localStorage.getItem("token");
       if (!token) {
         window.location.href = "/";
-        return;
+        return false;
       }
 
       try {
-        const res = await fetch("https://dndapp-0f3t.onrender.com/profile", {
+        // 🎯 Usando URL dinâmica para verificar perfil
+        const res = await fetch(`${API_URL}/profile`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -238,11 +378,13 @@
         if (!res.ok) {
           localStorage.removeItem("token");
           window.location.href = "/";
-          return;
+          return false;
         }
+        return true;
       } catch (error) {
         localStorage.removeItem("token");
         window.location.href = "/";
+        return false;
       }
     }
 
@@ -267,7 +409,7 @@
 
     // Função para pegar valor de texto
     function getTextValue(id) {
-      return document.getElementById(id).value || "";
+      return document.getElementById(id).value.trim() || "";
     }
 
     // Função para definir valor nos campos
@@ -288,13 +430,14 @@
       const token = localStorage.getItem('token');
 
       if (!characterId) {
-        alert('Nenhum personagem selecionado');
+        alert('Nenhum personagem selecionado para edição.');
         window.location.href = '/personagens';
         return;
       }
 
       try {
-        const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+        // 🎯 Usando URL dinâmica para carregar dados do personagem
+        const response = await fetch(`${API_URL}/characters/${characterId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -306,12 +449,12 @@
           const personagem = data.character;
           preencherFormulario(personagem);
         } else {
-          alert('Erro ao carregar dados do personagem');
-          window.location.href = '/personagens';
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erro ao carregar dados');
         }
       } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao carregar dados do personagem');
+        console.error('Erro ao carregar personagem:', error);
+        alert('Erro ao carregar dados do personagem: ' + error.message);
         window.location.href = '/personagens';
       }
     }
@@ -366,9 +509,22 @@
       document.getElementById('formulario-edicao').style.display = 'block';
     }
 
+    // Validar formulário
+    function validarFormulario() {
+      const nome = getTextValue("nome-personagem");
+      if (!nome) {
+        alert("Por favor, digite o nome do personagem.");
+        document.getElementById("nome-personagem").focus();
+        return false;
+      }
+      return true;
+    }
+
     // Event listener do botão salvar
     document.getElementById("btn-salvar").addEventListener("click", async function (event) {
       event.preventDefault();
+
+      if (!validarFormulario()) return;
 
       const token = localStorage.getItem("token");
       const characterId = localStorage.getItem('selectedCharacterId');
@@ -384,16 +540,9 @@
         return;
       }
 
-      // Validação básica
-      const nome = getTextValue("nome-personagem");
-      if (!nome.trim()) {
-        alert("Por favor, digite o nome do personagem.");
-        return;
-      }
-
       // Montar objeto do personagem
       const personagem = {
-        nome: nome,
+        nome: getTextValue("nome-personagem"),
         classe_nivel: getTextValue("classe-nivel"),
         antecedente: getTextValue("antecedente"),
         nome_jogador: getTextValue("nome-jogador"),
@@ -435,10 +584,11 @@
       // Desabilitar botão durante o envio
       const btnSalvar = document.getElementById("btn-salvar");
       btnSalvar.disabled = true;
-      btnSalvar.textContent = "Salvando...";
+      btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Salvando...';
 
       try {
-        const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+        // 🎯 Usando URL dinâmica para atualizar personagem
+        const response = await fetch(`${API_URL}/characters/${characterId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -449,112 +599,566 @@
 
         if (response.ok) {
           const data = await response.json();
-          alert("Personagem atualizado com sucesso!");
+          alert(`🎉 Personagem "${personagem.nome}" atualizado com sucesso!`);
           window.location.href = "/visualizar-personagem";
         } else {
           const errorData = await response.json();
-          alert("Erro ao atualizar personagem: " + (errorData.error || "Erro desconhecido"));
+          throw new Error(errorData.error || "Erro desconhecido ao atualizar personagem");
         }
       } catch (error) {
-        console.error("Erro de rede:", error);
-        alert("Erro de conexão. Verifique se o servidor está funcionando.");
+        console.error("Erro ao atualizar personagem:", error);
+        alert("Erro ao atualizar personagem: " + error.message);
       } finally {
         // Reabilitar botão
         btnSalvar.disabled = false;
-        btnSalvar.textContent = "Salvar Alterações";
+        btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Alterações';
+        lucide.createIcons();
       }
     });
 
     // Inicializar página
     document.addEventListener('DOMContentLoaded', async () => {
-      await verificarAutenticacao();
-      await carregarDadosParaEdicao();
+      const autenticado = await verificarAutenticacao();
+      if (autenticado) {
+        await carregarDadosParaEdicao();
+      }
       lucide.createIcons();
     });
   </script>
 
   <style>
-    /* Estilos para os checkboxes */
-    .checkboxes {
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 20px 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      color: #667eea;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #666 0%, #555 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 102, 102, 0.3);
+    }
+
+    .btn-back i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .spacer {
+      width: 120px;
+    }
+
+    /* Loading State */
+    .loading-state {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 60px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      color: #667eea;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-content p {
+      color: #666;
+      font-size: 16px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Main Content */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    /* Character Name Section */
+    .character-name-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-group.featured input {
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      border: 3px solid #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Form Sections */
+    .form-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section h2 {
+      color: #333;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .form-section h2 i {
+      width: 24px;
+      height: 24px;
+      color: #667eea;
+    }
+
+    /* Form Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    /* Input Groups */
+    .input-group {
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .checkbox-item {
+    .input-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .input-group label {
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .checkbox-item input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      margin: 0;
-    }
-
-    .checkbox-item label {
-      margin: 0;
-      font-weight: normal;
-      cursor: pointer;
-    }
-
-    .btn-voltar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background-color: #666;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+      font-weight: 600;
+      color: #555;
       font-size: 14px;
     }
 
-    .btn-voltar:hover {
-      background-color: #555;
+    .input-group label i {
+      width: 16px;
+      height: 16px;
+      color: #667eea;
     }
 
-    .btn-salvar {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
+    .input-group input,
+    .input-group textarea {
+      padding: 12px 16px;
+      border: 2px solid #e1e5e9;
+      border-radius: 12px;
       font-size: 16px;
-      cursor: pointer;
-      padding: 12px 24px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-group textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    /* Death Saves */
+    .death-saves {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .save-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .save-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .saves-checkboxes {
+      display: flex;
+      gap: 30px;
+    }
+
+    .save-type {
       flex: 1;
     }
 
-    .btn-salvar:hover {
-      background-color: #45a049;
+    .save-type h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 15px;
     }
 
-    .btn-salvar:disabled {
-      background-color: #ccc;
+    .save-type h3 i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      color: #555;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-label:hover {
+      color: #333;
+    }
+
+    .checkbox-label input {
+      display: none;
+    }
+
+    .checkmark {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .checkmark.success {
+      border-color: #4CAF50;
+    }
+
+    .checkmark.failure {
+      border-color: #f44336;
+    }
+
+    .checkbox-label input:checked + .checkmark.success {
+      background: #4CAF50;
+      border-color: #4CAF50;
+    }
+
+    .checkbox-label input:checked + .checkmark.failure {
+      background: #f44336;
+      border-color: #f44336;
+    }
+
+    .checkbox-label input:checked + .checkmark::after {
+      content: '✓';
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Action Section */
+    .action-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-success:disabled {
+      opacity: 0.7;
       cursor: not-allowed;
+      transform: none;
     }
 
-    .btn-cancelar {
-      background-color: #f44336;
+    .btn-danger {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      padding: 12px 24px;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(244, 67, 54, 0.4);
+    }
+
+    /* Spinner */
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      border-top: 1px solid #e1e5e9;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar button {
       flex: 1;
-    }
-
-    .btn-cancelar:hover {
-      background-color: #da190b;
-    }
-
-    .loading {
+      padding: 8px 0;
+      background: none;
+      border: none;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .navbar button i {
+      width: 20px;
+      height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .navbar button.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      font-weight: bold;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .navbar button:hover:not(.active) {
+      color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .header-nav {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .spacer {
+        display: none;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .death-saves {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .saves-checkboxes {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .action-section {
+        flex-direction: column;
+      }
+
+      .input-group.featured input {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-content {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .header-icon {
+        width: 28px;
+        height: 28px;
+      }
+
+      .btn-back {
+        align-self: flex-start;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-section {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .character-name-section {
+      animation: fadeInUp 0.4s ease-out;
+    }
+
+    .action-section {
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .loading-state {
+      animation: fadeInUp 0.4s ease-out;
     }
   </style>
 </body>
-
 </html>

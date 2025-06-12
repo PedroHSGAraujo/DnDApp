@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Atributos do Personagem</title>
-    <link rel="stylesheet" href="css/atributos.css">
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
@@ -25,115 +24,141 @@
 
     <!-- Loading -->
     <div id="loading" class="loading" style="display: block;">
-        <p>Carregando atributos do personagem...</p>
+        <div class="loading-content">
+            <i data-lucide="loader-2" class="loading-spinner"></i>
+            <p>Carregando atributos do personagem...</p>
+        </div>
     </div>
 
     <!-- Conteúdo principal -->
-    <div id="conteudo-atributos" style="display: none;">
-        <div class="linha">
-            <div class="campo">
-                <label for="forca">Força</label>
-                <input type="number" id="forca" min="1" max="30" value="10" />
-            </div>
-            <div class="campo">
-                <label for="destreza">Destreza</label>
-                <input type="number" id="destreza" min="1" max="30" value="10" />
-            </div>
-            <div class="campo">
-                <label for="constituicao">Constituição</label>
-                <input type="number" id="constituicao" min="1" max="30" value="10" />
-            </div>
-            <div class="campo">
-                <label for="inteligencia">Inteligência</label>
-                <input type="number" id="inteligencia" min="1" max="30" value="10" />
-            </div>
-            <div class="campo">
-                <label for="sabedoria">Sabedoria</label>
-                <input type="number" id="sabedoria" min="1" max="30" value="10" />
-            </div>
-            <div class="campo">
-                <label for="carisma">Carisma</label>
-                <input type="number" id="carisma" min="1" max="30" value="10" />
-            </div>
-        </div>
-        <hr />
-
-        <div class="linha">
-            <div class="campo">
-                <label for="inspiracao">Inspiração</label>
-                <input type="number" id="inspiracao" min="0" value="0" />
-            </div>
-            <div class="campo">
-                <label for="bonus-proficiencia">Bônus de Proficiência</label>
-                <input type="number" id="bonus-proficiencia" min="2" value="2" />
-            </div>
-        </div>
-        <hr />
-
-        <div class="linha">
-            <div class="coluna">
-                <div class="coluna-titulo">Salvaguardas</div>
+    <div id="conteudo-atributos" class="container" style="display: none;">
+        <!-- Atributos Principais -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="user"></i>
+                Atributos Principais
+            </h2>
+            <div class="linha">
                 <div class="campo">
-                    <label for="salvaguarda-forca">Força</label>
-                    <input type="number" id="salvaguarda-forca" value="0" />
+                    <label for="forca">Força</label>
+                    <input type="number" id="forca" min="1" max="30" value="10" />
                 </div>
                 <div class="campo">
-                    <label for="salvaguarda-destreza">Destreza</label>
-                    <input type="number" id="salvaguarda-destreza" value="0" />
+                    <label for="destreza">Destreza</label>
+                    <input type="number" id="destreza" min="1" max="30" value="10" />
                 </div>
                 <div class="campo">
-                    <label for="salvaguarda-constituicao">Constituição</label>
-                    <input type="number" id="salvaguarda-constituicao" value="0" />
+                    <label for="constituicao">Constituição</label>
+                    <input type="number" id="constituicao" min="1" max="30" value="10" />
                 </div>
                 <div class="campo">
-                    <label for="salvaguarda-inteligencia">Inteligência</label>
-                    <input type="number" id="salvaguarda-inteligencia" value="0" />
+                    <label for="inteligencia">Inteligência</label>
+                    <input type="number" id="inteligencia" min="1" max="30" value="10" />
                 </div>
                 <div class="campo">
-                    <label for="salvaguarda-sabedoria">Sabedoria</label>
-                    <input type="number" id="salvaguarda-sabedoria" value="0" />
+                    <label for="sabedoria">Sabedoria</label>
+                    <input type="number" id="sabedoria" min="1" max="30" value="10" />
                 </div>
                 <div class="campo">
-                    <label for="salvaguarda-carisma">Carisma</label>
-                    <input type="number" id="salvaguarda-carisma" value="0" />
+                    <label for="carisma">Carisma</label>
+                    <input type="number" id="carisma" min="1" max="30" value="10" />
                 </div>
             </div>
         </div>
-        <hr />
 
-        <div class="linha">
-            <div class="coluna">
-                <div class="coluna-titulo">Perícias</div>
-
-                <div class="campo"><label>Acrobacia</label><input type="number" id="acrobacia" value="0" /></div>
-                <div class="campo"><label>Arcanismo</label><input type="number" id="arcanismo" value="0" /></div>
-                <div class="campo"><label>Atletismo</label><input type="number" id="atletismo" value="0" /></div>
-                <div class="campo"><label>Atuação</label><input type="number" id="atuacao" value="0" /></div>
-                <div class="campo"><label>Enganação</label><input type="number" id="enganacao" value="0" /></div>
-                <div class="campo"><label>Furtividade</label><input type="number" id="furtividade" value="0" /></div>
-                <div class="campo"><label>História</label><input type="number" id="historia" value="0" /></div>
-                <div class="campo"><label>Intimidação</label><input type="number" id="intimidacao" value="0" /></div>
-                <div class="campo"><label>Intuição</label><input type="number" id="intuicao" value="0" /></div>
-                <div class="campo"><label>Investigação</label><input type="number" id="investigacao" value="0" /></div>
-                <div class="campo"><label>Lidar com Animais</label><input type="number" id="lidar-com-animais"
-                        value="0" /></div>
-                <div class="campo"><label>Medicina</label><input type="number" id="medicina" value="0" /></div>
-                <div class="campo"><label>Natureza</label><input type="number" id="natureza" value="0" /></div>
-                <div class="campo"><label>Percepção</label><input type="number" id="percepcao" value="0" /></div>
-                <div class="campo"><label>Persuasão</label><input type="number" id="persuasao" value="0" /></div>
-                <div class="campo"><label>Prestidigitação</label><input type="number" id="prestidigitacao" value="0" />
+        <!-- Outros Atributos -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="star"></i>
+                Outros Atributos
+            </h2>
+            <div class="linha">
+                <div class="campo">
+                    <label for="inspiracao">Inspiração</label>
+                    <input type="number" id="inspiracao" min="0" value="0" />
                 </div>
-                <div class="campo"><label>Religião</label><input type="number" id="religiao" value="0" /></div>
-                <div class="campo"><label>Sobrevivência</label><input type="number" id="sobrevivencia" value="0" />
+                <div class="campo">
+                    <label for="bonus-proficiencia">Bônus de Proficiência</label>
+                    <input type="number" id="bonus-proficiencia" min="2" value="2" />
                 </div>
             </div>
         </div>
-        <hr />
+
+        <!-- Salvaguardas -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="shield"></i>
+                Salvaguardas
+            </h2>
+            <div class="linha">
+                <div class="coluna">
+                    <div class="campo">
+                        <label for="salvaguarda-forca">Força</label>
+                        <input type="number" id="salvaguarda-forca" value="0" />
+                    </div>
+                    <div class="campo">
+                        <label for="salvaguarda-destreza">Destreza</label>
+                        <input type="number" id="salvaguarda-destreza" value="0" />
+                    </div>
+                    <div class="campo">
+                        <label for="salvaguarda-constituicao">Constituição</label>
+                        <input type="number" id="salvaguarda-constituicao" value="0" />
+                    </div>
+                    <div class="campo">
+                        <label for="salvaguarda-inteligencia">Inteligência</label>
+                        <input type="number" id="salvaguarda-inteligencia" value="0" />
+                    </div>
+                    <div class="campo">
+                        <label for="salvaguarda-sabedoria">Sabedoria</label>
+                        <input type="number" id="salvaguarda-sabedoria" value="0" />
+                    </div>
+                    <div class="campo">
+                        <label for="salvaguarda-carisma">Carisma</label>
+                        <input type="number" id="salvaguarda-carisma" value="0" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perícias -->
+        <div class="card">
+            <h2 class="card-title">
+                <i data-lucide="list"></i>
+                Perícias
+            </h2>
+            <div class="linha">
+                <div class="coluna">
+                    <div class="campo"><label>Acrobacia</label><input type="number" id="acrobacia" value="0" /></div>
+                    <div class="campo"><label>Arcanismo</label><input type="number" id="arcanismo" value="0" /></div>
+                    <div class="campo"><label>Atletismo</label><input type="number" id="atletismo" value="0" /></div>
+                    <div class="campo"><label>Atuação</label><input type="number" id="atuacao" value="0" /></div>
+                    <div class="campo"><label>Enganação</label><input type="number" id="enganacao" value="0" /></div>
+                    <div class="campo"><label>Furtividade</label><input type="number" id="furtividade" value="0" /></div>
+                    <div class="campo"><label>História</label><input type="number" id="historia" value="0" /></div>
+                    <div class="campo"><label>Intimidação</label><input type="number" id="intimidacao" value="0" /></div>
+                    <div class="campo"><label>Intuição</label><input type="number" id="intuicao" value="0" /></div>
+                    <div class="campo"><label>Investigação</label><input type="number" id="investigacao" value="0" /></div>
+                    <div class="campo"><label>Lidar com Animais</label><input type="number" id="lidar-com-animais" value="0" /></div>
+                    <div class="campo"><label>Medicina</label><input type="number" id="medicina" value="0" /></div>
+                    <div class="campo"><label>Natureza</label><input type="number" id="natureza" value="0" /></div>
+                    <div class="campo"><label>Percepção</label><input type="number" id="percepcao" value="0" /></div>
+                    <div class="campo"><label>Persuasão</label><input type="number" id="persuasao" value="0" /></div>
+                    <div class="campo"><label>Prestidigitação</label><input type="number" id="prestidigitacao" value="0" /></div>
+                    <div class="campo"><label>Religião</label><input type="number" id="religiao" value="0" /></div>
+                    <div class="campo"><label>Sobrevivência</label><input type="number" id="sobrevivencia" value="0" /></div>
+                </div>
+            </div>
+        </div>
 
         <div class="botoes-acao">
-            <button id="btn-salvar-atributos" class="btn-salvar">Salvar Atributos</button>
-            <button onclick="continuarParaHabilidades()" class="btn-continuar" style="display: none;">Continuar para
-                Habilidades</button>
+            <button id="btn-salvar-atributos" class="btn-salvar">
+                <i data-lucide="save"></i>
+                Salvar Atributos
+            </button>
+            <button onclick="continuarParaHabilidades()" class="btn-continuar" style="display: none;">
+                <i data-lucide="arrow-right"></i>
+                Continuar para Habilidades
+            </button>
         </div>
     </div>
 
@@ -357,7 +382,7 @@
 
             const btnSalvar = document.getElementById('btn-salvar-atributos');
             btnSalvar.disabled = true;
-            btnSalvar.textContent = 'Salvando...';
+            btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
                 const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/attributes`, {
@@ -374,7 +399,7 @@
                     alert('Atributos salvos com sucesso!');
 
                     // Sempre mostrar botão continuar após salvar
-                    document.querySelector('.btn-continuar').style.display = 'inline-block';
+                    document.querySelector('.btn-continuar').style.display = 'inline-flex';
                 } else {
                     const errorData = await response.json();
                     alert('Erro ao salvar atributos: ' + (errorData.error || 'Erro desconhecido'));
@@ -384,7 +409,8 @@
                 alert('Erro de conexão ao salvar atributos');
             } finally {
                 btnSalvar.disabled = false;
-                btnSalvar.textContent = 'Salvar Atributos';
+                btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Atributos';
+                lucide.createIcons();
             }
         }
 
@@ -400,102 +426,367 @@
     </script>
 
     <style>
-        /* Estilos adicionais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
             margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
             margin: 0;
             flex: 1;
             text-align: center;
+            color: #333;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .btn-voltar {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 15px;
-            background-color: #666;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .btn-voltar:hover {
-            background-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .spacer {
             width: 80px;
-            /* Mesma largura do botão voltar para centralizar o título */
         }
 
+        /* Loading */
         .loading {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
             text-align: center;
-            padding: 50px;
-            color: #666;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
 
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-content p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .card-title i {
+            width: 24px;
+            height: 24px;
+            color: #667eea;
+        }
+
+        /* Layout */
+        .linha {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .campo {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .coluna {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 15px;
+        }
+
+        /* Form Elements */
+        label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid #e1e5e9;
+            font-size: 16px;
+            background: #fff;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="number"]:hover {
+            border-color: #a5b4fc;
+        }
+
+        /* Buttons */
         .botoes-acao {
             display: flex;
             gap: 15px;
             margin: 30px 0;
+            flex-wrap: wrap;
         }
 
         .btn-salvar,
         .btn-continuar {
-            padding: 12px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
             flex: 1;
+            justify-content: center;
+            min-width: 200px;
         }
 
         .btn-salvar {
-            background-color: #2196F3;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
         }
 
         .btn-salvar:hover {
-            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
         }
 
         .btn-salvar:disabled {
-            background-color: #ccc;
+            background: #ccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-continuar {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-continuar:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            border-top: 1px solid #e1e5e9;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar button {
+            flex: 1;
+            padding: 8px 0;
+            background: none;
+            border: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .navbar button i {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+        }
+
+        .navbar button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .navbar button:hover:not(.active) {
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 10px;
+                padding: 20px;
             }
 
             .spacer {
                 display: none;
             }
 
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .campo {
+                min-width: 150px;
+            }
+
             .botoes-acao {
                 flex-direction: column;
             }
+
+            .btn-salvar,
+            .btn-continuar {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .linha {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .campo {
+                min-width: unset;
+            }
+
+            .card-title {
+                font-size: 18px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            animation: fadeInUp 0.4s ease-out;
         }
     </style>
 </body>

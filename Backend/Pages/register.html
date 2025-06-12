@@ -2,135 +2,886 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registrar</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - D&D Character Manager</title>
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
     <div class="container">
-        <div class="logo">
-            <img src="assets/logo.png" alt="Logo do APP" class="logo-img">
+        <!-- Header com Logo -->
+        <div class="header">
+            <div class="logo">
+                <i data-lucide="shield" class="logo-icon"></i>
+                <h1>D&D Manager</h1>
+            </div>
+            <p class="subtitle">Crie sua conta e comece a aventura</p>
         </div>
 
-        <form class="form" id="registerForm">
-            <input type="text" placeholder="Nome de Usuário" name="username" required />
-            <input type="email" placeholder="E-mail" name="email" required />
-            <input type="password" placeholder="Senha" name="senha" required />
-            <input type="password" placeholder="Confirmar Senha" name="confirmar_senha" required />
-
-            <div class="links">
-                <a href="index.html">Já tem uma conta? Fazer Login</a>
+        <!-- Card de Registro -->
+        <div class="register-card">
+            <div class="card-header">
+                <i data-lucide="user-plus" class="card-icon"></i>
+                <h2>Criar nova conta</h2>
+                <p>Junte-se à comunidade de aventureiros</p>
             </div>
 
-            <button type="submit">Registrar</button>
-        </form>
-        <p id="message"></p>
-        <div id="message"></div>
+            <form id="registerForm" class="register-form">
+                <div class="input-group">
+                    <label for="username">
+                        <i data-lucide="user"></i>
+                        Nome de usuário
+                    </label>
+                    <input type="text" id="username" name="username" required placeholder="Escolha um nome único" autocomplete="username">
+                    <span class="input-hint">Mínimo 3 caracteres, sem espaços</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">
+                        <i data-lucide="mail"></i>
+                        Email
+                    </label>
+                    <input type="email" id="email" name="email" required placeholder="seu.email@exemplo.com" autocomplete="email">
+                    <span class="input-hint">Use um email válido e ativo</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">
+                        <i data-lucide="lock"></i>
+                        Senha
+                    </label>
+                    <div class="senha-field">
+                        <input type="password" id="senha" name="senha" required placeholder="Mínimo 6 caracteres" autocomplete="new-senha">
+                        <button type="button" class="toggle-senha" onclick="togglesenha('senha', 'eye-icon')">
+                            <i data-lucide="eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                    <div class="senha-strength" id="senhaStrength"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmsenha">
+                        <i data-lucide="shield-check"></i>
+                        Confirmar senha
+                    </label>
+                    <div class="senha-field">
+                        <input type="password" id="confirmsenha" name="confirmsenha" required placeholder="Digite a senha novamente" autocomplete="new-senha">
+                        <button type="button" class="toggle-senha" onclick="togglesenha('confirmsenha', 'eye-icon-2')">
+                            <i data-lucide="eye" id="eye-icon-2"></i>
+                        </button>
+                    </div>
+                    <span class="match-indicator" id="matchIndicator"></span>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" required>
+                        <span class="checkmark"></span>
+                        Aceito os <a href="#" class="link" onclick="mostrarTermos()">termos de uso</a> e <a href="#" class="link" onclick="mostrarPrivacidade()">política de privacidade</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-register" id="registerBtn">
+                    <i data-lucide="user-plus"></i>
+                    Criar conta
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>ou</span>
+            </div>
+
+            <div class="login-section">
+                <p>Já tem uma conta?</p>
+                <a href="/login" class="btn-login">
+                    <i data-lucide="log-in"></i>
+                    Fazer login
+                </a>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="benefits">
+            <div class="benefit">
+                <i data-lucide="zap"></i>
+                <h3>Criação Rápida</h3>
+                <p>Configure personagens em minutos</p>
+            </div>
+            <div class="benefit">
+                <i data-lucide="cloud"></i>
+                <h3>Sincronização</h3>
+                <p>Acesse de qualquer lugar</p>
+            </div>
+            <div class="benefit">
+                <i data-lucide="gift"></i>
+                <h3>Totalmente Grátis</h3>
+                <p>Sem taxas ou limitações</p>
+            </div>
+        </div>
     </div>
 
     <script>
-        document.getElementById("registerForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
+        // 🚀 URL DINÂMICA
+        const API_URL = window.location.origin;
 
-            const form = e.target;
-            const username = form.username.value;
-            const email = form.email.value;
-            const senha = form.senha.value;
-            const confirmarSenha = form.confirmar_senha.value;
-
-            const messageDiv = document.getElementById("message");
-
-            if (senha !== confirmarSenha) {
-                messageDiv.textContent = "As senhas não coincidem.";
-                messageDiv.style.color = "red";
-                return;
-            }
-
-            try {
-                const response = await fetch("https://dndapp-0f3t.onrender.com/register", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ username, email, senha }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    messageDiv.textContent = data.message;
-                    messageDiv.style.color = "green";
-                    // Redirecionar após alguns segundos
-                    setTimeout(() => {
-                        window.location.href = "/personagens";
-                    }, 1000);
-                } else {
-                    messageDiv.textContent = data.error || "Erro ao registrar";
-                    messageDiv.style.color = "red";
-                }
-            } catch (err) {
-                console.error("Erro na requisição:", err);
-                messageDiv.textContent = "Erro na conexão com o servidor.";
-                messageDiv.style.color = "red";
-            }
-        });
-
-        // Verificação quando usuário sai do campo de username ou email
-        document.querySelectorAll("input[name='username'], input[name='email']").forEach(input => {
-            input.addEventListener("blur", async () => {
-                const username = document.querySelector("input[name='username']").value;
-                const email = document.querySelector("input[name='email']").value;
-
-                try {
-                    const response = await fetch(`https://dndapp-0f3t.onrender.com/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
-                    const data = await response.json();
-
-                    if (data.exists) {
-                        document.getElementById("message").textContent = "Usuário ou e-mail já cadastrado";
-                        document.getElementById("message").style.color = "red";
+        // Verificar se já está logado
+        function verificarSeJaEstaLogado() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch(`${API_URL}/profile`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '/personagens';
                     } else {
-                        document.getElementById("message").textContent = "";
+                        localStorage.removeItem('token');
                     }
-                } catch (err) {
-                    console.error("Erro ao verificar usuário:", err);
-                }
-            });
-        });
-        const usernameInput = document.querySelector("input[name='username']");
-        const emailInput = document.querySelector("input[name='email']");
-        const messageBox = document.getElementById("message");
-
-        async function checkUserOrEmail() {
-            const username = usernameInput.value;
-            const email = emailInput.value;
-
-            if (!username && !email) return;
-
-            try {
-                const response = await fetch(`https://dndapp-0f3t.onrender.com/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
-                const data = await response.json();
-
-                if (data.exists) {
-                    messageBox.textContent = "Usuário ou e-mail já cadastrado";
-                    messageBox.style.color = "red";
-                } else {
-                    messageBox.textContent = "";
-                }
-            } catch (err) {
-                console.error("Erro ao verificar usuário:", err);
-                messageBox.textContent = "Erro ao verificar disponibilidade.";
-                messageBox.style.color = "orange";
+                }).catch(() => {
+                    localStorage.removeItem('token');
+                });
             }
         }
 
-        usernameInput.addEventListener("blur", checkUserOrEmail);
-        emailInput.addEventListener("blur", checkUserOrEmail);
+        function togglesenha(inputId, iconId) {
+            const senhaInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
+            
+            if (senhaInput.type === 'senha') {
+                senhaInput.type = 'text';
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                senhaInput.type = 'senha';
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function checksenhaStrength(senha) {
+            const strengthIndicator = document.getElementById('senhaStrength');
+            let strength = 0;
+            let text = '';
+            let color = '';
+
+            if (senha.length >= 6) strength++;
+            if (senha.match(/[a-z]+/)) strength++;
+            if (senha.match(/[A-Z]+/)) strength++;
+            if (senha.match(/[0-9]+/)) strength++;
+            if (senha.match(/[^a-zA-Z0-9]+/)) strength++;
+
+            switch (strength) {
+                case 0:
+                case 1:
+                    text = '🔴 Muito fraca';
+                    color = '#f44336';
+                    break;
+                case 2:
+                    text = '🟡 Fraca';
+                    color = '#ff9800';
+                    break;
+                case 3:
+                    text = '🟡 Média';
+                    color = '#ffeb3b';
+                    break;
+                case 4:
+                    text = '🟢 Forte';
+                    color = '#8bc34a';
+                    break;
+                case 5:
+                    text = '🟢 Muito forte';
+                    color = '#4caf50';
+                    break;
+            }
+
+            strengthIndicator.textContent = text;
+            strengthIndicator.style.color = color;
+            strengthIndicator.style.display = senha.length > 0 ? 'block' : 'none';
+        }
+
+        function checksenhaMatch() {
+            const senha = document.getElementById('senha').value;
+            const confirmsenha = document.getElementById('confirmsenha').value;
+            const matchIndicator = document.getElementById('matchIndicator');
+
+            if (confirmsenha.length === 0) {
+                matchIndicator.style.display = 'none';
+                return;
+            }
+
+            if (senha === confirmsenha) {
+                matchIndicator.textContent = '✅ Senhas coincidem';
+                matchIndicator.style.color = '#4caf50';
+            } else {
+                matchIndicator.textContent = '❌ Senhas não coincidem';
+                matchIndicator.style.color = '#f44336';
+            }
+            matchIndicator.style.display = 'block';
+        }
+
+        function validarUsername(username) {
+            if (username.length < 3) {
+                return 'Nome de usuário deve ter pelo menos 3 caracteres';
+            }
+            if (username.includes(' ')) {
+                return 'Nome de usuário não pode conter espaços';
+            }
+            if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+                return 'Nome de usuário pode conter apenas letras, números, _ e -';
+            }
+            return null;
+        }
+
+        function mostrarMensagem(texto, tipo = 'error') {
+            // Remover mensagem anterior se existir
+            const mensagemAnterior = document.querySelector('.message');
+            if (mensagemAnterior) {
+                mensagemAnterior.remove();
+            }
+
+            const mensagem = document.createElement('div');
+            mensagem.className = `message ${tipo}`;
+            mensagem.innerHTML = `
+                <i data-lucide="${tipo === 'success' ? 'check-circle' : 'alert-circle'}"></i>
+                <span>${texto}</span>
+            `;
+
+            const card = document.querySelector('.register-card');
+            card.insertBefore(mensagem, card.firstChild);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                if (mensagem.parentNode) {
+                    mensagem.remove();
+                }
+            }, 5000);
+        }
+
+        async function realizarRegistro(username, email, senha) {
+            try {
+                // Debug: Verificar se os dados estão corretos antes de enviar
+                console.log('Dados que serão enviados:', {
+                    username: username,
+                    email: email,
+                    senha: senha ? '[SENHA PRESENTE]' : '[SENHA AUSENTE]'
+                });
+
+                if (!username || !email || !senha) {
+                    throw new Error('Todos os campos são obrigatórios');
+                }
+
+                if (senha.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres');
+                }
+
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username: username.trim(), 
+                        email: email.trim(), 
+                        senha: senha 
+                    }),
+                });
+
+                const data = await response.json();
+                
+                // Debug: Mostrar resposta do servidor
+                console.log('Resposta do servidor:', {
+                    status: response.status,
+                    ok: response.ok,
+                    data: data
+                });
+
+                if (response.ok) {
+                    mostrarMensagem('🎉 Conta criada com sucesso! Redirecionando para o login...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                    
+                    return true;
+                } else {
+                    throw new Error(data.error || data.message || 'Erro ao criar conta');
+                }
+            } catch (error) {
+                console.error('Erro no registro:', error);
+                throw error;
+            }
+        }
+
+        function mostrarTermos() {
+            alert('Termos de Uso:\n\n1. Use a plataforma com responsabilidade\n2. Não compartilhe suas credenciais\n3. Respeite outros usuários\n4. Mantenha seus dados atualizados');
+        }
+
+        function mostrarPrivacidade() {
+            alert('Política de Privacidade:\n\n1. Seus dados são protegidos\n2. Não compartilhamos informações com terceiros\n3. Use cookies apenas para melhorar a experiência\n4. Você pode excluir sua conta a qualquer momento');
+        }
+
+        // Event listeners
+        document.getElementById('senha').addEventListener('input', (e) => {
+            checksenhaStrength(e.target.value);
+            checksenhaMatch();
+        });
+
+        document.getElementById('confirmsenha').addEventListener('input', checksenhaMatch);
+
+        document.getElementById('username').addEventListener('input', (e) => {
+            const username = e.target.value;
+            const hint = e.target.nextElementSibling;
+            
+            if (username.length > 0) {
+                const erro = validarUsername(username);
+                if (erro) {
+                    hint.textContent = erro;
+                    hint.style.color = '#f44336';
+                } else {
+                    hint.textContent = '✅ Nome de usuário válido';
+                    hint.style.color = '#4caf50';
+                }
+            } else {
+                hint.textContent = 'Mínimo 3 caracteres, sem espaços';
+                hint.style.color = '#666';
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value; // NÃO fazer trim na senha
+            const confirmsenha = document.getElementById('confirmsenha').value;
+            const terms = document.getElementById('terms').checked;
+            const registerBtn = document.getElementById('registerBtn');
+            
+            // Debug: Verificar valores dos campos
+            console.log('Valores do formulário:', {
+                username: username,
+                email: email,
+                senha: senha ? `[${senha.length} caracteres]` : '[VAZIO]',
+                confirmsenha: confirmsenha ? `[${confirmsenha.length} caracteres]` : '[VAZIO]',
+                terms: terms
+            });
+            
+            // Validações mais rigorosas
+            if (!username) {
+                mostrarMensagem('Nome de usuário é obrigatório.');
+                document.getElementById('username').focus();
+                return;
+            }
+
+            if (!email) {
+                mostrarMensagem('Email é obrigatório.');
+                document.getElementById('email').focus();
+                return;
+            }
+
+            if (!senha) {
+                mostrarMensagem('Senha é obrigatória.');
+                document.getElementById('senha').focus();
+                return;
+            }
+
+            if (!confirmsenha) {
+                mostrarMensagem('Confirmação de senha é obrigatória.');
+                document.getElementById('confirmsenha').focus();
+                return;
+            }
+
+            const usernameError = validarUsername(username);
+            if (usernameError) {
+                mostrarMensagem(usernameError);
+                document.getElementById('username').focus();
+                return;
+            }
+
+            if (!email.includes('@') || !email.includes('.')) {
+                mostrarMensagem('Por favor, digite um email válido.');
+                document.getElementById('email').focus();
+                return;
+            }
+
+            if (senha.length < 6) {
+                mostrarMensagem('A senha deve ter pelo menos 6 caracteres.');
+                document.getElementById('senha').focus();
+                return;
+            }
+
+            if (senha !== confirmsenha) {
+                mostrarMensagem('As senhas não coincidem.');
+                document.getElementById('confirmsenha').focus();
+                return;
+            }
+
+            if (!terms) {
+                mostrarMensagem('Você deve aceitar os termos de uso.');
+                document.getElementById('terms').focus();
+                return;
+            }
+
+            // Estado de carregamento
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Criando conta...';
+            lucide.createIcons();
+
+            try {
+                await realizarRegistro(username, email, senha);
+            } catch (error) {
+                mostrarMensagem(error.message || 'Erro ao criar conta. Tente novamente.');
+                console.error('Erro detalhado:', error);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i data-lucide="user-plus"></i> Criar conta';
+                lucide.createIcons();
+            }
+        });
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarSeJaEstaLogado();
+            lucide.createIcons();
+
+            // Focar no campo de username
+            document.getElementById('username').focus();
+        });
     </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Register Card */
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        .card-header h2 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message i {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .message.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* Form */
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .input-group label i {
+            width: 16px;
+            height: 16px;
+            color: #4CAF50;
+        }
+
+        .input-group input {
+            padding: 14px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .senha-field {
+            position: relative;
+        }
+
+        .toggle-senha {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-senha:hover {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .toggle-senha i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .senha-strength, .match-indicator {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .checkbox-group {
+            margin: 10px 0;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .checkbox-label input {
+            display: none;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .checkbox-label input:checked + .checkmark {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .checkbox-label input:checked + .checkmark::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-register {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-register:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-register i {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Login Section */
+        .login-section {
+            text-align: center;
+        }
+
+        .login-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .btn-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login i {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Benefits */
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .benefit {
+            text-align: center;
+            color: white;
+            padding: 15px;
+        }
+
+        .benefit i {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .benefit h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .benefit p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Spinner */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .register-card {
+                padding: 30px 25px;
+            }
+
+            .logo h1 {
+                font-size: 28px;
+            }
+
+            .benefits {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .benefits {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
 </body>
 
 </html>
