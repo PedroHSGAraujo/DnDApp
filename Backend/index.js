@@ -9,7 +9,6 @@ const jwt = require("jsonwebtoken");
 const characterRoutes = require('./characters')
 
 const cors = require('cors');
-const cors = require('cors');
 
 app.use(cors({
   origin: [
