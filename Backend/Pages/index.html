@@ -33,7 +33,7 @@
             const username = document.querySelector("input[name='username']").value;
             const senha = document.querySelector("input[name='senha']").value;
 
-            const response = await fetch("http://localhost:3000/login", {
+            const response = await fetch("http://dndapp-0f3t.onrender.com/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, senha }),
