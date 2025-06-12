@@ -106,7 +106,7 @@
             }
 
             try {
-                const res = await fetch("http://dndapp-0f3t.onrender.com/profile", {
+                const res = await fetch("https://dndapp-0f3t.onrender.com/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -187,7 +187,7 @@
 
             try {
                 // Primeiro, carregar dados básicos do personagem
-                const characterResponse = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+                const characterResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -200,7 +200,7 @@
                 }
 
                 // Tentar carregar inventário existente
-                const inventoryResponse = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
+                const inventoryResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -331,7 +331,7 @@
             btnSalvar.textContent = 'Salvando...';
 
             try {
-                const response = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
+                const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
