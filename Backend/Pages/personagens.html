@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Personagens</title>
   <link rel="stylesheet" href="css/personagens.css" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <script src="https://unpkg.com/lucide@latest"></script>
 
 </head>
@@ -93,9 +96,9 @@
         if (response.ok) {
           const data = await response.json();
           const personagens = data.characters;
-          
+
           const lista = document.getElementById("lista-personagens");
-          
+
           if (personagens.length === 0) {
             lista.innerHTML = "<p>Você ainda não criou nenhum personagem.</p>";
           } else {
@@ -123,7 +126,7 @@
     function selecionarPersonagem(characterId) {
       // Definir este personagem como ativo
       localStorage.setItem('selectedCharacterId', characterId);
-      
+
       // Ir para a página de visualização do personagem
       irPara('/visualizar-personagem');
     }

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Magias</title>
     <link rel="stylesheet" href="css/magias.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -58,7 +61,8 @@
 
         <div class="botoes-acao">
             <button class="btn-salvar" id="btn-salvar-magias">Salvar Magias</button>
-            <button onclick="continuarParaInventario()" class="btn-continuar" style="display: none;">Continuar para Inventário</button>
+            <button onclick="continuarParaInventario()" class="btn-continuar" style="display: none;">Continuar para
+                Inventário</button>
         </div>
     </div>
 
@@ -131,7 +135,7 @@
         // Gerar blocos de magia para os níveis 1-9
         function gerarBlocosMagia() {
             const container = document.getElementById('niveis-magias');
-            
+
             for (let nivel = 1; nivel <= 9; nivel++) {
                 const bloco = document.createElement('div');
                 bloco.className = 'bloco-magia';
@@ -302,7 +306,7 @@
             // Preencher truques
             const trequesContainer = document.getElementById('truques-container');
             trequesContainer.innerHTML = '';
-            
+
             if (magias.truques && magias.truques.length > 0) {
                 magias.truques.forEach(truque => {
                     const linha = document.createElement('div');
@@ -328,14 +332,14 @@
                 // Espaços de magia
                 const totalInput = document.getElementById(`nivel-${nivel}-total`);
                 const usadosInput = document.getElementById(`nivel-${nivel}-usados`);
-                
+
                 if (totalInput) totalInput.value = magias[`nivel_${nivel}_espacos_total`] || '';
                 if (usadosInput) usadosInput.value = magias[`nivel_${nivel}_espacos_usados`] || '';
 
                 // Magias do nível
                 const container = document.getElementById(`nivel-${nivel}-magias`);
                 container.innerHTML = '';
-                
+
                 const magiasNivel = magias[`nivel_${nivel}_magias`];
                 if (magiasNivel && magiasNivel.length > 0) {
                     magiasNivel.forEach(magia => {
@@ -378,7 +382,7 @@
             for (let nivel = 1; nivel <= 9; nivel++) {
                 const totalElement = document.getElementById(`nivel-${nivel}-total`);
                 const usadosElement = document.getElementById(`nivel-${nivel}-usados`);
-                
+
                 magias[`nivel_${nivel}_espacos_total`] = totalElement ? parseInt(totalElement.value) || 0 : 0;
                 magias[`nivel_${nivel}_espacos_usados`] = usadosElement ? parseInt(usadosElement.value) || 0 : 0;
                 magias[`nivel_${nivel}_magias`] = coletarMagiasNivel(nivel);
@@ -401,7 +405,7 @@
                 if (response.ok) {
                     const data = await response.json();
                     alert('Magias salvas com sucesso!');
-                    
+
                     // Sempre mostrar botão continuar após salvar
                     document.querySelector('.btn-continuar').style.display = 'inline-block';
                 } else {
@@ -589,7 +593,8 @@
             margin: 30px 0;
         }
 
-        .btn-salvar, .btn-continuar {
+        .btn-salvar,
+        .btn-continuar {
             padding: 12px 24px;
             border: none;
             border-radius: 8px;

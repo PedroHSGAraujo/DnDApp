@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Personagem</title>
   <link rel="stylesheet" href="css/novo-personagem.css" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -364,12 +367,12 @@
     }
 
     // Event listener do botão salvar
-    document.getElementById("btn-salvar").addEventListener("click", async function(event) {
+    document.getElementById("btn-salvar").addEventListener("click", async function (event) {
       event.preventDefault();
-      
+
       const token = localStorage.getItem("token");
       const characterId = localStorage.getItem('selectedCharacterId');
-      
+
       if (!token) {
         alert("Você precisa estar logado para editar um personagem.");
         window.location.href = "/login";
@@ -404,7 +407,7 @@
         pontos_vida_atual: getNumberValue("pontos_vida_atual"),
         pontos_vida_temp: getNumberValue("pontos_vida_temp"),
         dado_vida: getTextValue("dado-vida"),
-        
+
         // Checkboxes
         sucesso1: getCheckboxValue("sucesso1"),
         sucesso2: getCheckboxValue("sucesso2"),
@@ -412,13 +415,13 @@
         falha1: getCheckboxValue("falha1"),
         falha2: getCheckboxValue("falha2"),
         falha3: getCheckboxValue("falha3"),
-        
+
         // Personalidade
         traços_personalidade: getTextValue("traços_personalidade"),
         ideais: getTextValue("ideais"),
         vínculos: getTextValue("vínculos"),
         fraquezas: getTextValue("fraquezas"),
-        
+
         // Físico
         idade: getNumberValue("idade"),
         altura: getTextValue("altura"),

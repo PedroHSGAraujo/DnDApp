@@ -5,6 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inventário</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/inventario.css">
 </head>
@@ -65,7 +68,8 @@
 
         <div class="botoes-acao">
             <button class="btn-salvar" id="btn-salvar-inventario">Salvar Inventário</button>
-            <button onclick="finalizarPersonagem()" class="btn-finalizar" style="display: none;">✅ Personagem Completo!</button>
+            <button onclick="finalizarPersonagem()" class="btn-finalizar" style="display: none;">✅ Personagem
+                Completo!</button>
         </div>
     </div>
 
@@ -163,7 +167,7 @@
                 </div>
             `;
             lista.appendChild(novoEquipamento);
-            
+
             // Re-inicializar ícones do Lucide
             lucide.createIcons();
         }
@@ -343,7 +347,7 @@
                 if (response.ok) {
                     const data = await response.json();
                     alert('Inventário salvo com sucesso!');
-                    
+
                     // Mostrar botão de finalização
                     document.querySelector('.btn-finalizar').style.display = 'inline-block';
                 } else {
@@ -540,7 +544,8 @@
             margin: 30px 0;
         }
 
-        .btn-salvar, .btn-finalizar {
+        .btn-salvar,
+        .btn-finalizar {
             padding: 12px 24px;
             border: none;
             border-radius: 8px;

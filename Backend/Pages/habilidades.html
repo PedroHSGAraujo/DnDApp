@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Habilidades do Personagem</title>
     <link rel="stylesheet" href="css/habilidades.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -34,14 +37,17 @@
         <button class="btn-mais" onclick="adicionarLinhaAtaque()">+ Adicionar Ataque</button>
 
         <h2>Características & Talentos</h2>
-        <textarea class="textarea-grande" id="caracteristicas-talentos" placeholder="Ex: Sentidos aguçados, Visão no escuro, Fúria, Ação Extra, etc..."></textarea>
+        <textarea class="textarea-grande" id="caracteristicas-talentos"
+            placeholder="Ex: Sentidos aguçados, Visão no escuro, Fúria, Ação Extra, etc..."></textarea>
 
         <h2>Outras Proficiências & Idiomas</h2>
-        <textarea class="textarea-grande" id="outras-proficiencias" placeholder="Ex: Idiomas (Élfico, Anão), Ferramentas (Kit de Ladrão), Armaduras (Leve, Média), etc..."></textarea>
+        <textarea class="textarea-grande" id="outras-proficiencias"
+            placeholder="Ex: Idiomas (Élfico, Anão), Ferramentas (Kit de Ladrão), Armaduras (Leve, Média), etc..."></textarea>
 
         <div class="botoes-acao">
             <button class="btn-salvar" id="btn-salvar-habilidades">Salvar Habilidades</button>
-            <button onclick="continuarParaMagias()" class="btn-continuar" style="display: none;">Continuar para Magias</button>
+            <button onclick="continuarParaMagias()" class="btn-continuar" style="display: none;">Continuar para
+                Magias</button>
         </div>
     </div>
 
@@ -127,7 +133,7 @@
                 </button>
             `;
             lista.appendChild(novaLinha);
-            
+
             // Re-inicializar ícones do Lucide
             lucide.createIcons();
         }
@@ -282,7 +288,7 @@
                 if (response.ok) {
                     const data = await response.json();
                     alert('Habilidades salvas com sucesso!');
-                    
+
                     // Sempre mostrar botão continuar após salvar
                     document.querySelector('.btn-continuar').style.display = 'inline-block';
                 } else {
@@ -343,7 +349,8 @@
         }
 
         .spacer {
-            width: 80px; /* Mesma largura do botão voltar */
+            width: 80px;
+            /* Mesma largura do botão voltar */
         }
 
         .loading {
@@ -398,7 +405,8 @@
             margin: 30px 0;
         }
 
-        .btn-salvar, .btn-continuar {
+        .btn-salvar,
+        .btn-continuar {
             padding: 12px 24px;
             border: none;
             border-radius: 8px;

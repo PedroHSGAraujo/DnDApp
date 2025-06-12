@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Atributos do Personagem</title>
     <link rel="stylesheet" href="css/atributos.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
@@ -112,21 +115,25 @@
                 <div class="campo"><label>Intimidação</label><input type="number" id="intimidacao" value="0" /></div>
                 <div class="campo"><label>Intuição</label><input type="number" id="intuicao" value="0" /></div>
                 <div class="campo"><label>Investigação</label><input type="number" id="investigacao" value="0" /></div>
-                <div class="campo"><label>Lidar com Animais</label><input type="number" id="lidar-com-animais" value="0" /></div>
+                <div class="campo"><label>Lidar com Animais</label><input type="number" id="lidar-com-animais"
+                        value="0" /></div>
                 <div class="campo"><label>Medicina</label><input type="number" id="medicina" value="0" /></div>
                 <div class="campo"><label>Natureza</label><input type="number" id="natureza" value="0" /></div>
                 <div class="campo"><label>Percepção</label><input type="number" id="percepcao" value="0" /></div>
                 <div class="campo"><label>Persuasão</label><input type="number" id="persuasao" value="0" /></div>
-                <div class="campo"><label>Prestidigitação</label><input type="number" id="prestidigitacao" value="0" /></div>
+                <div class="campo"><label>Prestidigitação</label><input type="number" id="prestidigitacao" value="0" />
+                </div>
                 <div class="campo"><label>Religião</label><input type="number" id="religiao" value="0" /></div>
-                <div class="campo"><label>Sobrevivência</label><input type="number" id="sobrevivencia" value="0" /></div>
+                <div class="campo"><label>Sobrevivência</label><input type="number" id="sobrevivencia" value="0" />
+                </div>
             </div>
         </div>
         <hr />
-        
+
         <div class="botoes-acao">
             <button id="btn-salvar-atributos" class="btn-salvar">Salvar Atributos</button>
-            <button onclick="continuarParaHabilidades()" class="btn-continuar" style="display: none;">Continuar para Habilidades</button>
+            <button onclick="continuarParaHabilidades()" class="btn-continuar" style="display: none;">Continuar para
+                Habilidades</button>
         </div>
     </div>
 
@@ -365,7 +372,7 @@
                 if (response.ok) {
                     const data = await response.json();
                     alert('Atributos salvos com sucesso!');
-                    
+
                     // Sempre mostrar botão continuar após salvar
                     document.querySelector('.btn-continuar').style.display = 'inline-block';
                 } else {
@@ -426,7 +433,8 @@
         }
 
         .spacer {
-            width: 80px; /* Mesma largura do botão voltar para centralizar o título */
+            width: 80px;
+            /* Mesma largura do botão voltar para centralizar o título */
         }
 
         .loading {
@@ -441,7 +449,8 @@
             margin: 30px 0;
         }
 
-        .btn-salvar, .btn-continuar {
+        .btn-salvar,
+        .btn-continuar {
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
