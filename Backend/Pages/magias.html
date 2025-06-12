@@ -99,7 +99,7 @@
             }
 
             try {
-                const res = await fetch("http://localhost:3000/profile", {
+                const res = await fetch("http://dndapp-0f3t.onrender.com/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -241,7 +241,7 @@
 
             try {
                 // Primeiro, carregar dados básicos do personagem
-                const characterResponse = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                const characterResponse = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -257,7 +257,7 @@
                 gerarBlocosMagia();
 
                 // Tentar carregar magias existentes
-                const spellsResponse = await fetch(`http://localhost:3000/characters/${characterId}/spells`, {
+                const spellsResponse = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}/spells`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -389,7 +389,7 @@
             btnSalvar.textContent = 'Salvando...';
 
             try {
-                const response = await fetch(`http://localhost:3000/characters/${characterId}/spells`, {
+                const response = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}/spells`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
