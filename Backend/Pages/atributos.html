@@ -190,29 +190,39 @@
     </div>
 
     <script>
+        // 🚀 URL DINÂMICA - Detecta automaticamente o ambiente
+        const API_URL = window.location.origin;
+
         // Verificação de autenticação
         async function verificarAutenticacao() {
             const token = localStorage.getItem("token");
             if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
                 window.location.href = "/";
-                return;
+                return false;
             }
 
             try {
-                const res = await fetch("https://dndapp-0f3t.onrender.com/profile", {
+                const res = await fetch(`${API_URL}/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 if (!res.ok) {
+                    console.log('Token inválido, removendo e redirecionando');
                     localStorage.removeItem("token");
                     window.location.href = "/";
-                    return;
+                    return false;
                 }
+                
+                console.log('Autenticação verificada com sucesso');
+                return true;
             } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
                 localStorage.removeItem("token");
                 window.location.href = "/";
+                return false;
             }
         }
 
@@ -239,93 +249,143 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== CARREGANDO ATRIBUTOS ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
-                alert('Nenhum personagem selecionado');
+                console.log('Nenhum personagem selecionado');
+                alert('Nenhum personagem selecionado. Redirecionando...');
                 window.location.href = '/personagens';
                 return;
             }
 
+            if (!token) {
+                console.log('Token não encontrado');
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
+                return;
+            }
+
             try {
+                console.log('Buscando dados básicos do personagem...');
                 // Primeiro, carregar dados básicos do personagem
-                const characterResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+                const characterResponse = await fetch(`${API_URL}/characters/${characterId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
+
+                console.log('Status da resposta do personagem:', characterResponse.status);
 
                 if (characterResponse.ok) {
                     const characterData = await characterResponse.json();
+                    console.log('Dados do personagem recebidos:', characterData);
                     const personagem = characterData.character;
-                    document.getElementById('titulo-personagem').textContent = `Atributos - ${personagem.nome}`;
+                    
+                    if (personagem && personagem.nome) {
+                        document.getElementById('titulo-personagem').textContent = `Atributos - ${personagem.nome}`;
+                        console.log('Título atualizado para:', personagem.nome);
+                    }
+                } else {
+                    const errorText = await characterResponse.text();
+                    console.error('Erro ao buscar personagem:', characterResponse.status, errorText);
                 }
 
+                console.log('Buscando atributos existentes...');
                 // Tentar carregar atributos existentes
-                const attributesResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/attributes`, {
+                const attributesResponse = await fetch(`${API_URL}/characters/${characterId}/attributes`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('Status da resposta dos atributos:', attributesResponse.status);
+
                 if (attributesResponse.ok) {
                     const attributesData = await attributesResponse.json();
+                    console.log('Dados dos atributos recebidos:', attributesData);
                     const atributos = attributesData.attributes;
                     preencherAtributos(atributos);
                 } else {
-                    console.log('Nenhum atributo encontrado, usando valores padrão');
+                    const errorText = await attributesResponse.text();
+                    console.log('Nenhum atributo encontrado ou erro:', attributesResponse.status, errorText);
+                    console.log('Usando valores padrão');
                 }
 
                 // Mostrar conteúdo e esconder loading
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-atributos').style.display = 'block';
+                console.log('Interface atualizada - loading removido, conteúdo exibido');
 
             } catch (error) {
-                console.error('Erro ao carregar atributos:', error);
+                console.error('Erro detalhado ao carregar atributos:', error);
+                console.error('Stack trace:', error.stack);
+                
+                // Mostrar conteúdo mesmo com erro
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-atributos').style.display = 'block';
+                
+                alert('Erro ao carregar atributos: ' + error.message);
             }
         }
 
         // Preencher formulário com atributos existentes
         function preencherAtributos(atributos) {
-            // Atributos principais
-            document.getElementById('forca').value = atributos.forca || 10;
-            document.getElementById('destreza').value = atributos.destreza || 10;
-            document.getElementById('constituicao').value = atributos.constituicao || 10;
-            document.getElementById('inteligencia').value = atributos.inteligencia || 10;
-            document.getElementById('sabedoria').value = atributos.sabedoria || 10;
-            document.getElementById('carisma').value = atributos.carisma || 10;
+            if (!atributos) {
+                console.log('Nenhum atributo para preencher, usando valores padrão');
+                return;
+            }
 
-            // Outros
-            document.getElementById('inspiracao').value = atributos.inspiracao || 0;
-            document.getElementById('bonus-proficiencia').value = atributos.bonus_proficiencia || 2;
+            console.log('Preenchendo atributos:', atributos);
 
-            // Salvaguardas
-            document.getElementById('salvaguarda-forca').value = atributos.salvaguarda_forca || 0;
-            document.getElementById('salvaguarda-destreza').value = atributos.salvaguarda_destreza || 0;
-            document.getElementById('salvaguarda-constituicao').value = atributos.salvaguarda_constituicao || 0;
-            document.getElementById('salvaguarda-inteligencia').value = atributos.salvaguarda_inteligencia || 0;
-            document.getElementById('salvaguarda-sabedoria').value = atributos.salvaguarda_sabedoria || 0;
-            document.getElementById('salvaguarda-carisma').value = atributos.salvaguarda_carisma || 0;
+            try {
+                // Atributos principais
+                document.getElementById('forca').value = atributos.forca || 10;
+                document.getElementById('destreza').value = atributos.destreza || 10;
+                document.getElementById('constituicao').value = atributos.constituicao || 10;
+                document.getElementById('inteligencia').value = atributos.inteligencia || 10;
+                document.getElementById('sabedoria').value = atributos.sabedoria || 10;
+                document.getElementById('carisma').value = atributos.carisma || 10;
 
-            // Perícias
-            document.getElementById('acrobacia').value = atributos.acrobacia || 0;
-            document.getElementById('arcanismo').value = atributos.arcanismo || 0;
-            document.getElementById('atletismo').value = atributos.atletismo || 0;
-            document.getElementById('atuacao').value = atributos.atuacao || 0;
-            document.getElementById('enganacao').value = atributos.enganacao || 0;
-            document.getElementById('furtividade').value = atributos.furtividade || 0;
-            document.getElementById('historia').value = atributos.historia || 0;
-            document.getElementById('intimidacao').value = atributos.intimidacao || 0;
-            document.getElementById('intuicao').value = atributos.intuicao || 0;
-            document.getElementById('investigacao').value = atributos.investigacao || 0;
-            document.getElementById('lidar-com-animais').value = atributos.lidar_com_animais || 0;
-            document.getElementById('medicina').value = atributos.medicina || 0;
-            document.getElementById('natureza').value = atributos.natureza || 0;
-            document.getElementById('percepcao').value = atributos.percepcao || 0;
-            document.getElementById('persuasao').value = atributos.persuasao || 0;
-            document.getElementById('prestidigitacao').value = atributos.prestidigitacao || 0;
-            document.getElementById('religiao').value = atributos.religiao || 0;
-            document.getElementById('sobrevivencia').value = atributos.sobrevivencia || 0;
+                // Outros
+                document.getElementById('inspiracao').value = atributos.inspiracao || 0;
+                document.getElementById('bonus-proficiencia').value = atributos.bonus_proficiencia || 2;
+
+                // Salvaguardas
+                document.getElementById('salvaguarda-forca').value = atributos.salvaguarda_forca || 0;
+                document.getElementById('salvaguarda-destreza').value = atributos.salvaguarda_destreza || 0;
+                document.getElementById('salvaguarda-constituicao').value = atributos.salvaguarda_constituicao || 0;
+                document.getElementById('salvaguarda-inteligencia').value = atributos.salvaguarda_inteligencia || 0;
+                document.getElementById('salvaguarda-sabedoria').value = atributos.salvaguarda_sabedoria || 0;
+                document.getElementById('salvaguarda-carisma').value = atributos.salvaguarda_carisma || 0;
+
+                // Perícias
+                document.getElementById('acrobacia').value = atributos.acrobacia || 0;
+                document.getElementById('arcanismo').value = atributos.arcanismo || 0;
+                document.getElementById('atletismo').value = atributos.atletismo || 0;
+                document.getElementById('atuacao').value = atributos.atuacao || 0;
+                document.getElementById('enganacao').value = atributos.enganacao || 0;
+                document.getElementById('furtividade').value = atributos.furtividade || 0;
+                document.getElementById('historia').value = atributos.historia || 0;
+                document.getElementById('intimidacao').value = atributos.intimidacao || 0;
+                document.getElementById('intuicao').value = atributos.intuicao || 0;
+                document.getElementById('investigacao').value = atributos.investigacao || 0;
+                document.getElementById('lidar-com-animais').value = atributos.lidar_com_animais || 0;
+                document.getElementById('medicina').value = atributos.medicina || 0;
+                document.getElementById('natureza').value = atributos.natureza || 0;
+                document.getElementById('percepcao').value = atributos.percepcao || 0;
+                document.getElementById('persuasao').value = atributos.persuasao || 0;
+                document.getElementById('prestidigitacao').value = atributos.prestidigitacao || 0;
+                document.getElementById('religiao').value = atributos.religiao || 0;
+                document.getElementById('sobrevivencia').value = atributos.sobrevivencia || 0;
+
+                console.log('Atributos preenchidos com sucesso');
+            } catch (error) {
+                console.error('Erro ao preencher atributos:', error);
+            }
         }
 
         // Salvar atributos
@@ -333,8 +393,18 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== SALVANDO ATRIBUTOS ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
                 alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            if (!token) {
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
                 return;
             }
 
@@ -380,12 +450,15 @@
                 sobrevivencia: getNumericValue('sobrevivencia')
             };
 
+            console.log('Dados a serem enviados:', atributos);
+
             const btnSalvar = document.getElementById('btn-salvar-atributos');
             btnSalvar.disabled = true;
             btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
-                const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/attributes`, {
+                console.log('Enviando requisição para salvar atributos...');
+                const response = await fetch(`${API_URL}/characters/${characterId}/attributes`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -394,19 +467,32 @@
                     body: JSON.stringify(atributos)
                 });
 
+                console.log('Status da resposta:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Resposta de sucesso:', data);
                     alert('Atributos salvos com sucesso!');
 
                     // Sempre mostrar botão continuar após salvar
                     document.querySelector('.btn-continuar').style.display = 'inline-flex';
                 } else {
-                    const errorData = await response.json();
-                    alert('Erro ao salvar atributos: ' + (errorData.error || 'Erro desconhecido'));
+                    const errorData = await response.text();
+                    console.error('Erro na resposta:', response.status, errorData);
+                    
+                    let errorMessage = 'Erro desconhecido';
+                    try {
+                        const errorJson = JSON.parse(errorData);
+                        errorMessage = errorJson.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Erro HTTP ${response.status}: ${errorData}`;
+                    }
+                    
+                    alert('Erro ao salvar atributos: ' + errorMessage);
                 }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão ao salvar atributos');
+                console.error('Erro de rede:', error);
+                alert('Erro de conexão ao salvar atributos: ' + error.message);
             } finally {
                 btnSalvar.disabled = false;
                 btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Atributos';
@@ -419,8 +505,14 @@
 
         // Inicializar página
         document.addEventListener('DOMContentLoaded', async () => {
-            await verificarAutenticacao();
-            await carregarAtributos();
+            console.log('=== INICIALIZANDO PÁGINA DE ATRIBUTOS ===');
+            console.log('URL atual:', window.location.href);
+            console.log('API URL:', API_URL);
+            
+            const autenticado = await verificarAutenticacao();
+            if (autenticado) {
+                await carregarAtributos();
+            }
             lucide.createIcons();
         });
     </script>
@@ -790,5 +882,4 @@
         }
     </style>
 </body>
-
 </html>

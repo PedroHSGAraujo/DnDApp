@@ -121,29 +121,39 @@
     </div>
 
     <script>
+        // 🚀 URL DINÂMICA - Detecta automaticamente o ambiente
+        const API_URL = window.location.origin;
+
         // Verificação de autenticação
         async function verificarAutenticacao() {
             const token = localStorage.getItem("token");
             if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
                 window.location.href = "/";
-                return;
+                return false;
             }
 
             try {
-                const res = await fetch("https://dndapp-0f3t.onrender.com/profile", {
+                const res = await fetch(`${API_URL}/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 if (!res.ok) {
+                    console.log('Token inválido, removendo e redirecionando');
                     localStorage.removeItem("token");
                     window.location.href = "/";
-                    return;
+                    return false;
                 }
+                
+                console.log('Autenticação verificada com sucesso');
+                return true;
             } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
                 localStorage.removeItem("token");
                 window.location.href = "/";
+                return false;
             }
         }
 
@@ -245,6 +255,7 @@
                 }
             });
 
+            console.log('Truques coletados:', truques);
             return truques;
         }
 
@@ -265,6 +276,7 @@
                 }
             });
 
+            console.log(`Magias nível ${nivel} coletadas:`, magias);
             return magias;
         }
 
@@ -273,42 +285,74 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== CARREGANDO MAGIAS ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
-                alert('Nenhum personagem selecionado');
+                console.log('Nenhum personagem selecionado');
+                alert('Nenhum personagem selecionado. Redirecionando...');
                 window.location.href = '/personagens';
                 return;
             }
 
+            if (!token) {
+                console.log('Token não encontrado');
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
+                return;
+            }
+
             try {
+                console.log('Buscando dados básicos do personagem...');
                 // Primeiro, carregar dados básicos do personagem
-                const characterResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+                const characterResponse = await fetch(`${API_URL}/characters/${characterId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
+
+                console.log('Status da resposta do personagem:', characterResponse.status);
 
                 if (characterResponse.ok) {
                     const characterData = await characterResponse.json();
+                    console.log('Dados do personagem recebidos:', characterData);
                     const personagem = characterData.character;
-                    document.getElementById('titulo-personagem').textContent = `Magias - ${personagem.nome}`;
+                    
+                    if (personagem && personagem.nome) {
+                        document.getElementById('titulo-personagem').textContent = `Magias - ${personagem.nome}`;
+                        console.log('Título atualizado para:', personagem.nome);
+                    }
+                } else {
+                    const errorText = await characterResponse.text();
+                    console.error('Erro ao buscar personagem:', characterResponse.status, errorText);
                 }
 
                 // Gerar blocos de magia
+                console.log('Gerando blocos de magia...');
                 gerarBlocosMagia();
 
+                console.log('Buscando magias existentes...');
                 // Tentar carregar magias existentes
-                const spellsResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/spells`, {
+                const spellsResponse = await fetch(`${API_URL}/characters/${characterId}/spells`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('Status da resposta das magias:', spellsResponse.status);
+
                 if (spellsResponse.ok) {
                     const spellsData = await spellsResponse.json();
+                    console.log('Dados das magias recebidos:', spellsData);
                     const magias = spellsData.spells;
                     preencherMagias(magias);
                 } else {
-                    console.log('Nenhuma magia encontrada, usando valores padrão');
+                    const errorText = await spellsResponse.text();
+                    console.log('Nenhuma magia encontrada ou erro:', spellsResponse.status, errorText);
+                    console.log('Usando valores padrão - adicionando truques vazios');
                     // Adicionar alguns truques vazios
                     for (let i = 0; i < 3; i++) {
                         adicionarTruque();
@@ -318,82 +362,143 @@
                 // Mostrar conteúdo e esconder loading
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-magias').style.display = 'block';
+                console.log('Interface atualizada - loading removido, conteúdo exibido');
 
             } catch (error) {
-                console.error('Erro ao carregar magias:', error);
+                console.error('Erro detalhado ao carregar magias:', error);
+                console.error('Stack trace:', error.stack);
+                
+                // Mostrar conteúdo mesmo com erro
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-magias').style.display = 'block';
+                
+                // Gerar blocos e adicionar truques vazios em caso de erro
                 gerarBlocosMagia();
-                // Adicionar alguns truques vazios em caso de erro
                 for (let i = 0; i < 3; i++) {
                     adicionarTruque();
                 }
+                
+                alert('Erro ao carregar magias: ' + error.message);
             }
         }
 
         // Preencher formulário com magias existentes
         function preencherMagias(magias) {
-            // Informações básicas
-            document.getElementById('classe-conjuradora').value = magias.classe_conjuradora || '';
-            document.getElementById('cd-resistencia').value = magias.cd_resistencia || '';
-            document.getElementById('bonus-ataque-magia').value = magias.bonus_ataque_magia || '';
-            document.getElementById('habilidade-chave').value = magias.habilidade_chave || '';
-
-            // Preencher truques
-            const trequesContainer = document.getElementById('truques-container');
-            trequesContainer.innerHTML = '';
-
-            if (magias.truques && magias.truques.length > 0) {
-                magias.truques.forEach(truque => {
-                    const linha = document.createElement('div');
-                    linha.className = 'linha-magia';
-                    linha.innerHTML = `
-                        <input type="checkbox" class="checkbox-preparada" ${truque.preparada ? 'checked' : ''} />
-                        <input type="text" class="input-nome-magia" placeholder="Nome do truque" value="${truque.nome || ''}" />
-                        <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
-                            <i data-lucide="x"></i>
-                        </button>
-                    `;
-                    trequesContainer.appendChild(linha);
-                });
-            } else {
-                // Adicionar truques vazios se não houver
+            if (!magias) {
+                console.log('Nenhuma magia para preencher, usando valores padrão');
                 for (let i = 0; i < 3; i++) {
                     adicionarTruque();
                 }
+                return;
             }
 
-            // Preencher magias por nível
-            for (let nivel = 1; nivel <= 9; nivel++) {
-                // Espaços de magia
-                const totalInput = document.getElementById(`nivel-${nivel}-total`);
-                const usadosInput = document.getElementById(`nivel-${nivel}-usados`);
+            console.log('Preenchendo magias:', magias);
 
-                if (totalInput) totalInput.value = magias[`nivel_${nivel}_espacos_total`] || '';
-                if (usadosInput) usadosInput.value = magias[`nivel_${nivel}_espacos_usados`] || '';
+            try {
+                // Informações básicas
+                document.getElementById('classe-conjuradora').value = magias.classe_conjuradora || '';
+                document.getElementById('cd-resistencia').value = magias.cd_resistencia || '';
+                document.getElementById('bonus-ataque-magia').value = magias.bonus_ataque_magia || '';
+                document.getElementById('habilidade-chave').value = magias.habilidade_chave || '';
 
-                // Magias do nível
-                const container = document.getElementById(`nivel-${nivel}-magias`);
-                container.innerHTML = '';
+                // Preencher truques
+                const trequesContainer = document.getElementById('truques-container');
+                trequesContainer.innerHTML = '';
 
-                const magiasNivel = magias[`nivel_${nivel}_magias`];
-                if (magiasNivel && magiasNivel.length > 0) {
-                    magiasNivel.forEach(magia => {
+                let truquesParsed = [];
+                
+                // Tentar fazer parse dos truques se for string JSON
+                if (typeof magias.truques === 'string') {
+                    try {
+                        truquesParsed = JSON.parse(magias.truques);
+                    } catch (e) {
+                        console.log('Erro ao fazer parse dos truques JSON:', e);
+                        truquesParsed = [];
+                    }
+                } else if (Array.isArray(magias.truques)) {
+                    truquesParsed = magias.truques;
+                }
+
+                console.log('Truques processados:', truquesParsed);
+
+                if (truquesParsed && truquesParsed.length > 0) {
+                    truquesParsed.forEach(truque => {
                         const linha = document.createElement('div');
                         linha.className = 'linha-magia';
                         linha.innerHTML = `
-                            <input type="checkbox" class="checkbox-preparada" ${magia.preparada ? 'checked' : ''} />
-                            <input type="text" class="input-nome-magia" placeholder="Nome da magia" value="${magia.nome || ''}" />
+                            <input type="checkbox" class="checkbox-preparada" ${truque.preparada ? 'checked' : ''} />
+                            <input type="text" class="input-nome-magia" placeholder="Nome do truque" value="${truque.nome || ''}" />
                             <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
                                 <i data-lucide="x"></i>
                             </button>
                         `;
-                        container.appendChild(linha);
+                        trequesContainer.appendChild(linha);
                     });
+                } else {
+                    // Adicionar truques vazios se não houver
+                    console.log('Nenhum truque encontrado, adicionando truques vazios');
+                    for (let i = 0; i < 3; i++) {
+                        adicionarTruque();
+                    }
+                }
+
+                // Preencher magias por nível
+                for (let nivel = 1; nivel <= 9; nivel++) {
+                    // Espaços de magia
+                    const totalInput = document.getElementById(`nivel-${nivel}-total`);
+                    const usadosInput = document.getElementById(`nivel-${nivel}-usados`);
+
+                    if (totalInput) totalInput.value = magias[`nivel_${nivel}_espacos_total`] || '';
+                    if (usadosInput) usadosInput.value = magias[`nivel_${nivel}_espacos_usados`] || '';
+
+                    // Magias do nível
+                    const container = document.getElementById(`nivel-${nivel}-magias`);
+                    if (container) {
+                        container.innerHTML = '';
+
+                        let magiasNivel = [];
+                        const magiasData = magias[`nivel_${nivel}_magias`];
+                        
+                        // Tentar fazer parse das magias se for string JSON
+                        if (typeof magiasData === 'string') {
+                            try {
+                                magiasNivel = JSON.parse(magiasData);
+                            } catch (e) {
+                                console.log(`Erro ao fazer parse das magias nível ${nivel}:`, e);
+                                magiasNivel = [];
+                            }
+                        } else if (Array.isArray(magiasData)) {
+                            magiasNivel = magiasData;
+                        }
+
+                        console.log(`Magias nível ${nivel} processadas:`, magiasNivel);
+
+                        if (magiasNivel && magiasNivel.length > 0) {
+                            magiasNivel.forEach(magia => {
+                                const linha = document.createElement('div');
+                                linha.className = 'linha-magia';
+                                linha.innerHTML = `
+                                    <input type="checkbox" class="checkbox-preparada" ${magia.preparada ? 'checked' : ''} />
+                                    <input type="text" class="input-nome-magia" placeholder="Nome da magia" value="${magia.nome || ''}" />
+                                    <button type="button" onclick="removerMagia(this)" class="btn-remover-magia" title="Remover">
+                                        <i data-lucide="x"></i>
+                                    </button>
+                                `;
+                                container.appendChild(linha);
+                            });
+                        }
+                    }
+                }
+
+                lucide.createIcons();
+                console.log('Magias preenchidas com sucesso');
+            } catch (error) {
+                console.error('Erro ao preencher magias:', error);
+                // Adicionar truques vazios em caso de erro
+                for (let i = 0; i < 3; i++) {
+                    adicionarTruque();
                 }
             }
-
-            lucide.createIcons();
         }
 
         // Salvar magias
@@ -401,8 +506,18 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== SALVANDO MAGIAS ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
                 alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            if (!token) {
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
                 return;
             }
 
@@ -424,12 +539,15 @@
                 magias[`nivel_${nivel}_magias`] = coletarMagiasNivel(nivel);
             }
 
+            console.log('Dados a serem enviados:', magias);
+
             const btnSalvar = document.getElementById('btn-salvar-magias');
             btnSalvar.disabled = true;
             btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
-                const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/spells`, {
+                console.log('Enviando requisição para salvar magias...');
+                const response = await fetch(`${API_URL}/characters/${characterId}/spells`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -438,19 +556,32 @@
                     body: JSON.stringify(magias)
                 });
 
+                console.log('Status da resposta:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Resposta de sucesso:', data);
                     alert('Magias salvas com sucesso!');
 
                     // Sempre mostrar botão continuar após salvar
                     document.querySelector('.btn-continuar').style.display = 'inline-flex';
                 } else {
-                    const errorData = await response.json();
-                    alert('Erro ao salvar magias: ' + (errorData.error || 'Erro desconhecido'));
+                    const errorData = await response.text();
+                    console.error('Erro na resposta:', response.status, errorData);
+                    
+                    let errorMessage = 'Erro desconhecido';
+                    try {
+                        const errorJson = JSON.parse(errorData);
+                        errorMessage = errorJson.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Erro HTTP ${response.status}: ${errorData}`;
+                    }
+                    
+                    alert('Erro ao salvar magias: ' + errorMessage);
                 }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão ao salvar magias');
+                console.error('Erro de rede:', error);
+                alert('Erro de conexão ao salvar magias: ' + error.message);
             } finally {
                 btnSalvar.disabled = false;
                 btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Magias';
@@ -463,8 +594,14 @@
 
         // Inicializar página
         document.addEventListener('DOMContentLoaded', async () => {
-            await verificarAutenticacao();
-            await carregarMagias();
+            console.log('=== INICIALIZANDO PÁGINA DE MAGIAS ===');
+            console.log('URL atual:', window.location.href);
+            console.log('API URL:', API_URL);
+            
+            const autenticado = await verificarAutenticacao();
+            if (autenticado) {
+                await carregarMagias();
+            }
             lucide.createIcons();
         });
     </script>

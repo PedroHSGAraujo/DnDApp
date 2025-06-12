@@ -107,31 +107,41 @@
     </div>
 
     <script>
+        // 🚀 URL DINÂMICA - Detecta automaticamente o ambiente
+        const API_URL = window.location.origin;
+
         let ataques = []; // Array para armazenar os ataques
 
         // Verificação de autenticação
         async function verificarAutenticacao() {
             const token = localStorage.getItem("token");
             if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
                 window.location.href = "/";
-                return;
+                return false;
             }
 
             try {
-                const res = await fetch("https://dndapp-0f3t.onrender.com/profile", {
+                const res = await fetch(`${API_URL}/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 if (!res.ok) {
+                    console.log('Token inválido, removendo e redirecionando');
                     localStorage.removeItem("token");
                     window.location.href = "/";
-                    return;
+                    return false;
                 }
+                
+                console.log('Autenticação verificada com sucesso');
+                return true;
             } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
                 localStorage.removeItem("token");
                 window.location.href = "/";
+                return false;
             }
         }
 
@@ -177,39 +187,70 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== CARREGANDO HABILIDADES ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
-                alert('Nenhum personagem selecionado');
+                console.log('Nenhum personagem selecionado');
+                alert('Nenhum personagem selecionado. Redirecionando...');
                 window.location.href = '/personagens';
                 return;
             }
 
+            if (!token) {
+                console.log('Token não encontrado');
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
+                return;
+            }
+
             try {
+                console.log('Buscando dados básicos do personagem...');
                 // Primeiro, carregar dados básicos do personagem
-                const characterResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+                const characterResponse = await fetch(`${API_URL}/characters/${characterId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
+
+                console.log('Status da resposta do personagem:', characterResponse.status);
 
                 if (characterResponse.ok) {
                     const characterData = await characterResponse.json();
+                    console.log('Dados do personagem recebidos:', characterData);
                     const personagem = characterData.character;
-                    document.getElementById('titulo-personagem').textContent = `Habilidades - ${personagem.nome}`;
+                    
+                    if (personagem && personagem.nome) {
+                        document.getElementById('titulo-personagem').textContent = `Habilidades - ${personagem.nome}`;
+                        console.log('Título atualizado para:', personagem.nome);
+                    }
+                } else {
+                    const errorText = await characterResponse.text();
+                    console.error('Erro ao buscar personagem:', characterResponse.status, errorText);
                 }
 
+                console.log('Buscando habilidades existentes...');
                 // Tentar carregar habilidades existentes
-                const abilitiesResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/abilities`, {
+                const abilitiesResponse = await fetch(`${API_URL}/characters/${characterId}/abilities`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('Status da resposta das habilidades:', abilitiesResponse.status);
+
                 if (abilitiesResponse.ok) {
                     const abilitiesData = await abilitiesResponse.json();
+                    console.log('Dados das habilidades recebidos:', abilitiesData);
                     const habilidades = abilitiesData.abilities;
                     preencherHabilidades(habilidades);
                 } else {
-                    console.log('Nenhuma habilidade encontrada, usando valores padrão');
+                    const errorText = await abilitiesResponse.text();
+                    console.log('Nenhuma habilidade encontrada ou erro:', abilitiesResponse.status, errorText);
+                    console.log('Usando valores padrão - adicionando linha vazia');
                     // Adicionar pelo menos uma linha de ataque vazia
                     adicionarLinhaAtaque();
                 }
@@ -217,47 +258,86 @@
                 // Mostrar conteúdo e esconder loading
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-habilidades').style.display = 'block';
+                console.log('Interface atualizada - loading removido, conteúdo exibido');
 
             } catch (error) {
-                console.error('Erro ao carregar habilidades:', error);
+                console.error('Erro detalhado ao carregar habilidades:', error);
+                console.error('Stack trace:', error.stack);
+                
+                // Mostrar conteúdo mesmo com erro
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-habilidades').style.display = 'block';
+                
                 // Adicionar linha vazia em caso de erro
                 adicionarLinhaAtaque();
+                
+                alert('Erro ao carregar habilidades: ' + error.message);
             }
         }
 
         // Preencher formulário com habilidades existentes
         function preencherHabilidades(habilidades) {
-            // Preencher textareas
-            document.getElementById('caracteristicas-talentos').value = habilidades.caracteristicas_talentos || '';
-            document.getElementById('outras-proficiencias').value = habilidades.outras_proficiencias_idiomas || '';
-
-            // Preencher ataques
-            const listaAtaques = document.getElementById('lista-ataques');
-            listaAtaques.innerHTML = ''; // Limpar ataques existentes
-
-            if (habilidades.ataques_conjuracao && habilidades.ataques_conjuracao.length > 0) {
-                habilidades.ataques_conjuracao.forEach(ataque => {
-                    const novaLinha = document.createElement('div');
-                    novaLinha.className = 'linha-ataque';
-                    novaLinha.innerHTML = `
-                        <input type="text" placeholder="Nome do Ataque/Magia" class="input-nome" value="${ataque.nome || ''}" />
-                        <input type="text" placeholder="Bônus de Ataque (ex: +5)" class="input-bonus" value="${ataque.bonus_ataque || ''}" />
-                        <input type="text" placeholder="Dano/Tipo (ex: 1d8+3 cortante)" class="input-dano" value="${ataque.dano_tipo || ''}" />
-                        <button type="button" onclick="removerLinhaAtaque(this)" class="btn-remover" title="Remover">
-                            <i data-lucide="x"></i>
-                        </button>
-                    `;
-                    listaAtaques.appendChild(novaLinha);
-                });
-            } else {
-                // Se não há ataques, adicionar uma linha vazia
+            if (!habilidades) {
+                console.log('Nenhuma habilidade para preencher, usando valores padrão');
                 adicionarLinhaAtaque();
+                return;
             }
 
-            // Re-inicializar ícones do Lucide
-            lucide.createIcons();
+            console.log('Preenchendo habilidades:', habilidades);
+
+            try {
+                // Preencher textareas
+                document.getElementById('caracteristicas-talentos').value = habilidades.caracteristicas_talentos || '';
+                document.getElementById('outras-proficiencias').value = habilidades.outras_proficiencias_idiomas || '';
+
+                // Preencher ataques
+                const listaAtaques = document.getElementById('lista-ataques');
+                listaAtaques.innerHTML = ''; // Limpar ataques existentes
+
+                let ataquesParsed = [];
+                
+                // Tentar fazer parse dos ataques se for string JSON
+                if (typeof habilidades.ataques_conjuracao === 'string') {
+                    try {
+                        ataquesParsed = JSON.parse(habilidades.ataques_conjuracao);
+                    } catch (e) {
+                        console.log('Erro ao fazer parse dos ataques JSON:', e);
+                        ataquesParsed = [];
+                    }
+                } else if (Array.isArray(habilidades.ataques_conjuracao)) {
+                    ataquesParsed = habilidades.ataques_conjuracao;
+                }
+
+                console.log('Ataques processados:', ataquesParsed);
+
+                if (ataquesParsed && ataquesParsed.length > 0) {
+                    ataquesParsed.forEach(ataque => {
+                        const novaLinha = document.createElement('div');
+                        novaLinha.className = 'linha-ataque';
+                        novaLinha.innerHTML = `
+                            <input type="text" placeholder="Nome do Ataque/Magia" class="input-nome" value="${ataque.nome || ''}" />
+                            <input type="text" placeholder="Bônus de Ataque (ex: +5)" class="input-bonus" value="${ataque.bonus_ataque || ''}" />
+                            <input type="text" placeholder="Dano/Tipo (ex: 1d8+3 cortante)" class="input-dano" value="${ataque.dano_tipo || ''}" />
+                            <button type="button" onclick="removerLinhaAtaque(this)" class="btn-remover" title="Remover">
+                                <i data-lucide="x"></i>
+                            </button>
+                        `;
+                        listaAtaques.appendChild(novaLinha);
+                    });
+                } else {
+                    // Se não há ataques, adicionar uma linha vazia
+                    console.log('Nenhum ataque encontrado, adicionando linha vazia');
+                    adicionarLinhaAtaque();
+                }
+
+                // Re-inicializar ícones do Lucide
+                lucide.createIcons();
+                console.log('Habilidades preenchidas com sucesso');
+            } catch (error) {
+                console.error('Erro ao preencher habilidades:', error);
+                // Adicionar linha vazia em caso de erro
+                adicionarLinhaAtaque();
+            }
         }
 
         // Coletar dados dos ataques
@@ -280,6 +360,7 @@
                 }
             });
 
+            console.log('Ataques coletados:', ataques);
             return ataques;
         }
 
@@ -288,8 +369,18 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== SALVANDO HABILIDADES ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
                 alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            if (!token) {
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
                 return;
             }
 
@@ -299,12 +390,15 @@
                 outras_proficiencias_idiomas: document.getElementById('outras-proficiencias').value.trim()
             };
 
+            console.log('Dados a serem enviados:', habilidades);
+
             const btnSalvar = document.getElementById('btn-salvar-habilidades');
             btnSalvar.disabled = true;
             btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
-                const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/abilities`, {
+                console.log('Enviando requisição para salvar habilidades...');
+                const response = await fetch(`${API_URL}/characters/${characterId}/abilities`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -313,19 +407,32 @@
                     body: JSON.stringify(habilidades)
                 });
 
+                console.log('Status da resposta:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Resposta de sucesso:', data);
                     alert('Habilidades salvas com sucesso!');
 
                     // Sempre mostrar botão continuar após salvar
                     document.querySelector('.btn-continuar').style.display = 'inline-flex';
                 } else {
-                    const errorData = await response.json();
-                    alert('Erro ao salvar habilidades: ' + (errorData.error || 'Erro desconhecido'));
+                    const errorData = await response.text();
+                    console.error('Erro na resposta:', response.status, errorData);
+                    
+                    let errorMessage = 'Erro desconhecido';
+                    try {
+                        const errorJson = JSON.parse(errorData);
+                        errorMessage = errorJson.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Erro HTTP ${response.status}: ${errorData}`;
+                    }
+                    
+                    alert('Erro ao salvar habilidades: ' + errorMessage);
                 }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão ao salvar habilidades');
+                console.error('Erro de rede:', error);
+                alert('Erro de conexão ao salvar habilidades: ' + error.message);
             } finally {
                 btnSalvar.disabled = false;
                 btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Habilidades';
@@ -338,8 +445,14 @@
 
         // Inicializar página
         document.addEventListener('DOMContentLoaded', async () => {
-            await verificarAutenticacao();
-            await carregarHabilidades();
+            console.log('=== INICIALIZANDO PÁGINA DE HABILIDADES ===');
+            console.log('URL atual:', window.location.href);
+            console.log('API URL:', API_URL);
+            
+            const autenticado = await verificarAutenticacao();
+            if (autenticado) {
+                await carregarHabilidades();
+            }
             lucide.createIcons();
         });
     </script>
@@ -771,5 +884,4 @@
         }
     </style>
 </body>
-
 </html>

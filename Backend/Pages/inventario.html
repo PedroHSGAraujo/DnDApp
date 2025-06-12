@@ -122,29 +122,39 @@
     </div>
 
     <script>
+        // 🚀 URL DINÂMICA - Detecta automaticamente o ambiente
+        const API_URL = window.location.origin;
+
         // Verificação de autenticação
         async function verificarAutenticacao() {
             const token = localStorage.getItem("token");
             if (!token) {
+                console.log('Token não encontrado, redirecionando para login');
                 window.location.href = "/";
-                return;
+                return false;
             }
 
             try {
-                const res = await fetch("https://dndapp-0f3t.onrender.com/profile", {
+                const res = await fetch(`${API_URL}/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 if (!res.ok) {
+                    console.log('Token inválido, removendo e redirecionando');
                     localStorage.removeItem("token");
                     window.location.href = "/";
-                    return;
+                    return false;
                 }
+                
+                console.log('Autenticação verificada com sucesso');
+                return true;
             } catch (error) {
+                console.error('Erro na verificação de autenticação:', error);
                 localStorage.removeItem("token");
                 window.location.href = "/";
+                return false;
             }
         }
 
@@ -210,39 +220,70 @@
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
 
+            console.log('=== CARREGANDO INVENTÁRIO ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
+
             if (!characterId) {
-                alert('Nenhum personagem selecionado');
+                console.log('Nenhum personagem selecionado');
+                alert('Nenhum personagem selecionado. Redirecionando...');
                 window.location.href = '/personagens';
                 return;
             }
 
+            if (!token) {
+                console.log('Token não encontrado');
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
+                return;
+            }
+
             try {
+                console.log('Buscando dados básicos do personagem...');
                 // Primeiro, carregar dados básicos do personagem
-                const characterResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}`, {
+                const characterResponse = await fetch(`${API_URL}/characters/${characterId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
+
+                console.log('Status da resposta do personagem:', characterResponse.status);
 
                 if (characterResponse.ok) {
                     const characterData = await characterResponse.json();
+                    console.log('Dados do personagem recebidos:', characterData);
                     const personagem = characterData.character;
-                    document.getElementById('titulo-personagem').textContent = `Inventário - ${personagem.nome}`;
+                    
+                    if (personagem && personagem.nome) {
+                        document.getElementById('titulo-personagem').textContent = `Inventário - ${personagem.nome}`;
+                        console.log('Título atualizado para:', personagem.nome);
+                    }
+                } else {
+                    const errorText = await characterResponse.text();
+                    console.error('Erro ao buscar personagem:', characterResponse.status, errorText);
                 }
 
+                console.log('Buscando inventário existente...');
                 // Tentar carregar inventário existente
-                const inventoryResponse = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
+                const inventoryResponse = await fetch(`${API_URL}/characters/${characterId}/inventory`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('Status da resposta do inventário:', inventoryResponse.status);
+
                 if (inventoryResponse.ok) {
                     const inventoryData = await inventoryResponse.json();
+                    console.log('Dados do inventário recebidos:', inventoryData);
                     const inventario = inventoryData.inventory;
                     preencherInventario(inventario);
                 } else {
-                    console.log('Nenhum inventário encontrado, usando valores padrão');
+                    const errorText = await inventoryResponse.text();
+                    console.log('Nenhum inventário encontrado ou erro:', inventoryResponse.status, errorText);
+                    console.log('Usando valores padrão e adicionando equipamentos vazios');
                     // Adicionar alguns equipamentos vazios
                     for (let i = 0; i < 3; i++) {
                         adicionarEquipamento();
@@ -252,66 +293,94 @@
                 // Mostrar conteúdo e esconder loading
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-inventario').style.display = 'block';
+                console.log('Interface atualizada - loading removido, conteúdo exibido');
 
             } catch (error) {
-                console.error('Erro ao carregar inventário:', error);
+                console.error('Erro detalhado ao carregar inventário:', error);
+                console.error('Stack trace:', error.stack);
+                
+                // Mostrar conteúdo mesmo com erro
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-inventario').style.display = 'block';
+                
                 // Adicionar equipamentos vazios em caso de erro
                 for (let i = 0; i < 3; i++) {
                     adicionarEquipamento();
                 }
+                
+                alert('Erro ao carregar inventário: ' + error.message);
             }
         }
 
         // Preencher formulário com inventário existente
         function preencherInventario(inventario) {
-            // Preencher moedas
-            document.getElementById('pc').value = inventario.pc || 0;
-            document.getElementById('pp').value = inventario.pp || 0;
-            document.getElementById('pe').value = inventario.pe || 0;
-            document.getElementById('po').value = inventario.po || 0;
-            document.getElementById('pl').value = inventario.pl || 0;
+            if (!inventario) {
+                console.log('Nenhum inventário para preencher, usando valores padrão');
+                // Adicionar alguns equipamentos vazios
+                for (let i = 0; i < 3; i++) {
+                    adicionarEquipamento();
+                }
+                return;
+            }
 
-            // Preencher equipamentos
-            const listaEquipamentos = document.getElementById('lista-equipamentos');
-            listaEquipamentos.innerHTML = ''; // Limpar equipamentos existentes
+            console.log('Preenchendo inventário:', inventario);
 
-            if (inventario.equipamentos && inventario.equipamentos.length > 0) {
-                inventario.equipamentos.forEach(equipamento => {
-                    const novoEquipamento = document.createElement('div');
-                    novoEquipamento.className = 'equipamento';
-                    novoEquipamento.innerHTML = `
-                        <div class="equipamento-campos">
-                            <div class="campo-quantidade">
-                                <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="${equipamento.quantidade || 1}" />
+            try {
+                // Preencher moedas
+                document.getElementById('pc').value = inventario.pc || 0;
+                document.getElementById('pp').value = inventario.pp || 0;
+                document.getElementById('pe').value = inventario.pe || 0;
+                document.getElementById('po').value = inventario.po || 0;
+                document.getElementById('pl').value = inventario.pl || 0;
+
+                // Preencher equipamentos
+                const listaEquipamentos = document.getElementById('lista-equipamentos');
+                listaEquipamentos.innerHTML = ''; // Limpar equipamentos existentes
+
+                if (inventario.equipamentos && inventario.equipamentos.length > 0) {
+                    inventario.equipamentos.forEach(equipamento => {
+                        const novoEquipamento = document.createElement('div');
+                        novoEquipamento.className = 'equipamento';
+                        novoEquipamento.innerHTML = `
+                            <div class="equipamento-campos">
+                                <div class="campo-quantidade">
+                                    <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="${equipamento.quantidade || 1}" />
+                                </div>
+                                <div class="campo-nome">
+                                    <input type="text" class="input-nome" placeholder="Nome do equipamento" value="${equipamento.nome || ''}" />
+                                </div>
+                                <div class="campo-categoria">
+                                    <select class="select-categoria">
+                                        <option value="">Categoria</option>
+                                        <option value="Arma" ${equipamento.categoria === 'Arma' ? 'selected' : ''}>Arma</option>
+                                        <option value="Armadura" ${equipamento.categoria === 'Armadura' ? 'selected' : ''}>Armadura</option>
+                                        <option value="Escudo" ${equipamento.categoria === 'Escudo' ? 'selected' : ''}>Escudo</option>
+                                        <option value="Ferramenta" ${equipamento.categoria === 'Ferramenta' ? 'selected' : ''}>Ferramenta</option>
+                                        <option value="Consumível" ${equipamento.categoria === 'Consumível' ? 'selected' : ''}>Consumível</option>
+                                        <option value="Gema" ${equipamento.categoria === 'Gema' ? 'selected' : ''}>Gema</option>
+                                        <option value="Arte" ${equipamento.categoria === 'Arte' ? 'selected' : ''}>Objeto de Arte</option>
+                                        <option value="Mágico" ${equipamento.categoria === 'Mágico' ? 'selected' : ''}>Item Mágico</option>
+                                        <option value="Diversos" ${equipamento.categoria === 'Diversos' ? 'selected' : ''}>Diversos</option>
+                                    </select>
+                                </div>
+                                <button type="button" onclick="removerEquipamento(this)" class="btn-remover" title="Remover">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
                             </div>
-                            <div class="campo-nome">
-                                <input type="text" class="input-nome" placeholder="Nome do equipamento" value="${equipamento.nome || ''}" />
-                            </div>
-                            <div class="campo-categoria">
-                                <select class="select-categoria">
-                                    <option value="">Categoria</option>
-                                    <option value="Arma" ${equipamento.categoria === 'Arma' ? 'selected' : ''}>Arma</option>
-                                    <option value="Armadura" ${equipamento.categoria === 'Armadura' ? 'selected' : ''}>Armadura</option>
-                                    <option value="Escudo" ${equipamento.categoria === 'Escudo' ? 'selected' : ''}>Escudo</option>
-                                    <option value="Ferramenta" ${equipamento.categoria === 'Ferramenta' ? 'selected' : ''}>Ferramenta</option>
-                                    <option value="Consumível" ${equipamento.categoria === 'Consumível' ? 'selected' : ''}>Consumível</option>
-                                    <option value="Gema" ${equipamento.categoria === 'Gema' ? 'selected' : ''}>Gema</option>
-                                    <option value="Arte" ${equipamento.categoria === 'Arte' ? 'selected' : ''}>Objeto de Arte</option>
-                                    <option value="Mágico" ${equipamento.categoria === 'Mágico' ? 'selected' : ''}>Item Mágico</option>
-                                    <option value="Diversos" ${equipamento.categoria === 'Diversos' ? 'selected' : ''}>Diversos</option>
-                                </select>
-                            </div>
-                            <button type="button" onclick="removerEquipamento(this)" class="btn-remover" title="Remover">
-                                <i data-lucide="trash-2"></i>
-                            </button>
-                        </div>
-                    `;
-                    listaEquipamentos.appendChild(novoEquipamento);
-                });
-            } else {
-                // Se não há equipamentos, adicionar alguns vazios
+                        `;
+                        listaEquipamentos.appendChild(novoEquipamento);
+                    });
+                } else {
+                    // Se não há equipamentos, adicionar alguns vazios
+                    for (let i = 0; i < 3; i++) {
+                        adicionarEquipamento();
+                    }
+                }
+
+                console.log('Inventário preenchido com sucesso');
+            } catch (error) {
+                console.error('Erro ao preencher inventário:', error);
+                // Em caso de erro, adicionar equipamentos vazios
                 for (let i = 0; i < 3; i++) {
                     adicionarEquipamento();
                 }
@@ -344,31 +413,50 @@
             return lista;
         }
 
+        // Função para pegar valor numérico
+        function getNumericValue(id) {
+            const value = document.getElementById(id).value;
+            return value === "" ? 0 : parseInt(value, 10);
+        }
+
         // Salvar inventário
         async function salvarInventario() {
             const characterId = localStorage.getItem('selectedCharacterId');
             const token = localStorage.getItem('token');
+
+            console.log('=== SALVANDO INVENTÁRIO ===');
+            console.log('Character ID:', characterId);
+            console.log('Token presente:', !!token);
 
             if (!characterId) {
                 alert('Nenhum personagem selecionado');
                 return;
             }
 
+            if (!token) {
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = '/';
+                return;
+            }
+
             const inventario = {
-                pc: parseInt(document.getElementById('pc').value) || 0,
-                pp: parseInt(document.getElementById('pp').value) || 0,
-                pe: parseInt(document.getElementById('pe').value) || 0,
-                po: parseInt(document.getElementById('po').value) || 0,
-                pl: parseInt(document.getElementById('pl').value) || 0,
+                pc: getNumericValue('pc'),
+                pp: getNumericValue('pp'),
+                pe: getNumericValue('pe'),
+                po: getNumericValue('po'),
+                pl: getNumericValue('pl'),
                 equipamentos: coletarEquipamentos()
             };
+
+            console.log('Dados a serem enviados:', inventario);
 
             const btnSalvar = document.getElementById('btn-salvar-inventario');
             btnSalvar.disabled = true;
             btnSalvar.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Salvando...';
 
             try {
-                const response = await fetch(`https://dndapp-0f3t.onrender.com/characters/${characterId}/inventory`, {
+                console.log('Enviando requisição para salvar inventário...');
+                const response = await fetch(`${API_URL}/characters/${characterId}/inventory`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -377,19 +465,32 @@
                     body: JSON.stringify(inventario)
                 });
 
+                console.log('Status da resposta:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Resposta de sucesso:', data);
                     alert('Inventário salvo com sucesso!');
 
-                    // Mostrar botão de finalização
+                    // Sempre mostrar botão finalizar após salvar
                     document.querySelector('.btn-finalizar').style.display = 'inline-flex';
                 } else {
-                    const errorData = await response.json();
-                    alert('Erro ao salvar inventário: ' + (errorData.error || 'Erro desconhecido'));
+                    const errorData = await response.text();
+                    console.error('Erro na resposta:', response.status, errorData);
+                    
+                    let errorMessage = 'Erro desconhecido';
+                    try {
+                        const errorJson = JSON.parse(errorData);
+                        errorMessage = errorJson.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Erro HTTP ${response.status}: ${errorData}`;
+                    }
+                    
+                    alert('Erro ao salvar inventário: ' + errorMessage);
                 }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão ao salvar inventário');
+                console.error('Erro de rede:', error);
+                alert('Erro de conexão ao salvar inventário: ' + error.message);
             } finally {
                 btnSalvar.disabled = false;
                 btnSalvar.innerHTML = '<i data-lucide="save"></i> Salvar Inventário';
@@ -402,8 +503,14 @@
 
         // Inicializar página
         document.addEventListener('DOMContentLoaded', async () => {
-            await verificarAutenticacao();
-            await carregarInventario();
+            console.log('=== INICIALIZANDO PÁGINA DE INVENTÁRIO ===');
+            console.log('URL atual:', window.location.href);
+            console.log('API URL:', API_URL);
+            
+            const autenticado = await verificarAutenticacao();
+            if (autenticado) {
+                await carregarInventario();
+            }
             lucide.createIcons();
         });
     </script>
@@ -950,5 +1057,4 @@
         }
     </style>
 </body>
-
 </html>
