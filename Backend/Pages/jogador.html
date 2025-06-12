@@ -66,7 +66,7 @@
             const novaSenha = document.getElementById("nova-senha").value;
             const token = localStorage.getItem("token");
 
-            const res = await fetch("http://dndapp-0f3t.onrender.com/update-password", {
+            const res = await fetch("https://dndapp-0f3t.onrender.com/update-password", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -84,7 +84,7 @@
             if (!token) return window.location.href = "/login";
 
             try {
-                const response = await fetch("http://dndapp-0f3t.onrender.com/profile", {
+                const response = await fetch("https://dndapp-0f3t.onrender.com/profile", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -121,7 +121,7 @@
             }
 
             try {
-                const response = await fetch("http://dndapp-0f3t.onrender.com/profile", {
+                const response = await fetch("https://dndapp-0f3t.onrender.com/profile", {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
