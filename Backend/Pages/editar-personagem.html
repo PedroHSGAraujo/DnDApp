@@ -226,7 +226,7 @@
       }
 
       try {
-        const res = await fetch("http://localhost:3000/profile", {
+        const res = await fetch("http://dndapp-0f3t.onrender.com/profile", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -291,7 +291,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:3000/characters/${characterId}`, {
+        const response = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -435,7 +435,7 @@
       btnSalvar.textContent = "Salvando...";
 
       try {
-        const response = await fetch(`http://localhost:3000/characters/${characterId}`, {
+        const response = await fetch(`http://dndapp-0f3t.onrender.com/characters/${characterId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
