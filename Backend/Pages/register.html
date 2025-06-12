@@ -49,7 +49,7 @@
             }
 
             try {
-                const response = await fetch("http://localhost:3000/register", {
+                const response = await fetch("http://dndapp-0f3t.onrender.com/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -84,7 +84,7 @@
                 const email = document.querySelector("input[name='email']").value;
 
                 try {
-                    const response = await fetch(`http://localhost:3000/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
+                    const response = await fetch(`http://dndapp-0f3t.onrender.com/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
                     const data = await response.json();
 
                     if (data.exists) {
@@ -109,7 +109,7 @@
             if (!username && !email) return;
 
             try {
-                const response = await fetch(`http://localhost:3000/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
+                const response = await fetch(`http://dndapp-0f3t.onrender.com/check-user?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`);
                 const data = await response.json();
 
                 if (data.exists) {
