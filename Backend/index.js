@@ -9,11 +9,15 @@ const jwt = require("jsonwebtoken");
 const characterRoutes = require('./characters')
 
 const cors = require('cors');
+const cors = require('cors');
+
 app.use(cors({
   origin: [
     'https://dndapp-0f3t.onrender.com',
     'http://localhost:3000',
-    'http://localhost:5000'
+    'http://localhost:5000',
+    'https://fichadnd.com.br',
+    'https://www.fichadnd.com.br'
   ],
   credentials: true
 }));
