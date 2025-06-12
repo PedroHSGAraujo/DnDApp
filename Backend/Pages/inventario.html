@@ -7,42 +7,66 @@
     <title>Inventário</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/inventario.css">
-    <script src="js/auth.js"></script>
-
 </head>
 
 <body>
-
-    <h2>Equipamento</h2>
-
-    <div class="equipamento">
-        <span>PC</span>
-        <input type="number" min="0">
-        <input type="text" placeholder="Nome do equipamento">
+    <!-- Header com nome do personagem -->
+    <div class="header">
+        <button onclick="voltarParaVisualizacao()" class="btn-voltar">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+        </button>
+        <h1 id="titulo-personagem">Inventário do Personagem</h1>
+        <div class="spacer"></div>
     </div>
 
-    <div class="equipamento">
-        <span>PP</span>
-        <input type="number" min="0">
-        <input type="text" placeholder="Nome do equipamento">
+    <!-- Loading -->
+    <div id="loading" class="loading" style="display: block;">
+        <p>Carregando inventário do personagem...</p>
     </div>
 
-    <div class="equipamento">
-        <span>PE</span>
-        <input type="number" min="0">
-        <input type="text" placeholder="Nome do equipamento">
-    </div>
+    <!-- Conteúdo principal -->
+    <div id="conteudo-inventario" style="display: none;">
+        <!-- Moedas -->
+        <div class="secao-moedas">
+            <h2>💰 Moedas</h2>
+            <div class="moedas-grid">
+                <div class="moeda">
+                    <label for="pc">PC (Cobre)</label>
+                    <input type="number" id="pc" min="0" value="0" />
+                </div>
+                <div class="moeda">
+                    <label for="pp">PP (Prata)</label>
+                    <input type="number" id="pp" min="0" value="0" />
+                </div>
+                <div class="moeda">
+                    <label for="pe">PE (Electro)</label>
+                    <input type="number" id="pe" min="0" value="0" />
+                </div>
+                <div class="moeda">
+                    <label for="po">PO (Ouro)</label>
+                    <input type="number" id="po" min="0" value="0" />
+                </div>
+                <div class="moeda">
+                    <label for="pl">PL (Platina)</label>
+                    <input type="number" id="pl" min="0" value="0" />
+                </div>
+            </div>
+        </div>
 
-    <div class="equipamento">
-        <span>PO</span>
-        <input type="number" min="0">
-        <input type="text" placeholder="Nome do equipamento">
-    </div>
+        <!-- Equipamentos -->
+        <div class="secao-equipamentos">
+            <h2>🎒 Equipamentos</h2>
+            <div id="lista-equipamentos">
+                <!-- Equipamentos serão inseridos aqui dinamicamente -->
+            </div>
+            <button class="btn-adicionar" onclick="adicionarEquipamento()">+ Adicionar Equipamento</button>
+        </div>
 
-    <div class="equipamento">
-        <span>PL</span>
-        <input type="number" min="0">
-        <input type="text" placeholder="Nome do equipamento">
+        <div class="botoes-acao">
+            <button class="btn-salvar" id="btn-salvar-inventario">Salvar Inventário</button>
+            <button onclick="finalizarPersonagem()" class="btn-finalizar" style="display: none;">✅ Personagem Completo!</button>
+        </div>
     </div>
 
     <div class="navbar">
@@ -73,12 +97,551 @@
     </div>
 
     <script>
+        // Verificação de autenticação
+        async function verificarAutenticacao() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                    return;
+                }
+            } catch (error) {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            }
+        }
+
         function irPara(pagina) {
             window.location.href = pagina;
         }
 
-        lucide.createIcons();
+        function voltarParaVisualizacao() {
+            window.location.href = '/visualizar-personagem';
+        }
+
+        function finalizarPersonagem() {
+            alert('🎉 Parabéns! Seu personagem está completo e pronto para aventuras!');
+            window.location.href = '/visualizar-personagem';
+        }
+
+        // Adicionar novo equipamento
+        function adicionarEquipamento() {
+            const lista = document.getElementById('lista-equipamentos');
+            const novoEquipamento = document.createElement('div');
+            novoEquipamento.className = 'equipamento';
+            novoEquipamento.innerHTML = `
+                <div class="equipamento-campos">
+                    <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="1" />
+                    <input type="text" class="input-nome" placeholder="Nome do equipamento" />
+                    <select class="select-categoria">
+                        <option value="">Categoria</option>
+                        <option value="Arma">Arma</option>
+                        <option value="Armadura">Armadura</option>
+                        <option value="Escudo">Escudo</option>
+                        <option value="Ferramenta">Ferramenta</option>
+                        <option value="Consumível">Consumível</option>
+                        <option value="Gema">Gema</option>
+                        <option value="Arte">Objeto de Arte</option>
+                        <option value="Mágico">Item Mágico</option>
+                        <option value="Diversos">Diversos</option>
+                    </select>
+                    <button type="button" onclick="removerEquipamento(this)" class="btn-remover" title="Remover">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            `;
+            lista.appendChild(novoEquipamento);
+            
+            // Re-inicializar ícones do Lucide
+            lucide.createIcons();
+        }
+
+        // Remover equipamento
+        function removerEquipamento(botao) {
+            const equipamento = botao.closest('.equipamento');
+            equipamento.remove();
+        }
+
+        // Carregar inventário existente
+        async function carregarInventario() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                window.location.href = '/personagens';
+                return;
+            }
+
+            try {
+                // Primeiro, carregar dados básicos do personagem
+                const characterResponse = await fetch(`http://localhost:3000/characters/${characterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (characterResponse.ok) {
+                    const characterData = await characterResponse.json();
+                    const personagem = characterData.character;
+                    document.getElementById('titulo-personagem').textContent = `Inventário - ${personagem.nome}`;
+                }
+
+                // Tentar carregar inventário existente
+                const inventoryResponse = await fetch(`http://localhost:3000/characters/${characterId}/inventory`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (inventoryResponse.ok) {
+                    const inventoryData = await inventoryResponse.json();
+                    const inventario = inventoryData.inventory;
+                    preencherInventario(inventario);
+                } else {
+                    console.log('Nenhum inventário encontrado, usando valores padrão');
+                    // Adicionar alguns equipamentos vazios
+                    for (let i = 0; i < 3; i++) {
+                        adicionarEquipamento();
+                    }
+                }
+
+                // Mostrar conteúdo e esconder loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-inventario').style.display = 'block';
+
+            } catch (error) {
+                console.error('Erro ao carregar inventário:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-inventario').style.display = 'block';
+                // Adicionar equipamentos vazios em caso de erro
+                for (let i = 0; i < 3; i++) {
+                    adicionarEquipamento();
+                }
+            }
+        }
+
+        // Preencher formulário com inventário existente
+        function preencherInventario(inventario) {
+            // Preencher moedas
+            document.getElementById('pc').value = inventario.pc || 0;
+            document.getElementById('pp').value = inventario.pp || 0;
+            document.getElementById('pe').value = inventario.pe || 0;
+            document.getElementById('po').value = inventario.po || 0;
+            document.getElementById('pl').value = inventario.pl || 0;
+
+            // Preencher equipamentos
+            const listaEquipamentos = document.getElementById('lista-equipamentos');
+            listaEquipamentos.innerHTML = ''; // Limpar equipamentos existentes
+
+            if (inventario.equipamentos && inventario.equipamentos.length > 0) {
+                inventario.equipamentos.forEach(equipamento => {
+                    const novoEquipamento = document.createElement('div');
+                    novoEquipamento.className = 'equipamento';
+                    novoEquipamento.innerHTML = `
+                        <div class="equipamento-campos">
+                            <input type="number" class="input-quantidade" placeholder="Qtd" min="1" value="${equipamento.quantidade || 1}" />
+                            <input type="text" class="input-nome" placeholder="Nome do equipamento" value="${equipamento.nome || ''}" />
+                            <select class="select-categoria">
+                                <option value="">Categoria</option>
+                                <option value="Arma" ${equipamento.categoria === 'Arma' ? 'selected' : ''}>Arma</option>
+                                <option value="Armadura" ${equipamento.categoria === 'Armadura' ? 'selected' : ''}>Armadura</option>
+                                <option value="Escudo" ${equipamento.categoria === 'Escudo' ? 'selected' : ''}>Escudo</option>
+                                <option value="Ferramenta" ${equipamento.categoria === 'Ferramenta' ? 'selected' : ''}>Ferramenta</option>
+                                <option value="Consumível" ${equipamento.categoria === 'Consumível' ? 'selected' : ''}>Consumível</option>
+                                <option value="Gema" ${equipamento.categoria === 'Gema' ? 'selected' : ''}>Gema</option>
+                                <option value="Arte" ${equipamento.categoria === 'Arte' ? 'selected' : ''}>Objeto de Arte</option>
+                                <option value="Mágico" ${equipamento.categoria === 'Mágico' ? 'selected' : ''}>Item Mágico</option>
+                                <option value="Diversos" ${equipamento.categoria === 'Diversos' ? 'selected' : ''}>Diversos</option>
+                            </select>
+                            <button type="button" onclick="removerEquipamento(this)" class="btn-remover" title="Remover">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                    `;
+                    listaEquipamentos.appendChild(novoEquipamento);
+                });
+            } else {
+                // Se não há equipamentos, adicionar alguns vazios
+                for (let i = 0; i < 3; i++) {
+                    adicionarEquipamento();
+                }
+            }
+
+            // Re-inicializar ícones do Lucide
+            lucide.createIcons();
+        }
+
+        // Coletar dados dos equipamentos
+        function coletarEquipamentos() {
+            const equipamentos = document.querySelectorAll('.equipamento');
+            const lista = [];
+
+            equipamentos.forEach(equipamento => {
+                const quantidade = parseInt(equipamento.querySelector('.input-quantidade').value) || 1;
+                const nome = equipamento.querySelector('.input-nome').value.trim();
+                const categoria = equipamento.querySelector('.select-categoria').value;
+
+                // Só adiciona se pelo menos o nome foi preenchido
+                if (nome) {
+                    lista.push({
+                        quantidade: quantidade,
+                        nome: nome,
+                        categoria: categoria || 'Diversos'
+                    });
+                }
+            });
+
+            return lista;
+        }
+
+        // Salvar inventário
+        async function salvarInventario() {
+            const characterId = localStorage.getItem('selectedCharacterId');
+            const token = localStorage.getItem('token');
+
+            if (!characterId) {
+                alert('Nenhum personagem selecionado');
+                return;
+            }
+
+            const inventario = {
+                pc: parseInt(document.getElementById('pc').value) || 0,
+                pp: parseInt(document.getElementById('pp').value) || 0,
+                pe: parseInt(document.getElementById('pe').value) || 0,
+                po: parseInt(document.getElementById('po').value) || 0,
+                pl: parseInt(document.getElementById('pl').value) || 0,
+                equipamentos: coletarEquipamentos()
+            };
+
+            const btnSalvar = document.getElementById('btn-salvar-inventario');
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+
+            try {
+                const response = await fetch(`http://localhost:3000/characters/${characterId}/inventory`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(inventario)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Inventário salvo com sucesso!');
+                    
+                    // Mostrar botão de finalização
+                    document.querySelector('.btn-finalizar').style.display = 'inline-block';
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao salvar inventário: ' + (errorData.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão ao salvar inventário');
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = 'Salvar Inventário';
+            }
+        }
+
+        // Event listener do botão salvar
+        document.getElementById('btn-salvar-inventario').addEventListener('click', salvarInventario);
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await verificarAutenticacao();
+            await carregarInventario();
+            lucide.createIcons();
+        });
     </script>
+
+    <style>
+        /* Estilos adicionais */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-voltar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #555;
+        }
+
+        .spacer {
+            width: 80px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .secao-moedas {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .secao-moedas h2 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+
+        .moedas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .moeda {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .moeda label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .moeda input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .secao-equipamentos {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .secao-equipamentos h2 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+
+        .equipamento {
+            margin-bottom: 15px;
+        }
+
+        .equipamento-campos {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-quantidade {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .input-nome {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .select-categoria {
+            min-width: 120px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn-remover {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-remover:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-remover i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-adicionar {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .btn-adicionar:hover {
+            background-color: #45a049;
+        }
+
+        .botoes-acao {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .btn-salvar, .btn-finalizar {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-salvar {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-salvar:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-salvar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-finalizar {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-finalizar:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .spacer {
+                display: none;
+            }
+
+            .moedas-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .equipamento-campos {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .input-nome {
+                min-width: unset;
+            }
+
+            .botoes-acao {
+                flex-direction: column;
+            }
+        }
+
+        /* Navbar já está no CSS original */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #bfbfbf;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            border-top: 2px solid #888;
+        }
+
+        .navbar button {
+            flex: 1;
+            padding: 6px 0;
+            background: none;
+            border: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .navbar button i {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+        }
+
+        .navbar button.active {
+            background-color: #999;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            font-weight: bold;
+        }
+    </style>
 </body>
 
 </html>

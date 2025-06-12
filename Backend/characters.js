@@ -907,4 +907,163 @@ router.post("/characters/:id/spells", authenticateToken, async (req, res) => {
   }
 });
 
+// Buscar inventário de um personagem
+router.get("/characters/:id/inventory", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const characterId = req.params.id;
+
+  console.log("=== BUSCANDO INVENTÁRIO ===");
+  console.log("Character ID:", characterId);
+  console.log("User ID:", userId);
+
+  try {
+    // Verificar se o personagem pertence ao usuário
+    const ownerCheck = await pool.query(
+      "SELECT id FROM characters WHERE id = $1 AND user_id = $2",
+      [characterId, userId]
+    );
+
+    if (ownerCheck.rows.length === 0) {
+      return res.status(404).json({ error: "Personagem não encontrado" });
+    }
+
+    // Buscar inventário do personagem
+    const result = await pool.query(
+      "SELECT * FROM character_inventory WHERE character_id = $1",
+      [characterId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Inventário não encontrado" });
+    }
+
+    console.log("Inventário encontrado para personagem", characterId);
+    res.json({ inventory: result.rows[0] });
+  } catch (error) {
+    console.error("Erro ao buscar inventário:", error);
+    res.status(500).json({ error: "Erro ao buscar inventário" });
+  }
+});
+
+// Salvar/Atualizar inventário de um personagem
+router.post("/characters/:id/inventory", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const characterId = req.params.id;
+
+  console.log("=== SALVANDO INVENTÁRIO ===");
+  console.log("Character ID:", characterId);
+  console.log("User ID:", userId);
+  console.log("Dados recebidos:", JSON.stringify(req.body, null, 2));
+
+  try {
+    // Verificar se o personagem pertence ao usuário
+    const ownerCheck = await pool.query(
+      "SELECT id FROM characters WHERE id = $1 AND user_id = $2",
+      [characterId, userId]
+    );
+
+    if (ownerCheck.rows.length === 0) {
+      console.log("Personagem não encontrado ou não pertence ao usuário");
+      return res.status(404).json({ error: "Personagem não encontrado" });
+    }
+
+    console.log("Personagem verificado, extraindo dados...");
+
+    const {
+      pc, pp, pe, po, pl,
+      equipamentos
+    } = req.body;
+
+    console.log("Dados extraídos:");
+    console.log("Moedas - PC:", pc, "PP:", pp, "PE:", pe, "PO:", po, "PL:", pl);
+    console.log("Equipamentos:", equipamentos);
+
+    // Verificar se já existe inventário para este personagem
+    console.log("Verificando se já existe inventário...");
+    const existingInventory = await pool.query(
+      "SELECT id FROM character_inventory WHERE character_id = $1",
+      [characterId]
+    );
+
+    console.log("Inventário existente encontrado:", existingInventory.rows.length);
+
+    let result;
+    
+    if (existingInventory.rows.length > 0) {
+      // Atualizar inventário existente
+      console.log("Atualizando inventário existente...");
+      
+      const updateQuery = `
+        UPDATE character_inventory SET
+          pc = $1,
+          pp = $2,
+          pe = $3,
+          po = $4,
+          pl = $5,
+          equipamentos = $6,
+          updated_at = NOW()
+        WHERE character_id = $7
+        RETURNING id, character_id, updated_at;
+      `;
+
+      const values = [
+        pc || 0,
+        pp || 0,
+        pe || 0,
+        po || 0,
+        pl || 0,
+        JSON.stringify(equipamentos || []),
+        characterId
+      ];
+
+      console.log("Executando UPDATE com valores:", values.length, "parâmetros");
+      result = await pool.query(updateQuery, values);
+      console.log("UPDATE executado com sucesso");
+    } else {
+      // Criar novo inventário
+      console.log("Criando novo inventário...");
+      
+      const insertQuery = `
+        INSERT INTO character_inventory (
+          character_id,
+          pc, pp, pe, po, pl,
+          equipamentos
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7
+        ) RETURNING id, character_id, created_at;
+      `;
+
+      const values = [
+        characterId,
+        pc || 0,
+        pp || 0,
+        pe || 0,
+        po || 0,
+        pl || 0,
+        JSON.stringify(equipamentos || [])
+      ];
+
+      console.log("Colunas na query:", 7);
+      console.log("Valores fornecidos:", values.length);
+      console.log("Executando INSERT...");
+      result = await pool.query(insertQuery, values);
+      console.log("INSERT executado com sucesso");
+    }
+
+    console.log("Inventário salvo com sucesso:", result.rows[0]);
+    
+    res.json({ 
+      message: "Inventário salvo com sucesso",
+      inventory: result.rows[0] 
+    });
+  } catch (error) {
+    console.error("ERRO DETALHADO ao salvar inventário:");
+    console.error("Mensagem:", error.message);
+    console.error("Stack:", error.stack);
+    console.error("Code:", error.code);
+    console.error("Detail:", error.detail);
+    res.status(500).json({ error: "Erro ao salvar inventário", details: error.message });
+  }
+});
+
 module.exports = router;
